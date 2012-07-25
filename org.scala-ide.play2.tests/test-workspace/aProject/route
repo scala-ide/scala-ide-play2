@@ -1,0 +1,28 @@
+GET   /clients/:id          controllers.Clients.show(id: Long)  
+# Display a client.
+GET   /clients/:id          controllers.Clients.show(id: Long) 
+GET   /clients              controllers.Clients.list()
+GET   /clients/:id          controllers.Clients.show(id: Long) 
+GET   /files/*name          controllers.Application.download(name)  
+GET   /clients/$id<[0-9]+>  controllers.Clients.show(id: Long) 
+GET   /                     controllers.Application.homePage()
+# Extract the page parameter from the path.
+# i.e. http://myserver.com/index
+GET   /:page                controllers.Application.show(page)
+# Extract the page parameter from the query string.
+# i.e. http://myserver.com/?page=index
+GET   /                     controllers.Application.show(page)
+GET   /client/:id           controllers.Clients.show(id: Long)
+# Extract the page parameter from the path, or fix the value for /
+GET   /                     controllers.Application.show(page = "home")
+GET   /:page                controllers.Application.show(page)
+# Pagination links, like /clients?page=3
+GET   /clients              controllers.Clients.list(page: Integer ?= 1)
+# Hello action
+GET   /hello/:name          controllers.Application.hello(name)
+
+# Amir's tests
+GET   /hello/:str           controllers.Test.test_underline() #comment at here!
+test.test.test2.A.show()
+Integer.parseInt(a: String)
+#kdjfa /dkfjsa
