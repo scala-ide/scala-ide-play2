@@ -1,15 +1,11 @@
 package org.scalaide.play2.routeeditor.scanners
 
-import org.junit.Test
-import org.junit.Assert._
-import org.scalaide.play2.routeeditor.ColorManager
-import org.eclipse.jdt.internal.core.util.SimpleDocument
-import org.scalaide.play2.routeeditor.RouteColorConstants
 import org.eclipse.jface.text.Document
-import org.eclipse.jface.text.rules.Token
 import org.eclipse.jface.text.rules.IToken
+import org.eclipse.jface.text.rules.Token
+import org.junit.Test
 
-class RouteScannerTest extends AbstractRouteScannerTest(new RouteScanner(_)) {
+class RouteScannerTest extends AbstractRouteScannerTest(new RouteScanner(_, _)) {
   private val httpToken = scanner.asInstanceOf[RouteScanner].httpToken
 
   @Test

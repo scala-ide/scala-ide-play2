@@ -8,6 +8,8 @@ object PlayPlugin {
   val PLUGIN_ID = "Play Plugin"
 
   def getDefault = PlayPlugin.plugin
+  
+  def prefStore = plugin.getPreferenceStore
 
   def getImageDescriptor(path: String) = {
     AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);

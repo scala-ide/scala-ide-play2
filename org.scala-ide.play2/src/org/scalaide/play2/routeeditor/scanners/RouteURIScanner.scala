@@ -1,16 +1,16 @@
 package org.scalaide.play2.routeeditor.scanners
 
-import org.eclipse.jface.text.rules.IRule;
-import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.jface.text.rules.IWordDetector;
-import org.eclipse.jface.text.rules.RuleBasedScanner;
-import org.eclipse.jface.text.rules.WordRule;
-import org.scalaide.play2.routeeditor.ColorManager;
-import org.scalaide.play2.routeeditor.RouteColorConstants;
+import org.eclipse.jdt.ui.text.IColorManager
+import org.eclipse.jface.preference.IPreferenceStore
+import org.eclipse.jface.text.rules.IRule
+import org.eclipse.jface.text.rules.IToken
+import org.eclipse.jface.text.rules.IWordDetector
+import org.eclipse.jface.text.rules.RuleBasedScanner
+import org.eclipse.jface.text.rules.WordRule
+import org.scalaide.play2.routeeditor.RouteSyntaxClasses._
 
-class RouteURIScanner(manager: ColorManager) extends AbstractRouteScanner(RouteColorConstants.getToken("ROUTE_URI", manager)) {
-  val dynamic = RouteColorConstants.getToken("ROUTE_URI_DYNAMIC",
-    manager);
+class RouteURIScanner(prefStore: IPreferenceStore, manager: IColorManager) extends AbstractRouteScanner(URI, prefStore, manager) {
+  def dynamic = getToken(URI_DYNAMIC)
 
   val rules = Array[IRule](
     // Add a rule for dynamic with colon

@@ -1,51 +1,55 @@
 package org.scalaide.play2.routeeditor
 
 import scala.Array.canBuildFrom
+import scala.tools.eclipse.lexical.SingleTokenScanner
+
+import org.eclipse.jdt.internal.ui.text.JavaColorManager
+import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.presentation.PresentationReconciler
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer
 import org.eclipse.jface.text.rules.ITokenScanner
 import org.eclipse.jface.text.source.ISourceViewer
 import org.eclipse.jface.text.source.SourceViewerConfiguration
+import org.eclipse.jface.util.PropertyChangeEvent
 import org.scalaide.play2.routeeditor.scanners.RouteActionScanner
-import org.scalaide.play2.routeeditor.scanners.RoutePartitionScanner
+import org.scalaide.play2.routeeditor.scanners.RoutePartitions
 import org.scalaide.play2.routeeditor.scanners.RouteScanner
 import org.scalaide.play2.routeeditor.scanners.RouteURIScanner
-import org.scalaide.play2.routeeditor.scanners.RouteCommentScanner
 
-class RouteConfiguration(colorManager: ColorManager, routeEditor: RouteEditor) extends SourceViewerConfiguration {
+class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) extends SourceViewerConfiguration {
   val reconciler = new PresentationReconciler();
-  private val xmlDoubleClickStrategy: RouteDoubleClickStrategy =
+  val colorManager = new JavaColorManager()
+  private val routeDoubleClickStrategy: RouteDoubleClickStrategy =
     new RouteDoubleClickStrategy()
   private val scanner: RouteScanner = {
-    val result = new RouteScanner(colorManager)
-//    result.setDefaultReturnToken(RouteColorConstants.getToken("DEFAULT",
-//      colorManager))
+    val result = new RouteScanner(prefStore, colorManager)
+    //    result.setDefaultReturnToken(RouteColorConstants.getToken("DEFAULT",
+    //      colorManager))
     result
   }
 
   private val uriScanner: RouteURIScanner = {
-    val result = new RouteURIScanner(colorManager)
-//    result.setDefaultReturnToken(RouteColorConstants.getToken("ROUTE_URI",
-//      colorManager))
+    val result = new RouteURIScanner(prefStore, colorManager)
+    //    result.setDefaultReturnToken(RouteColorConstants.getToken("ROUTE_URI",
+    //      colorManager))
     result
   }
 
   private val actionScanner: RouteActionScanner = {
-    val result = new RouteActionScanner(colorManager)
-//    result.setDefaultReturnToken(RouteColorConstants.getToken("ROUTE_ACTION",
-//      colorManager))
+    val result = new RouteActionScanner(prefStore, colorManager)
+    //    result.setDefaultReturnToken(RouteColorConstants.getToken("ROUTE_ACTION",
+    //      colorManager))
     result
   }
-  
-  private val commentScanner: RouteCommentScanner = {
-    val result = new RouteCommentScanner(RouteColorConstants.getToken("ROUTE_COMMENT",
-      colorManager))
+
+  private val commentScanner: SingleTokenScanner = {
+    val result = new SingleTokenScanner(RouteSyntaxClasses.COMMENT, colorManager, prefStore)
     result
   }
 
   override def getDoubleClickStrategy(sourceViewer: ISourceViewer, contentType: String) = {
-    xmlDoubleClickStrategy
+    routeDoubleClickStrategy
   }
 
   def handlePartition(partitionType: String, tokenScanner: ITokenScanner) {
@@ -55,7 +59,7 @@ class RouteConfiguration(colorManager: ColorManager, routeEditor: RouteEditor) e
   }
 
   override def getConfiguredContentTypes(sourceViewer: ISourceViewer) = {
-    RoutePartitionScanner.getTypes() ++ Array(IDocument.DEFAULT_CONTENT_TYPE)
+    RoutePartitions.getTypes() ++ Array(IDocument.DEFAULT_CONTENT_TYPE)
   }
 
   override def getHyperlinkDetectors(sourceViewer: ISourceViewer) = {
@@ -72,11 +76,18 @@ class RouteConfiguration(colorManager: ColorManager, routeEditor: RouteEditor) e
     sourceViewer: ISourceViewer) = {
 
     handlePartition(scanner, IDocument.DEFAULT_CONTENT_TYPE)
-    handlePartition(uriScanner, RoutePartitionScanner.ROUTE_URI)
-    handlePartition(actionScanner, RoutePartitionScanner.ROUTE_ACTION)
-    handlePartition(commentScanner, RoutePartitionScanner.ROUTE_COMMENT)
-//    handlePartition(scanner, RoutePartitionScanner.ROUTE_COMMENT)
-    
+    handlePartition(uriScanner, RoutePartitions.ROUTE_URI)
+    handlePartition(actionScanner, RoutePartitions.ROUTE_ACTION)
+    handlePartition(commentScanner, RoutePartitions.ROUTE_COMMENT)
+    //    handlePartition(scanner, RoutePartitionScanner.ROUTE_COMMENT)
+
     reconciler
+  }
+
+  def handlePropertyChangeEvent(event: PropertyChangeEvent) {
+    scanner.adaptToPreferenceChange(event)
+    uriScanner.adaptToPreferenceChange(event)
+    actionScanner.adaptToPreferenceChange(event)
+    commentScanner.adaptToPreferenceChange(event)
   }
 }

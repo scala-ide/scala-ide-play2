@@ -1,17 +1,18 @@
 package org.scalaide.play2.routeeditor.scanners
 
-import org.eclipse.jface.text.rules.IRule
-import org.eclipse.jface.text.rules.RuleBasedScanner
-import org.eclipse.jface.text.rules.WhitespaceRule
-import org.scalaide.play2.routeeditor.ColorManager
-import org.scalaide.play2.routeeditor.RouteColorConstants
-import org.scalaide.play2.routeeditor.RouteWhitespaceDetector
-import org.scalaide.play2.routeeditor.rules.HTTPKeywordRule
-import org.scalaide.play2.routeeditor.rules.RouteCommentRule
 import org.eclipse.jface.text.rules.IToken
+import org.eclipse.jface.text.rules.RuleBasedScanner
+import scala.tools.eclipse.lexical.AbstractScalaScanner
+import org.eclipse.jface.preference.IPreferenceStore
+import scala.tools.eclipse.semantichighlighting.ColorManager
+import org.eclipse.jdt.ui.text.IColorManager
+import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
 
-abstract class AbstractRouteScanner(defaultToken: IToken) extends RuleBasedScanner {
-  fDefaultReturnToken = defaultToken
-    
+abstract class AbstractRouteScanner(defaultSyntax: ScalaSyntaxClass, prefStore: IPreferenceStore, manager: IColorManager) extends RuleBasedScanner with AbstractScalaScanner {
+  fDefaultReturnToken = getToken(defaultSyntax)
+  override def preferenceStore = prefStore
+  override def colorManager = manager
+
   def getDefaultReturnToken = fDefaultReturnToken
+
 }

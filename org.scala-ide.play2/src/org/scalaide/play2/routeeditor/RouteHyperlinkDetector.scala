@@ -1,22 +1,23 @@
 package org.scalaide.play2.routeeditor
 
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.internal.ui.javaeditor.JavaElementHyperlink;
-import org.eclipse.jdt.ui.actions.OpenAction;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.Region;
-import org.eclipse.jface.text.hyperlink.IHyperlink;
-import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
-import org.scalaide.play2.routeeditor.scanners.RoutePartitionScanner;
-import org.scalaide.play2.routeeditor.tools.MethodFinder;
+import scala.Array.canBuildFrom
+
+import org.eclipse.jdt.internal.ui.javaeditor.JavaElementHyperlink
+import org.eclipse.jdt.ui.actions.OpenAction
+import org.eclipse.jface.text.BadLocationException
+import org.eclipse.jface.text.IRegion
+import org.eclipse.jface.text.ITextViewer
+import org.eclipse.jface.text.Region
+import org.eclipse.jface.text.hyperlink.IHyperlink
+import org.eclipse.jface.text.hyperlink.IHyperlinkDetector
+import org.scalaide.play2.routeeditor.scanners.RoutePartitions
+import org.scalaide.play2.routeeditor.tools.MethodFinder
 
 class RouteHyperlinkDetector(routeEditor: RouteEditor) extends IHyperlinkDetector {
   override def detectHyperlinks(textViewer: ITextViewer,
     region: IRegion, canShowMultipleHyperlinks: Boolean): Array[IHyperlink] = {
     try {
-      if (RoutePartitionScanner.isRouteAction(textViewer.getDocument()
+      if (RoutePartitions.isRouteAction(textViewer.getDocument()
         .getContentType(region.getOffset()))) {
         val wordRegion = findWord(textViewer.getDocument().get(),
           region.getOffset())

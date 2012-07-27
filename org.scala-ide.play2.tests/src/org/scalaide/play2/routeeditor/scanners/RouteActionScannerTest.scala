@@ -1,15 +1,11 @@
 package org.scalaide.play2.routeeditor.scanners
 
-import org.junit.Test
-import org.junit.Assert._
-import org.scalaide.play2.routeeditor.ColorManager
-import org.eclipse.jdt.internal.core.util.SimpleDocument
-import org.scalaide.play2.routeeditor.RouteColorConstants
 import org.eclipse.jface.text.Document
-import org.eclipse.jface.text.rules.Token
 import org.eclipse.jface.text.rules.IToken
+import org.eclipse.jface.text.rules.Token
+import org.junit.Test
 
-class RouteActionScannerTest extends AbstractRouteScannerTest(new RouteActionScanner(_)) {
+class RouteActionScannerTest extends AbstractRouteScannerTest(new RouteActionScanner(_, _)) {
   val packageToken = scanner.asInstanceOf[RouteActionScanner].packageToken
   val classToken = scanner.asInstanceOf[RouteActionScanner].classToken
   val methodToken = scanner.asInstanceOf[RouteActionScanner].methodToken

@@ -1,23 +1,20 @@
 package org.scalaide.play2.routeeditor.scanners
 
-import org.eclipse.jface.text.rules.IRule;
-import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.jface.text.rules.IWordDetector;
-import org.eclipse.jface.text.rules.RuleBasedScanner;
-import org.eclipse.jface.text.rules.WordRule;
-import org.scalaide.play2.routeeditor.ColorManager;
-import org.scalaide.play2.routeeditor.RouteColorConstants;
-import org.scalaide.play2.routeeditor.rules.PackageRule;
+import org.eclipse.jdt.ui.text.IColorManager
+import org.eclipse.jface.preference.IPreferenceStore
+import org.eclipse.jface.text.rules.IRule
+import org.eclipse.jface.text.rules.IToken
+import org.eclipse.jface.text.rules.IWordDetector
+import org.eclipse.jface.text.rules.RuleBasedScanner
+import org.eclipse.jface.text.rules.WordRule
+import org.scalaide.play2.routeeditor.RouteSyntaxClasses._
+import org.scalaide.play2.routeeditor.rules.PackageRule
 
-class RouteActionScanner(manager: ColorManager) extends AbstractRouteScanner(RouteColorConstants.getToken("ROUTE_ACTION",
-  manager)) {
+class RouteActionScanner(prefStore: IPreferenceStore, manager: IColorManager) extends AbstractRouteScanner(ACTION, prefStore, manager) {
 
-  val packageToken = RouteColorConstants.getToken(
-    "ROUTE_ACTION_PACKAGE", manager);
-  val classToken = RouteColorConstants
-    .getToken("ROUTE_CLASS", manager);
-  val methodToken = RouteColorConstants.getToken("ROUTE_METHOD",
-    manager);
+  val packageToken = getToken(ACTION_PACKAGE);
+  val classToken = getToken(ACTION_CLASS);
+  val methodToken = getToken(ACTION_METHOD);
   val methodArgumentToken = fDefaultReturnToken
 
   val rules = Array[IRule](
