@@ -1,6 +1,5 @@
 package org.scalaide.play2.routeeditor.scanners
 
-import org.eclipse.jdt.internal.ui.text.JavaColorManager
 import org.eclipse.jdt.ui.text.IColorManager
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.rules.IToken
@@ -9,7 +8,8 @@ import org.junit.Assert.assertEquals
 import org.scalaide.play2.PlayPlugin
 
 abstract class AbstractRouteScannerTest(constructor: (IPreferenceStore, IColorManager) => AbstractRouteScanner) {
-  protected val colorManager = new JavaColorManager()
+//  protected val colorManager = new JavaColorManager()
+  protected val colorManager = null
   protected val prefStore = PlayPlugin.prefStore
   protected val scanner = constructor(prefStore, colorManager);
   protected val defaultToken = scanner.getDefaultReturnToken
