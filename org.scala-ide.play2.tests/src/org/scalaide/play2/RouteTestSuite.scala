@@ -15,9 +15,10 @@ import org.scalaide.play2.routeeditor.tools.MethodFinderTest
 @RunWith(value=classOf[org.junit.runners.Suite])
 @SuiteClasses(value=Array(
     classOf[RouteHyperlinkDetectorTest],
-    classOf[RouteActionScannerTest],
-    classOf[RouteURIScannerTest],
-    classOf[RouteScannerTest],
+//    Test disabled from the test suite as they require UI
+//    classOf[RouteActionScannerTest],
+//    classOf[RouteURIScannerTest],
+//    classOf[RouteScannerTest],
     classOf[MethodFinderTest]))
 class RouteTestSuite {
 	
