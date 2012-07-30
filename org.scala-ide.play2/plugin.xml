@@ -13,6 +13,15 @@
             id="org.scalaide.play2.routeeditor.RouteEditor"
             name="Route Editor">
       </editor>
+      <editor
+            class="org.scalaide.play2.templateeditor.TemplateEditor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            default="true"
+            extensions=".shtml"
+            icon="icons/play.png"
+            id="org.scalaide.play2.templateeditor.TemplateEditor"
+            name="Template Editor">
+      </editor>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -38,6 +47,9 @@
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="org.scalaide.play2.routeeditor.RouteColourPreferenceInitializer">
+      </initializer>
+      <initializer
+            class="org.scalaide.play2.templateeditor.TemplateColourPreferenceInitializer">
       </initializer>
    </extension>
 </plugin>
