@@ -9,9 +9,10 @@ object TemplatePartitions {
   val TEMPLATE_SCALA = "__template_scala"
   val TEMPLATE_COMMENT = "__template_comment"
   val TEMPLATE_PLAIN = "__template_plain"
+  val TEMPLATE_TAG = "__template_tag"
 
   def getTypes() = {
-    Array(TEMPLATE_DEFAULT, TEMPLATE_SCALA, TEMPLATE_COMMENT, TEMPLATE_PLAIN);
+    Array(TEMPLATE_DEFAULT, TEMPLATE_SCALA, TEMPLATE_COMMENT, TEMPLATE_TAG);
   }
 
 }

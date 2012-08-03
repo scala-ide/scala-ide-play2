@@ -45,12 +45,24 @@ object TemplateParsing {
     override def toString = kind + "[" + offset + " - " + length + "]: " + input
   }
   case class ScalaCode(input: Positional) extends PlayTemplate(input, "sc")
-  case class DefaultCode(input: Positional) extends PlayTemplate(input, "df")
+  case class DefaultCode(input: Plain) extends PlayTemplate(input, "df")
   case class CommentCode(input: Positional) extends PlayTemplate(input, "cm")
+  
+  // TODO should be removed after fixing import in original parser
+  def fixImport(s: Simple): Simple = {
+    if(s.code.startsWith("import")){
+      val oldPos = s.pos.asInstanceOf[OffsetPosition]
+      val offset = oldPos.offset
+      val newPos = new OffsetPosition(oldPos.source, offset+1)
+      s.pos = newPos
+    }
+    s
+  }
 
   def handleScalaExpPart(scalaExpPart: ScalaExpPart with Positional): List[PlayTemplate] = scalaExpPart match {
-    case Simple(code: String) =>
+    case s@Simple(code: String) =>
       List(ScalaCode(scalaExpPart))
+//      List(ScalaCode(fixImport(s))) // TODO should be removed after fixing import in original parser
     case Block(whitespace: String, args: Option[String], content: Seq[TemplateTree]) =>
       content.flatMap(handleTemplateTree).toList
   }
@@ -103,10 +115,10 @@ object TemplateParsing {
 
   def handleTemplate(template: Template): List[PlayTemplate] = template match {
     case Template(name: PosString, comment: Option[Comment], params: PosString, imports: Seq[Simple], defs: Seq[Def], sub: Seq[Template], content: Seq[TemplateTree]) =>
-      val commentPart = comment.map(CommentCode(_)).toList // FIXME for the moment, no support for comments
-      //      val commentPart = List()
+      val commentPart = comment.map(CommentCode(_)).toList
       val paramsPart = if (params.pos != NoPosition) List(ScalaCode(adaptAt(params))) else List()
-      val importsPart = imports.map(ScalaCode(_)).toList
+//      val importsPart = imports.map(ScalaCode(_)).toList
+      val importsPart = imports.map( s => ScalaCode(fixImport(s)) ).toList // TODO should be removed after fixing import in original parser
       val defsPart = defs.flatMap(handleDef).toList
       val subsPart = sub.flatMap(handleTemplate).toList
       val contentPart = content.flatMap(handleTemplateTree).toList

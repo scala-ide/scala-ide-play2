@@ -7,6 +7,7 @@ object TemplateSyntaxClasses {
   val PLAIN = ScalaSyntaxClass("Plain", "template.plain")
   val COMMENT = ScalaSyntaxClass("Comment", "template.comment")
   val SCALA = ScalaSyntaxClass("Scala", "template.scala")
+  val TAG = ScalaSyntaxClass("Tag", "template.tag")
 
   case class Category(name: String, children: List[ScalaSyntaxClass])
 

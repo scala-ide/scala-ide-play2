@@ -2,18 +2,19 @@
 
 package org.scalaide.play2.templateeditor
 
-import scala.tools.eclipse.semantichighlighting.SemanticHighlightingAnnotations
-import scala.tools.eclipse.util.SWTUtils.fnToPropertyChangeListener
-import scala.tools.eclipse.ScalaPlugin
+import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
+import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClasses
+
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer
-import org.eclipse.jdt.internal.ui.JavaPlugin
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.resource.StringConverter
-import org.eclipse.jface.util.PropertyChangeEvent
 import org.eclipse.swt.graphics.RGB
-import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
 import org.scalaide.play2.PlayPlugin
-import org.scalaide.play2.templateeditor.TemplateSyntaxClasses._
+import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.COMMENT
+import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.DEFAULT
+import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.PLAIN
+import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.SCALA
+import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.TAG
 
 class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer {
 
@@ -47,10 +48,34 @@ class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer 
     }
 
   private def setDefaultsForSyntaxClasses(implicit scalaPrefStore: IPreferenceStore) {
-    setDefaultsForSyntaxClass(COMMENT, 			new RGB(0, 128, 0))
-    setDefaultsForSyntaxClass(SCALA,			new RGB(0, 0, 255))
-    setDefaultsForSyntaxClass(PLAIN, 			new RGB(196, 0, 0))
-    setDefaultsForSyntaxClass(DEFAULT, 			new RGB(0, 0, 0))
+    val commentColor = new RGB(63, 127, 95)
+    val scalaDefaultColor = new RGB(128, 128, 128)
+    setDefaultsForSyntaxClass(COMMENT, commentColor)
+    setDefaultsForSyntaxClass(SCALA, scalaDefaultColor)
+    setDefaultsForSyntaxClass(PLAIN, new RGB(196, 0, 0))
+    setDefaultsForSyntaxClass(TAG, new RGB(200, 0, 255))
+    setDefaultsForSyntaxClass(DEFAULT, new RGB(0, 0, 0))
+
+    // Scala syntactic
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.SINGLE_LINE_COMMENT, commentColor)
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.MULTI_LINE_COMMENT, commentColor)
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.SCALADOC, new RGB(63, 95, 191))
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.KEYWORD, new RGB(127, 0, 85), bold = true)
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.STRING, new RGB(42, 0, 255))
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.DEFAULT, scalaDefaultColor)
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.OPERATOR, scalaDefaultColor)
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.BRACKET, scalaDefaultColor)
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.RETURN, new RGB(127, 0, 85), bold = true)
+
+    // XML, see org.eclipse.wst.xml.ui.internal.preferences.XMLUIPreferenceInitializer
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.XML_COMMENT, new RGB(63, 85, 191))
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.XML_ATTRIBUTE_VALUE, new RGB(42, 0, 255), italic = true)
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.XML_ATTRIBUTE_NAME, new RGB(127, 0, 127))
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.XML_ATTRIBUTE_EQUALS, scalaDefaultColor)
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.XML_TAG_DELIMITER, new RGB(0, 128, 128))
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.XML_TAG_NAME, new RGB(63, 127, 127))
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.XML_PI, new RGB(0, 128, 128))
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.XML_CDATA_BORDER, new RGB(0, 128, 128))
   }
 
 }

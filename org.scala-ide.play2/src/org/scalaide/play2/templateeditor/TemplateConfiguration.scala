@@ -1,7 +1,6 @@
 package org.scalaide.play2.templateeditor
 
 import scala.tools.eclipse.lexical.SingleTokenScanner
-
 import org.eclipse.jdt.internal.ui.text.JavaColorManager
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.presentation.PresentationReconciler
@@ -12,6 +11,9 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration
 import org.eclipse.jface.util.PropertyChangeEvent
 import org.scalaide.play2.routeeditor.RouteDoubleClickStrategy
 import org.scalaide.play2.templateeditor.scanners.TemplatePartitions
+import scala.tools.eclipse.lexical.ScalaCodeScanner
+import scalariform.ScalaVersions
+import scala.tools.eclipse.lexical.XmlTagScanner
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends SourceViewerConfiguration {
   val reconciler = new PresentationReconciler();
@@ -23,12 +25,18 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     val result = new SingleTokenScanner(TemplateSyntaxClasses.PLAIN, colorManager, prefStore)
     result
   }
-  private val scalaScanner: SingleTokenScanner = {
-    val result = new SingleTokenScanner(TemplateSyntaxClasses.SCALA, colorManager, prefStore)
+  private val scalaScanner: ScalaCodeScanner = {
+    //    val result = new SingleTokenScanner(TemplateSyntaxClasses.SCALA, colorManager, prefStore)
+    val result = new ScalaCodeScanner(colorManager, prefStore, ScalaVersions.DEFAULT)
     result
   }
   private val commentScanner: SingleTokenScanner = {
     val result = new SingleTokenScanner(TemplateSyntaxClasses.COMMENT, colorManager, prefStore)
+    result
+  }
+  private val tagScanner: XmlTagScanner = {
+    //    val result = new SingleTokenScanner(TemplateSyntaxClasses.TAG, colorManager, prefStore)
+    val result = new XmlTagScanner(colorManager, prefStore)
     result
   }
 
@@ -62,6 +70,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     handlePartition(plainScanner, TemplatePartitions.TEMPLATE_PLAIN)
     handlePartition(scalaScanner, TemplatePartitions.TEMPLATE_SCALA)
     handlePartition(commentScanner, TemplatePartitions.TEMPLATE_COMMENT)
+    handlePartition(tagScanner, TemplatePartitions.TEMPLATE_TAG)
 
     reconciler
   }
