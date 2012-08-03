@@ -19,8 +19,8 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
   private val templateDoubleClickStrategy: RouteDoubleClickStrategy =
     new RouteDoubleClickStrategy()
 
-  private val defaultScanner: SingleTokenScanner = {
-    val result = new SingleTokenScanner(TemplateSyntaxClasses.DEFAULT, colorManager, prefStore)
+  private val plainScanner: SingleTokenScanner = {
+    val result = new SingleTokenScanner(TemplateSyntaxClasses.PLAIN, colorManager, prefStore)
     result
   }
   private val scalaScanner: SingleTokenScanner = {
@@ -59,7 +59,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
   override def getPresentationReconciler(
     sourceViewer: ISourceViewer) = {
 
-    handlePartition(defaultScanner, TemplatePartitions.TEMPLATE_DEFAULT)
+    handlePartition(plainScanner, TemplatePartitions.TEMPLATE_PLAIN)
     handlePartition(scalaScanner, TemplatePartitions.TEMPLATE_SCALA)
     handlePartition(commentScanner, TemplatePartitions.TEMPLATE_COMMENT)
 
@@ -67,7 +67,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
   }
 
   def handlePropertyChangeEvent(event: PropertyChangeEvent) {
-    defaultScanner.adaptToPreferenceChange(event)
+    plainScanner.adaptToPreferenceChange(event)
     scalaScanner.adaptToPreferenceChange(event)
     commentScanner.adaptToPreferenceChange(event)
   }

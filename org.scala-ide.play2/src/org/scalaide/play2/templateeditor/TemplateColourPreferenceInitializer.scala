@@ -47,8 +47,9 @@ class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer 
     }
 
   private def setDefaultsForSyntaxClasses(implicit scalaPrefStore: IPreferenceStore) {
-    setDefaultsForSyntaxClass(COMMENT, 			new RGB(128, 128, 0))
-    setDefaultsForSyntaxClass(SCALA,			new RGB(0, 0, 128))
+    setDefaultsForSyntaxClass(COMMENT, 			new RGB(0, 128, 0))
+    setDefaultsForSyntaxClass(SCALA,			new RGB(0, 0, 255))
+    setDefaultsForSyntaxClass(PLAIN, 			new RGB(196, 0, 0))
     setDefaultsForSyntaxClass(DEFAULT, 			new RGB(0, 0, 0))
   }
 

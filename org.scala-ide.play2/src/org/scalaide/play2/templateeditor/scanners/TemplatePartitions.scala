@@ -8,9 +8,10 @@ object TemplatePartitions {
   val TEMPLATE_DEFAULT = IDocument.DEFAULT_CONTENT_TYPE
   val TEMPLATE_SCALA = "__template_scala"
   val TEMPLATE_COMMENT = "__template_comment"
+  val TEMPLATE_PLAIN = "__template_plain"
 
   def getTypes() = {
-    Array(TEMPLATE_DEFAULT, TEMPLATE_SCALA, TEMPLATE_COMMENT);
+    Array(TEMPLATE_DEFAULT, TEMPLATE_SCALA, TEMPLATE_COMMENT, TEMPLATE_PLAIN);
   }
 
 }

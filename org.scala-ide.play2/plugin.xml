@@ -17,7 +17,8 @@
             class="org.scalaide.play2.templateeditor.TemplateEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
-            extensions=".shtml"
+            extensions="html"
+            filenames="*.scala.html"
             icon="icons/play.png"
             id="org.scalaide.play2.templateeditor.TemplateEditor"
             name="Template Editor">

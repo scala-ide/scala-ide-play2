@@ -4,6 +4,7 @@ import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
 
 object TemplateSyntaxClasses {
   val DEFAULT = ScalaSyntaxClass("Default", "template.default")
+  val PLAIN = ScalaSyntaxClass("Plain", "template.plain")
   val COMMENT = ScalaSyntaxClass("Comment", "template.comment")
   val SCALA = ScalaSyntaxClass("Scala", "template.scala")
 

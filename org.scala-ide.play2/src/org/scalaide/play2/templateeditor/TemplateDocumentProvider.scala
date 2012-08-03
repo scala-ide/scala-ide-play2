@@ -8,7 +8,7 @@ class TemplateDocumentProvider extends FileDocumentProvider {
   protected override def createDocument(element: Object): IDocument = {
     val document = super.createDocument(element);
     if (document != null) {
-      val partitioner = new TemplateDocumentPartitioner()
+      val partitioner = new TemplateDocumentPartitioner(true)
       partitioner.connect(document)
       document.setDocumentPartitioner(partitioner)
     }
