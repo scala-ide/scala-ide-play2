@@ -14,6 +14,7 @@ import org.scalaide.play2.templateeditor.scanners.TemplatePartitions
 import scala.tools.eclipse.lexical.ScalaCodeScanner
 import scalariform.ScalaVersions
 import scala.tools.eclipse.lexical.XmlTagScanner
+import org.scalaide.play2.templateeditor.scanners.HtmlTagScanner
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends SourceViewerConfiguration {
   val reconciler = new PresentationReconciler();
@@ -36,7 +37,8 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
   }
   private val tagScanner: XmlTagScanner = {
     //    val result = new SingleTokenScanner(TemplateSyntaxClasses.TAG, colorManager, prefStore)
-    val result = new XmlTagScanner(colorManager, prefStore)
+    //    val result = new XmlTagScanner(colorManager, prefStore)
+    val result = new HtmlTagScanner(colorManager, prefStore)
     result
   }
 

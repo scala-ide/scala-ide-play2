@@ -12,102 +12,170 @@ import scala.util.parsing.input.OffsetPosition
 
 object TemplatePartitionTokeniser {
 
-  def tokenise(text: String): List[ScalaPartitionRegion] = {
+  def getXMLTagRegions(text: String): List[ScalaPartitionRegion] = {
+    val toks = ScalaPartitionTokeniser.tokenise(text)
+    val newToks = toks.filter(_.contentType == ScalaPartitions.XML_TAG).map(t => {
+      ScalaPartitionRegion(TemplatePartitions.TEMPLATE_TAG, t.start, t.end)
+    })
+    newToks
+  }
+
+  def getScalaCommentRegions(text: String): List[ScalaPartitionRegion] = {
     val parts = TemplateParsing.handleTemplateCode(text)
     import TemplateParsing._
     var prevOffset = 0
-    type ListRegion = List[ScalaPartitionRegion]
-    type Elem = Either[ScalaPartitionRegion, ListRegion]
-    val notFlattenedtokens: List[Elem] = parts.map(t => {
+    val tokens: List[ScalaPartitionRegion] = parts.map(t => {
       val contentType = t match {
         case ScalaCode(_) => TemplatePartitions.TEMPLATE_SCALA
         case DefaultCode(_) => TemplatePartitions.TEMPLATE_PLAIN
         case CommentCode(_) => TemplatePartitions.TEMPLATE_COMMENT
       }
       // TODO a bit of hack for comment part. it should be removed!
-      if (contentType != TemplatePartitions.TEMPLATE_COMMENT) { 
+      if (contentType != TemplatePartitions.TEMPLATE_COMMENT) {
         prevOffset = t.length + t.offset
-        if (contentType == TemplatePartitions.TEMPLATE_PLAIN) {
-          t match {
-            case DefaultCode(p) => {
-              val code = p.text
-              val offset = p.pos.asInstanceOf[OffsetPosition].offset
-              val toks = ScalaPartitionTokeniser.tokenise(code)
-              val newToks = toks.map(t => {
-                val contType = {
-                  if (t.contentType == ScalaPartitions.XML_TAG)
-                    TemplatePartitions.TEMPLATE_TAG
-                  else
-                    TemplatePartitions.TEMPLATE_PLAIN
-                }
-                ScalaPartitionRegion(contType, t.start + offset, t.end + offset)
-              })
-              Right(newToks)
-            }
-            case _ => throw new RuntimeException("impossible!!")
-          }
-        } else
-          Left(ScalaPartitionRegion(contentType, t.offset, t.length + t.offset - 1))
+        ScalaPartitionRegion(contentType, t.offset, t.length + t.offset - 1)
       } else {
         val offset = text.indexOf("@*", prevOffset)
         prevOffset = offset + t.length
-        Left(ScalaPartitionRegion(contentType, offset, offset + t.length - 1))
+        ScalaPartitionRegion(contentType, offset, offset + t.length - 1)
       }
     })
-    val tokens = notFlattenedtokens.foldLeft[ListRegion](Nil)((prev, e) => {
-      e match {
-        case Left(x) => prev ::: List(x) // e is not list
-        case Right(x) => prev ::: x // e is list
+    tokens.filter(e => (e.start != -1 && e.contentType != TemplatePartitions.TEMPLATE_PLAIN)).sort((a, b) => a.start < b.start)
+  }
+
+  // It's O(m*n). It should be changed to O(m+n)
+  def calculateXMLTagRegions(xmlTagRegions: List[ScalaPartitionRegion], scalaCommentRegions: List[ScalaPartitionRegion]): List[ScalaPartitionRegion] = {
+    def tagRegion(start: Int, end: Int) =
+      ScalaPartitionRegion(TemplatePartitions.TEMPLATE_TAG, start, end)
+    val notFlatten = xmlTagRegions.map(x => {
+      val elem = {
+        val elems = scalaCommentRegions.filter(e => x.containsRange(e.start, e.end - e.start + 1))
+        if (!elems.isEmpty) {
+          var startIndex = x.start
+          val newElems = elems.foldLeft[List[ScalaPartitionRegion]](Nil)((prev, n) => {
+            val newElem = tagRegion(startIndex, n.start - 1)
+            startIndex = n.end + 1
+            prev ::: List(newElem)
+          })
+          val notFiltered = newElems ::: List(tagRegion(startIndex, x.end))
+          notFiltered.filter(s => (s.start <= s.end))
+        } else {
+          List(x)
+        }
       }
+      elem
     })
-    //    tokens.flatten
-    val new_tokens = if (tokens.isEmpty) {
-      Nil
-    } else {
-      val start = tokens.head.start
-      if (start != 0) {
-        ScalaPartitionRegion(TemplatePartitions.TEMPLATE_DEFAULT, 0, start - 1) :: tokens
-      } else {
-        tokens
+    notFlatten.flatten
+  }
+
+  def merge[T](aList: List[T], bList: List[T], lt: (T, T) => Boolean): List[T] = bList match {
+    case Nil => aList
+    case _ =>
+      aList match {
+        case Nil => bList
+        case x :: xs =>
+          if (lt(x, bList.head))
+            x :: merge(xs, bList, lt)
+          else
+            bList.head :: merge(aList, bList.tail, lt)
       }
-    }
-    new_tokens.filter(_.start != -1).sort((a, b) => a.start < b.start)
+  }
+
+  def calculateAllRegions(slicedXmlTagRegions: List[ScalaPartitionRegion], scalaCommentRegions: List[ScalaPartitionRegion], text: String): List[ScalaPartitionRegion] = {
+    def lt(r1: ScalaPartitionRegion, r2: ScalaPartitionRegion) =
+      r1.start < r2.start
+    def plainRegion(start: Int, end: Int) =
+      ScalaPartitionRegion(TemplatePartitions.TEMPLATE_PLAIN, start, end)
+    val tokens = merge(slicedXmlTagRegions, scalaCommentRegions, lt)
+    var prevEnd = 0
+    val newTokens = tokens.foldLeft[List[ScalaPartitionRegion]](Nil)((prev, elem) => {
+      val newElems =
+        if (elem.start != prevEnd) {
+          val newElem = plainRegion(prevEnd, elem.start - 1)
+          List(newElem, elem)
+        } else
+          List(elem)
+      prevEnd = elem.end + 1
+      prev ::: newElems
+    })
+    // Handles last unspecified partition
+    if (prevEnd != text.length) {
+      newTokens ::: List(plainRegion(prevEnd, text.length - 1))
+    } else
+      newTokens
+  }
+
+  def tokenise(text: String): List[ScalaPartitionRegion] = {
+    val xmlTagRegions = getXMLTagRegions(text)
+    val scalaCommentRegions = getScalaCommentRegions(text)
+    val slicedXmlTagRegions = calculateXMLTagRegions(xmlTagRegions, scalaCommentRegions)
+    calculateAllRegions(slicedXmlTagRegions, scalaCommentRegions, text)
   }
 
 }
 
 //object TemplatePartitionTokeniser {
-//	
-//	def tokenise(text: String): List[ScalaPartitionRegion] = {
-//			val tokens = new ListBuffer[ScalaPartitionRegion]
-//					val tokeniser = new TemplatePartitionTokeniser(text)
-//			while (tokeniser.tokensRemain) {
-//				val nextToken = tokeniser.nextToken()
-//						tokens += nextToken
-//			}
-//			tokens.toList
-//	}
-//	
-//}
 //
-//class TemplatePartitionTokeniser(text: String) {
-//	import TemplateDocumentPartitioner.EOF
-//	
-//	private val contentArr = TemplatePartitions.getTypes
-//	private val iterations = contentArr.length
-//	private val lengthOfToken = text.length / iterations
-//	
-//	private var pos = 0
-//	
-//	def tokensRemain = pos < iterations
-//	
-//	def nextToken(): ScalaPartitionRegion = {
-//			
-//			val contentType = contentArr(pos)
-//					val tokenStart = lengthOfToken * pos
-//					val tokenEnd = lengthOfToken * (pos + 1) - 1
-//					pos += 1
-//					ScalaPartitionRegion(contentType, tokenStart, tokenEnd)
-//	}
-//	
+//  def tokenise(text: String): List[ScalaPartitionRegion] = {
+//    val parts = TemplateParsing.handleTemplateCode(text)
+//    import TemplateParsing._
+//    var prevOffset = 0
+//    type ListRegion = List[ScalaPartitionRegion]
+//    type Elem = Either[ScalaPartitionRegion, ListRegion]
+//    val notFlattenedtokens: List[Elem] = parts.map(t => {
+//      val contentType = t match {
+//        case ScalaCode(_) => TemplatePartitions.TEMPLATE_SCALA
+//        case DefaultCode(_) => TemplatePartitions.TEMPLATE_PLAIN
+//        case CommentCode(_) => TemplatePartitions.TEMPLATE_COMMENT
+//      }
+//      // TODO a bit of hack for comment part. it should be removed!
+//      if (contentType != TemplatePartitions.TEMPLATE_COMMENT) { 
+//        prevOffset = t.length + t.offset
+//        if (contentType == TemplatePartitions.TEMPLATE_PLAIN) {
+//          t match {
+//            case DefaultCode(p) => {
+//              val code = p.text
+//              val offset = p.pos.asInstanceOf[OffsetPosition].offset
+//              val toks = ScalaPartitionTokeniser.tokenise(code)
+//              val newToks = toks.map(t => {
+//                val contType = {
+//                  if (t.contentType == ScalaPartitions.XML_TAG)
+//                    TemplatePartitions.TEMPLATE_TAG
+//                  else
+//                    TemplatePartitions.TEMPLATE_PLAIN
+//                }
+//                ScalaPartitionRegion(contType, t.start + offset, t.end + offset)
+//              })
+//              Right(newToks)
+//            }
+//            case _ => throw new RuntimeException("impossible!!")
+//          }
+//        } else
+//          Left(ScalaPartitionRegion(contentType, t.offset, t.length + t.offset - 1))
+//      } else {
+//        val offset = text.indexOf("@*", prevOffset)
+//        prevOffset = offset + t.length
+//        Left(ScalaPartitionRegion(contentType, offset, offset + t.length - 1))
+//      }
+//    })
+//    val tokens = notFlattenedtokens.foldLeft[ListRegion](Nil)((prev, e) => {
+//      e match {
+//        case Left(x) => prev ::: List(x) // e is not list
+//        case Right(x) => prev ::: x // e is list
+//      }
+//    })
+//    //    tokens.flatten
+//    val new_tokens = if (tokens.isEmpty) {
+//      Nil
+//    } else {
+//      val start = tokens.head.start
+//      if (start != 0) {
+//        ScalaPartitionRegion(TemplatePartitions.TEMPLATE_DEFAULT, 0, start - 1) :: tokens
+//      } else {
+//        tokens
+//      }
+//    }
+//    new_tokens.filter(_.start != -1).sort((a, b) => a.start < b.start)
+//  }
+//
 //}
