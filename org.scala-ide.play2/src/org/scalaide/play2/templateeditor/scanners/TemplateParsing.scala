@@ -47,22 +47,33 @@ object TemplateParsing {
   case class ScalaCode(input: Positional) extends PlayTemplate(input, "sc")
   case class DefaultCode(input: Plain) extends PlayTemplate(input, "df")
   case class CommentCode(input: Positional) extends PlayTemplate(input, "cm")
-  
+
   // TODO should be removed after fixing import in original parser
   def fixImport(s: Simple): Simple = {
-    if(s.code.startsWith("import")){
+    if (s.code.startsWith("import")) {
       val oldPos = s.pos.asInstanceOf[OffsetPosition]
       val offset = oldPos.offset
-      val newPos = new OffsetPosition(oldPos.source, offset+1)
+      val newPos = new OffsetPosition(oldPos.source, offset + 1)
       s.pos = newPos
     }
     s
   }
 
+  // removes the generated yield after for
+  def fixFor(s: Simple): Simple = {
+    if (s.code.startsWith("for(")) {
+      val indexOfYield = s.code.indexOf(" yield ")
+      val newS = Simple(s.code.substring(0, indexOfYield))
+      newS.pos = s.pos
+      return newS
+    }
+    s
+  }
+
   def handleScalaExpPart(scalaExpPart: ScalaExpPart with Positional): List[PlayTemplate] = scalaExpPart match {
-    case s@Simple(code: String) =>
-      List(ScalaCode(scalaExpPart))
-//      List(ScalaCode(fixImport(s))) // TODO should be removed after fixing import in original parser
+    case s @ Simple(code: String) =>
+      //      List(ScalaCode(scalaExpPart))
+      List(ScalaCode(fixFor(s)))
     case Block(whitespace: String, args: Option[String], content: Seq[TemplateTree]) =>
       content.flatMap(handleTemplateTree).toList
   }
@@ -80,14 +91,13 @@ object TemplateParsing {
       handleTemplateTree(adaptAt(exp).asInstanceOf[ScalaExp])
     //      handleTemplateTree(exp)
     case cm @ Comment(msg: String) =>
-      List(CommentCode(cm)) // FIXME for the moment, no support for comments
-    //      List()
+      List(CommentCode(cm))
     case ScalaExp(parts: Seq[ScalaExpPart with Positional]) =>
       parts.flatMap(handleScalaExpPart).toList
   }
 
   def adaptAt(input: Positional): Positional = {
-    if (!ADAPT_AT){
+    if (!ADAPT_AT) {
       return input
     }
     val newPos = {
@@ -115,14 +125,15 @@ object TemplateParsing {
 
   def handleTemplate(template: Template): List[PlayTemplate] = template match {
     case Template(name: PosString, comment: Option[Comment], params: PosString, imports: Seq[Simple], defs: Seq[Def], sub: Seq[Template], content: Seq[TemplateTree]) =>
+      val namePart = if (name != null && name.str.length != 0) List(ScalaCode(name)) else List()
       val commentPart = comment.map(CommentCode(_)).toList
       val paramsPart = if (params.pos != NoPosition) List(ScalaCode(adaptAt(params))) else List()
-//      val importsPart = imports.map(ScalaCode(_)).toList
-      val importsPart = imports.map( s => ScalaCode(fixImport(s)) ).toList // TODO should be removed after fixing import in original parser
+      val importsPart = imports.map(ScalaCode(_)).toList
+      //      val importsPart = imports.map(s => ScalaCode(fixImport(s))).toList // TODO should be removed after fixing import in original parser
       val defsPart = defs.flatMap(handleDef).toList
       val subsPart = sub.flatMap(handleTemplate).toList
       val contentPart = content.flatMap(handleTemplateTree).toList
-      commentPart ::: paramsPart ::: importsPart ::: defsPart ::: subsPart ::: contentPart
+      namePart ::: commentPart ::: paramsPart ::: importsPart ::: defsPart ::: subsPart ::: contentPart
   }
 
   def handleTemplateCode(templateCode: String) = {
