@@ -9,7 +9,6 @@ import scala.tools.eclipse.util.SWTUtils.fnToPropertyChangeListener
 import scala.tools.eclipse.util.SWTUtils.fnToSelectionAdapter
 import scala.tools.eclipse.util.SWTUtils.noArgFnToSelectionAdapter
 import scala.tools.eclipse.util.SWTUtils.noArgFnToSelectionChangedListener
-
 import org.eclipse.jdt.internal.ui.preferences.OverlayPreferenceStore
 import org.eclipse.jdt.internal.ui.preferences.OverlayPreferenceStore.BOOLEAN
 import org.eclipse.jdt.internal.ui.preferences.OverlayPreferenceStore.OverlayKey
@@ -42,6 +41,8 @@ import org.eclipse.ui.dialogs.PreferencesUtil
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.routeeditor.RouteSyntaxClasses.ALL_SYNTAX_CLASSES
 import org.scalaide.play2.routeeditor.RouteSyntaxClasses.routeOtherCategory
+import org.eclipse.ui.texteditor.ChainedPreferenceStore
+import org.eclipse.ui.editors.text.EditorsUI
 
 //import SyntaxColouringPreviewText.ColouringLocation
 
@@ -49,7 +50,7 @@ import org.scalaide.play2.routeeditor.RouteSyntaxClasses.routeOtherCategory
  * @see org.eclipse.jdt.internal.ui.preferences.JavaEditorColoringConfigurationBlock
  */
 class RouteSyntaxColouringPreferencePage extends PreferencePage with IWorkbenchPreferencePage {
-
+  lazy val preferenceStore = new ChainedPreferenceStore(Array(PlayPlugin.prefStore, EditorsUI.getPreferenceStore))
   setPreferenceStore(PlayPlugin.prefStore)
   private val overlayStore = makeOverlayPreferenceStore
 

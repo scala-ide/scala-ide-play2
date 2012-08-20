@@ -4,8 +4,8 @@ import org.eclipse.ui.plugin.AbstractUIPlugin
 import org.osgi.framework.BundleContext
 
 object PlayPlugin {
-  var plugin: PlayPlugin = _
-  val PLUGIN_ID = "Play Plugin"
+  @volatile var plugin: PlayPlugin = _
+  val PLUGIN_ID = "org.scala-ide.play2"
 
   def getDefault = PlayPlugin.plugin
   
@@ -17,6 +17,7 @@ object PlayPlugin {
 }
 
 class PlayPlugin extends AbstractUIPlugin {
+  import PlayPlugin._
   override def start(context: BundleContext) = {
     super.start(context);
     PlayPlugin.plugin = this;
@@ -26,5 +27,7 @@ class PlayPlugin extends AbstractUIPlugin {
     PlayPlugin.plugin = null;
     super.stop(context);
   }
+  
+  val problemMarkerId = PLUGIN_ID + ".templateProblem"
 
 }

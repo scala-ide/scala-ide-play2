@@ -1,23 +1,28 @@
 package org.scalaide.play2.templateeditor
 
+import scala.tools.eclipse.lexical.ScalaCodeScanner
 import scala.tools.eclipse.lexical.SingleTokenScanner
 import org.eclipse.jdt.internal.ui.text.JavaColorManager
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.presentation.PresentationReconciler
+import org.eclipse.jface.text.reconciler.IReconciler
+import org.eclipse.jface.text.reconciler.MonoReconciler
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer
 import org.eclipse.jface.text.rules.ITokenScanner
 import org.eclipse.jface.text.source.ISourceViewer
-import org.eclipse.jface.text.source.SourceViewerConfiguration
 import org.eclipse.jface.util.PropertyChangeEvent
+import org.eclipse.ui.editors.text.TextSourceViewerConfiguration
 import org.scalaide.play2.routeeditor.RouteDoubleClickStrategy
-import org.scalaide.play2.templateeditor.scanners.TemplatePartitions
-import scala.tools.eclipse.lexical.ScalaCodeScanner
-import scalariform.ScalaVersions
-import scala.tools.eclipse.lexical.XmlTagScanner
+import org.scalaide.play2.templateeditor.reconciler.TemplateReconcilingStrategy
 import org.scalaide.play2.templateeditor.scanners.HtmlTagScanner
+import org.scalaide.play2.templateeditor.scanners.TemplatePartitions
+import scalariform.ScalaVersions
+import org.eclipse.jface.text.source.SourceViewerConfiguration
+import org.eclipse.jface.text.source.IAnnotationHover
+import org.eclipse.jface.text.source.DefaultAnnotationHover
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends SourceViewerConfiguration {
-  val reconciler = new PresentationReconciler();
+
   val colorManager = new JavaColorManager()
   private val templateDoubleClickStrategy: RouteDoubleClickStrategy =
     new RouteDoubleClickStrategy()
@@ -27,7 +32,6 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     result
   }
   private val scalaScanner: ScalaCodeScanner = {
-    //    val result = new SingleTokenScanner(TemplateSyntaxClasses.SCALA, colorManager, prefStore)
     val result = new ScalaCodeScanner(colorManager, prefStore, ScalaVersions.DEFAULT)
     result
   }
@@ -35,9 +39,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     val result = new SingleTokenScanner(TemplateSyntaxClasses.COMMENT, colorManager, prefStore)
     result
   }
-  private val tagScanner: XmlTagScanner = {
-    //    val result = new SingleTokenScanner(TemplateSyntaxClasses.TAG, colorManager, prefStore)
-    //    val result = new XmlTagScanner(colorManager, prefStore)
+  private val tagScanner: HtmlTagScanner = {
     val result = new HtmlTagScanner(colorManager, prefStore)
     result
   }
@@ -46,29 +48,28 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     templateDoubleClickStrategy
   }
 
-  def handlePartition(partitionType: String, tokenScanner: ITokenScanner) {
-    val dr = new DefaultDamagerRepairer(tokenScanner)
-    reconciler.setDamager(dr, partitionType)
-    reconciler.setRepairer(dr, partitionType)
-  }
-
   override def getConfiguredContentTypes(sourceViewer: ISourceViewer) = {
     TemplatePartitions.getTypes()
+  }
+  
+  override def getAnnotationHover(viewer: ISourceViewer): IAnnotationHover = {
+    new DefaultAnnotationHover(true) 
+
   }
 
   //  override def getHyperlinkDetectors(sourceViewer: ISourceViewer) = { TODO
   //    Array(new RouteHyperlinkDetector(routeEditor));
   //  }
 
-  def handlePartition(scan: ITokenScanner, token: String) = {
-    val dr = new DefaultDamagerRepairer(scan);
-    reconciler.setDamager(dr, token);
-    reconciler.setRepairer(dr, token);
-  }
-
   override def getPresentationReconciler(
     sourceViewer: ISourceViewer) = {
+    val reconciler = super.getPresentationReconciler(sourceViewer).asInstanceOf[PresentationReconciler]
+    def handlePartition(scan: ITokenScanner, token: String) = {
 
+      val dr = new DefaultDamagerRepairer(scan);
+      reconciler.setDamager(dr, token);
+      reconciler.setRepairer(dr, token);
+    }
     handlePartition(plainScanner, TemplatePartitions.TEMPLATE_PLAIN)
     handlePartition(scalaScanner, TemplatePartitions.TEMPLATE_SCALA)
     handlePartition(commentScanner, TemplatePartitions.TEMPLATE_COMMENT)
@@ -77,9 +78,18 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     reconciler
   }
 
+  lazy val strategy = new TemplateReconcilingStrategy(templateEditor)
+
+  override def getReconciler(sourceViewer: ISourceViewer): IReconciler = {
+    val reconciler = new MonoReconciler(strategy, /*isIncremental = */ false)
+    reconciler.install(sourceViewer)
+    reconciler
+  }
+
   def handlePropertyChangeEvent(event: PropertyChangeEvent) {
     plainScanner.adaptToPreferenceChange(event)
     scalaScanner.adaptToPreferenceChange(event)
     commentScanner.adaptToPreferenceChange(event)
   }
+
 }
