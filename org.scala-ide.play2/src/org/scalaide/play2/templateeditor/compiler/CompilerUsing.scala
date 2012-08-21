@@ -5,19 +5,17 @@ import play.templates.ScalaTemplateCompiler._
 import java.io.File
 import play.templates.GeneratedSource
 import play.templates.TemplateCompilationError
-import scala.util.parsing.input.OffsetPosition
 import scalax.file.Path
+import org.scalaide.play2.PlayProject
 
-object CompilerUsing {
-  lazy val sourceDir = new File("app/views")
-  val generatedDir = new File("target/test/generated-templates")
-  val generatedClasses = new File("target/test/generated-classes")
+object CompilerUsing{
   val templateCompiler = ScalaTemplateCompiler
   val additionalImports = """import play.api.templates._
 import play.api.templates.PlayMagic._"""
 
-  def compileTemplateToScala(templateName: String) = {
-    val templateFile = new File(sourceDir, templateName)
+  def compileTemplateToScala(templateFile: File, playProject: PlayProject) = {
+    import playProject.{generatedClasses, sourceDir, generatedDir}
+    
     try {
       templateCompiler.compile(templateFile, sourceDir, generatedDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", additionalImports) match {
         case Some(generated) => GeneratedSource(generated)
@@ -30,22 +28,26 @@ import play.api.templates.PlayMagic._"""
     }
   }
 
-  def compile(templateName: String) = {
-    compileTemplateToScala(templateName)
+  def compile(templateName: String, playProject: PlayProject) = {
+    import playProject.sourceDir
+    val templateFile = new File(sourceDir, templateName)
+    compileTemplateToScala(templateFile, playProject)
   }
 
   def main(args: Array[String]): Unit = {
-    val result = compile("index.scala.html")
-    //    val result2 = compile("main.scala.html")
+    val playProject = PlayProject(null)
+    val result = compile("a1.scala.html", playProject)
+    val result2 = compile("a2.scala.html", playProject)
     println(result.matrix)
-    //    println(result2.matrix)
+    println(result.file.getAbsolutePath())
+    println(result2.matrix)
     TemplateAsFunctionCompiler.CompilerInstance.compiler.askShutdown
   }
 
 }
 
 case class TemplateToScalaCompilationError(source: File, message: String, offset: Int, line: Int, column: Int) extends RuntimeException(message) {
-  override def toString = source.getName + ": " + message + offset + " " + line + "."+column
+  override def toString = source.getName + ": " + message + offset + " " + line + "." + column
 }
 
 object PositionHelper {

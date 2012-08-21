@@ -95,7 +95,7 @@ class TemplateReconcilingStrategy(textEditor: /*ITextEditor*/ TemplateEditor) ex
    */
   private object reloader extends IDocumentListener {
     def documentChanged(event: DocumentEvent) {
-      templateUnit.askReload()
+//      templateUnit.askReload() TODO
       textEditor.retrieveSourceViewer.invalidateTextPresentation()
     }
 

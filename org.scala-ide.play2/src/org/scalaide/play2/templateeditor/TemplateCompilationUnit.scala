@@ -8,7 +8,6 @@ import scala.tools.nsc.interactive.Response
 import scala.tools.nsc.io.AbstractFile
 import scala.tools.nsc.util.BatchSourceFile
 import scala.tools.nsc.util.SourceFile
-
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IMarker
 import org.eclipse.core.resources.IResource
@@ -21,6 +20,7 @@ import org.eclipse.ui.IEditorInput
 import org.eclipse.ui.part.FileEditorInput
 import org.eclipse.ui.texteditor.ITextEditor
 import org.scalaide.play2.PlayPlugin
+import org.scalaide.play2.PlayProject
 
 /**
  * A Script compilation unit connects the presentation compiler
@@ -31,9 +31,12 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
 
   private var document: Option[IDocument] = None
 
-  override def file: AbstractFile = EclipseResource(workspaceFile)
+  override val file: AbstractFile = EclipseResource(workspaceFile)
 
   override lazy val scalaProject = ScalaPlugin.plugin.asScalaProject(workspaceFile.getProject).get
+  lazy val playProject = PlayProject(scalaProject)
+
+  def getTemplateName = workspaceFile.getName()
 
   //  /** Return the compiler ScriptSourceFile corresponding to this unit. */
   //  override def sourceFile(contents: Array[Char]): ScriptSourceFile = {
@@ -76,37 +79,35 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
    *  Blocks until the unit is type-checked.
    */
   override def reconcile(newContents: String): List[IProblem] = {
+    playProject.withPresentationCompiler { pc =>
+      askReload(newContents.toCharArray)
+      pc.problemsOf(this)
+    }
     // FIXME just for test
-    val severityLevel = ProblemSeverities.Error
-    val msg = "message!"
-    val p = new DefaultProblem(
-      file.file.getAbsolutePath().toCharArray,
-      msg,
-      IProblem.Syntax,
-      new Array[String](0),
-      severityLevel,
-      20,
-      25,
-      2,
-      5)
-    List(p)
+    //    val severityLevel = ProblemSeverities.Error
+    //    val msg = "message!"
+    //    val p = new DefaultProblem(
+    //      file.file.getAbsolutePath().toCharArray,
+    //      msg,
+    //      IProblem.Syntax,
+    //      new Array[String](0),
+    //      severityLevel,
+    //      20,
+    //      25,
+    //      2,
+    //      5)
+    //    List(p)
     //    scalaProject.withPresentationCompiler { pc =>
     //      askReload(newContents.toCharArray)
     //      pc.problemsOf(file)
     //    }(Nil)
   }
 
-  def askReload(newContents: Array[Char] = Array()): Unit = {
-    // TODO just for test
-  }
-  //  def askReload(newContents: Array[Char] = getContents): Unit = {
-  //    scalaProject.withPresentationCompiler { pc =>
-  //      val src = batchSourceFile(newContents)
-  //      pc.withResponse[Unit] { response =>
-  //        pc.askReload(List(src), response)
-  //        response.get
-  //      }
-  //    }()
+  def askReload(newContents: Array[Char] = getContents): Unit =
+    playProject.withPresentationCompiler { pc =>
+      pc.askReload(this, newContents)
+    }
+    
 
   def clearBuildErrors(): Unit = {
     workspaceFile.deleteMarkers(PlayPlugin.plugin.problemMarkerId, true, IResource.DEPTH_INFINITE)
