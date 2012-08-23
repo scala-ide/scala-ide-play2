@@ -18,6 +18,7 @@ import scala.tools.nsc.io.PlainFile
 import java.io.File
 import scala.tools.eclipse.util.EclipseFile
 import scala.tools.eclipse.util.EclipseResource
+import scala.tools.eclipse.ScalaPresentationCompiler
 
 class TemplatePresentationCompiler(playProject: PlayProject) {
   private val sourceFiles = new AutoHashMap((tcu: TemplateCompilationUnit) => tcu.sourceFile())
@@ -143,6 +144,10 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
     }
   }
 
+  def withSourceFile[T](tcu : TemplateCompilationUnit)(op : (SourceFile, ScalaPresentationCompiler) => T) : T =
+    scalaProject.withPresentationCompiler(pc =>{
+    	op(scalaFileFromTCU(tcu), pc)
+    })()
 }
 
 object ScalaFileManager {

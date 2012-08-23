@@ -21,6 +21,13 @@ import org.eclipse.ui.part.FileEditorInput
 import org.eclipse.ui.texteditor.ITextEditor
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.PlayProject
+import scala.tools.eclipse.ScalaPresentationCompiler
+import org.eclipse.jface.text.Region
+import org.scalaide.play2.templateeditor.compiler.PositionHelper
+import org.eclipse.jdt.core.WorkingCopyOwner
+import org.eclipse.jdt.internal.core.SearchableEnvironment
+import org.eclipse.jdt.internal.core.DefaultWorkingCopyOwner
+import org.eclipse.jdt.internal.core.JavaProject
 
 /**
  * A Script compilation unit connects the presentation compiler
@@ -38,10 +45,6 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
 
   def getTemplateName = workspaceFile.getName()
 
-  //  /** Return the compiler ScriptSourceFile corresponding to this unit. */
-  //  override def sourceFile(contents: Array[Char]): ScriptSourceFile = {
-  //    ScriptSourceFile.apply(file, contents)
-  //  }
   /** Return the compiler ScriptSourceFile corresponding to this unit. */
   override def sourceFile(contents: Array[Char]): SourceFile = {
     batchSourceFile(contents)
@@ -83,31 +86,17 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
       askReload(newContents.toCharArray)
       pc.problemsOf(this)
     }
-    // FIXME just for test
-    //    val severityLevel = ProblemSeverities.Error
-    //    val msg = "message!"
-    //    val p = new DefaultProblem(
-    //      file.file.getAbsolutePath().toCharArray,
-    //      msg,
-    //      IProblem.Syntax,
-    //      new Array[String](0),
-    //      severityLevel,
-    //      20,
-    //      25,
-    //      2,
-    //      5)
-    //    List(p)
-    //    scalaProject.withPresentationCompiler { pc =>
-    //      askReload(newContents.toCharArray)
-    //      pc.problemsOf(file)
-    //    }(Nil)
   }
 
   def askReload(newContents: Array[Char] = getContents): Unit =
     playProject.withPresentationCompiler { pc =>
       pc.askReload(this, newContents)
     }
-    
+
+  // TODO should be cleaner
+  override def withSourceFile[T](op: (SourceFile, ScalaPresentationCompiler) => T)(orElse: => T = scalaProject.defaultOrElse): T = {
+    playProject.withSourceFile(this)(op)
+  }
 
   def clearBuildErrors(): Unit = {
     workspaceFile.deleteMarkers(PlayPlugin.plugin.problemMarkerId, true, IResource.DEPTH_INFINITE)
@@ -125,6 +114,27 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
   }
 
   object TemplateProblemMarker extends MarkerFactory(PlayPlugin.plugin.problemMarkerId)
+
+  def mapTemplateToScalaRegion(region: Region) = {
+    val offset = playProject.withPresentationCompiler { pc =>
+      val gen = pc.generatedSource(this)
+      PositionHelper.mapSourcePosition(gen.matrix, region.getOffset())
+    }
+    new Region(offset, region.getLength)
+  }
+
+  // these lines are for supporting javaHyperlinking XXX
+
+  //  def newSearchableEnvironment(workingCopyOwner : WorkingCopyOwner) : SearchableEnvironment = {
+  //    val getJavaProject = scalaProject.javaProject
+  //    val javaProject = getJavaProject.asInstanceOf[JavaProject]
+  //    javaProject.newSearchableNameEnvironment(workingCopyOwner)
+  //  }
+  //
+  //  def newSearchableEnvironment() : SearchableEnvironment =
+  //    newSearchableEnvironment(DefaultWorkingCopyOwner.PRIMARY)
+
+  // until here
 
 }
 

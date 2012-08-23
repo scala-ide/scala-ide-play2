@@ -5,12 +5,21 @@ import scala.tools.eclipse.ScalaProject
 import org.scalaide.play2.templateeditor.compiler.TemplatePresentationCompiler
 import org.scalaide.play2.util.AutoHashMap
 import java.io.File
+import scala.tools.nsc.util.SourceFile
+import org.scalaide.play2.templateeditor.TemplateCompilationUnit
+import scala.tools.eclipse.ScalaPresentationCompiler
 
 class PlayProject private (val scalaProject: ScalaProject) {
   private val presentationCompiler = new TemplatePresentationCompiler(this)
 
   def withPresentationCompiler[T](op: TemplatePresentationCompiler => T): T = {
     op(presentationCompiler)
+  }
+  
+  def withSourceFile[T](tcu: TemplateCompilationUnit)(op: (SourceFile, ScalaPresentationCompiler) => T): T = {
+    withPresentationCompiler { compiler =>
+      compiler.withSourceFile(tcu)(op)
+    } 
   }
   
   lazy val sourceDir = new File(scalaProject.underlying.getLocation().toString()+"app/views")

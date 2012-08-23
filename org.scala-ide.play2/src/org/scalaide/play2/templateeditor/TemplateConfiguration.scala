@@ -22,6 +22,7 @@ import org.eclipse.jface.text.source.IAnnotationHover
 import org.eclipse.jface.text.source.DefaultAnnotationHover
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector
 import scala.tools.eclipse.hyperlink.text.detector.DeclarationHyperlinkDetector
+import org.scalaide.play2.templateeditor.hyperlink.TemplateDeclarationHyperlinkDetector
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends SourceViewerConfiguration {
 
@@ -88,11 +89,11 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     reconciler
   }
   
-//  override def getHyperlinkDetectors(sv: ISourceViewer): Array[IHyperlinkDetector] = {
-//    val detector = DeclarationHyperlinkDetector()
-//    detector.setContext(templateEditor)
-//    Array(detector)
-//  }
+  override def getHyperlinkDetectors(sv: ISourceViewer): Array[IHyperlinkDetector] = {
+    val detector = TemplateDeclarationHyperlinkDetector()
+    detector.setContext(templateEditor)
+    Array(detector)
+  }
 
   def handlePropertyChangeEvent(event: PropertyChangeEvent) {
     plainScanner.adaptToPreferenceChange(event)

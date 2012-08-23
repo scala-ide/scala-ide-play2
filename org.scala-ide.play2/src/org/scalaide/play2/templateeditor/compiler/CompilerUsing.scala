@@ -40,7 +40,7 @@ import play.api.templates.PlayMagic._"""
     val result = compileTemplateToScala(new File("/Users/shaikhha/Documents/workspace-new/asd/a1.scala.html"), playProject)
     val result2 = compile("a2.scala.html", playProject)
     println(result.matrix)
-    println(result.file.getAbsolutePath())
+    println(PositionHelper.mapSourcePosition(result.matrix, 58))
     println(result2.matrix)
     TemplateAsFunctionCompiler.CompilerInstance.compiler.askShutdown
   }
@@ -54,6 +54,7 @@ case class TemplateToScalaCompilationError(source: File, message: String, offset
 object PositionHelper {
   def convertLineColumnToOffset(source: File, line: Int, column: Int) = {
     val content = Path(source).slurpString
+    // splitting the string will cause some problems
     var offset = 0
     for (i <- 1 until line) {
       offset = content.indexOf("\n", offset) + 1
@@ -61,4 +62,18 @@ object PositionHelper {
     offset += column - 1
     offset
   }
+  
+  def mapSourcePosition(matrix: Seq[(Int, Int)], sourcePosition: Int): Int = {
+      matrix.indexWhere(p => p._2 > sourcePosition) match {
+        case 0 => 0
+        case i if i > 0 => {
+          val pos = matrix(i - 1)
+          pos._1 + (sourcePosition - pos._2)
+        }
+        case _ => {
+          val pos = matrix.takeRight(1)(0)
+          pos._1 + (sourcePosition - pos._2)
+        }
+      }
+    }
 }
