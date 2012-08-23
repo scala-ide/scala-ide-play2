@@ -10,6 +10,8 @@ import scala.tools.eclipse.logging.HasLogger
 import scala.tools.eclipse.hyperlink.text._
 import scala.tools.eclipse.InteractiveCompilationUnit
 
+
+// FIXME lots of intersection with ScalaDeclarationHyperlinkComputer
 private[hyperlink] class TemplateScalaDeclarationHyperlinkComputer extends HasLogger {
   def findHyperlinks(scu: InteractiveCompilationUnit, wordRegion: IRegion, originalRegion: IRegion): Option[List[IHyperlink]] = {
     scu.withSourceFile({ (sourceFile, compiler) =>

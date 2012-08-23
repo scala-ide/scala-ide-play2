@@ -21,6 +21,7 @@ import org.eclipse.jface.text.Region
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 
+// FIXME lots of intersection with DeclarationHyperlinkDetector
 class TemplateDeclarationHyperlinkDetector extends BaseHyperlinkDetector with HasLogger {
 
   private val resolver: TemplateScalaDeclarationHyperlinkComputer = new TemplateScalaDeclarationHyperlinkComputer

@@ -23,6 +23,9 @@ import org.eclipse.jface.text.source.DefaultAnnotationHover
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector
 import scala.tools.eclipse.hyperlink.text.detector.DeclarationHyperlinkDetector
 import org.scalaide.play2.templateeditor.hyperlink.TemplateDeclarationHyperlinkDetector
+import org.scalaide.play2.templateeditor.hover.TemplateHover
+import org.eclipse.jface.text.DefaultTextHover
+import org.eclipse.jface.text.ITextViewerExtension2
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends SourceViewerConfiguration {
 
@@ -54,9 +57,9 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
   override def getConfiguredContentTypes(sourceViewer: ISourceViewer) = {
     TemplatePartitions.getTypes()
   }
-  
+
   override def getAnnotationHover(viewer: ISourceViewer): IAnnotationHover = {
-    new DefaultAnnotationHover(true) 
+    new DefaultAnnotationHover(true)
 
   }
 
@@ -88,11 +91,24 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     reconciler.install(sourceViewer)
     reconciler
   }
-  
+
   override def getHyperlinkDetectors(sv: ISourceViewer): Array[IHyperlinkDetector] = {
     val detector = TemplateDeclarationHyperlinkDetector()
     detector.setContext(templateEditor)
     Array(detector)
+  }
+
+  override def getTextHover(sv: ISourceViewer, contentType: String, stateMask: Int) = {
+    if (contentType.equals(TemplatePartitions.TEMPLATE_SCALA)) {
+      new TemplateHover(TemplateCompilationUnit.fromEditor(templateEditor).get)
+    } else {
+      new DefaultTextHover(sv)
+    }
+  }
+
+  // should be added, because this one is the default one
+  override def getTextHover(sv: ISourceViewer, contentType: String) = {
+    getTextHover(sv, contentType, ITextViewerExtension2.DEFAULT_HOVER_STATE_MASK);
   }
 
   def handlePropertyChangeEvent(event: PropertyChangeEvent) {
