@@ -28,7 +28,7 @@ import org.eclipse.jdt.internal.ui.JavaPlugin
 
 class TemplateEditor extends TextEditor with ISourceViewerEditor {
 //  var fProjectionSupport: ProjectionSupport = _
-  lazy val preferenceStore = new ChainedPreferenceStore(Array(PlayPlugin.prefStore, JavaPlugin.getDefault().getPreferenceStore()))
+  lazy val preferenceStore = new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.prefStore))
 //  val prefStore = PlayPlugin.prefStore
   val sourceViewConfiguration = new TemplateConfiguration(preferenceStore, this)
   val documentProvider = new TemplateDocumentProvider()
@@ -59,7 +59,6 @@ class TemplateEditor extends TextEditor with ISourceViewerEditor {
     sv
   }
   
-  def retrieveSourceViewer() = getSourceViewer
   
   def getViewer: ISourceViewer = getSourceViewer
   

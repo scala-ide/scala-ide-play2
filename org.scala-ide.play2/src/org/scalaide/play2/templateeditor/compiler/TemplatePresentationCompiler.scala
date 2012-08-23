@@ -8,6 +8,7 @@ import scala.tools.eclipse.javaelements.ScalaSourceFile
 import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblem
 import scala.tools.eclipse.javaelements.ScalaCompilationUnit
+import scalax.file.Path
 
 class TemplatePresentationCompiler(playProject: PlayProject) {
   private val sourceFiles = new AutoHashMap((tcu: TemplateCompilationUnit) => tcu.sourceFile())
@@ -16,10 +17,20 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
     val gen = CompilerUsing.compileTemplateToScala(sourceFile, playProject)
     gen
   }
-  private val scalaCompilationUnits = new AutoHashMap((tcu: TemplateCompilationUnit) => {
+  private val scalaCompilationUnits = new AutoHashMap[TemplateCompilationUnit, ScalaCompilationUnit]((tcu: TemplateCompilationUnit) => {
+    def relativePath(first: String, second: String) = {
+      first.substring(first.indexOf(second))
+    }
     val gen = generatedSource(tcu)
-    ScalaSourceFile.createFromPath(gen.file.getAbsolutePath())
+    val relPath = relativePath(gen.file.getAbsolutePath(), playProject.scalaProject.underlying.getFullPath().toString())
+    val scu = ScalaSourceFile.createFromPath(relPath) match {
+      case Some(v) => v
+      case None => throw new Exception("Configuration error!")
+    }
+    playProject.scalaProject.withSourceFile(scu) ((x, y) => ()) (()); // in order to make it load!
+    scu
   })
+
   //  private def scalaCompilationUnits(tcu: TemplateCompilationUnit) = {
   //    val sourceFile = tcu.file.file.getAbsoluteFile()
   //    val gen = CompilerUsing.compileTemplateToScala(sourceFile, playProject)
@@ -56,8 +67,8 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
           0,
           new Array[String](0),
           severityLevel,
-          offset,
-          offset + 1,
+          offset - 1,
+          offset - 1,
           line,
           column)
         List(p)
@@ -80,25 +91,36 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
     }
   }
 
-  def askReload(tcu: TemplateCompilationUnit, content: Array[Char]) = {
+  def askReload(tcu: TemplateCompilationUnit, content: Array[Char])  {
     sourceFiles.get(tcu) match {
       case Some(f) =>
         val newF = tcu.batchSourceFile(content)
         synchronized {
           sourceFiles(tcu) = newF
         }
-        try {
-          val scu = scalaCompilationUnits(tcu).asInstanceOf[ScalaCompilationUnit]
-          val sourceList = List(scu.sourceFile())
-          scalaProject.withPresentationCompiler(pc => {
-            val response = new pc.Response[Unit]
-            pc.askReload(sourceList, response)
-            response.get
-          })()
-        } catch {
-          case _ => () // TODO think more!
-        }
+
       case None =>
+        synchronized {
+          sourceFiles.put(tcu, tcu.sourceFile(content))
+        }
+    }
+    try {
+      val scu = scalaCompilationUnits(tcu).asInstanceOf[ScalaCompilationUnit]
+      val gen = generatedSource(tcu)
+//      val sourceList = List(scu.sourceFile())
+      scalaProject.withPresentationCompiler(pc => {
+//        pc.withResponse((res: pc.Response[Unit]) => {
+//          val response = pc.askReload(scu, scu.getContents)
+        val contents = Path(gen.file).slurpString
+   		  val response = pc.askReload(scu, contents.toCharArray)
+          response.get
+//        })
+//        pc.askReload(sourceList, response)
+//        pc.askReload(scu, scu.getContents)
+//        response.get
+      })()
+    } catch {
+      case _ =>  // TODO think more!
     }
   }
 

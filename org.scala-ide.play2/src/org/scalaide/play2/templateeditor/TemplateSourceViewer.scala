@@ -9,11 +9,11 @@ import org.eclipse.jface.util.PropertyChangeEvent
 import org.eclipse.swt.widgets.Composite
 import org.eclipse.jface.text.source.SourceViewer
 
-class TemplateSourceViewer(parent: Composite, ruler: IVerticalRuler, overviewRuler: IOverviewRuler, showsAnnotationOverview: Boolean, styles: Int, store: IPreferenceStore) extends /*ProjectionViewer(parent, ruler, overviewRuler, showsAnnotationOverview, styles) */SourceViewer(parent, ruler, overviewRuler, showsAnnotationOverview, styles)  with IPropertyChangeListener {
+class TemplateSourceViewer(parent: Composite, ruler: IVerticalRuler, overviewRuler: IOverviewRuler, showsAnnotationOverview: Boolean, styles: Int, store: IPreferenceStore) extends /*ProjectionViewer(parent, ruler, overviewRuler, showsAnnotationOverview, styles) */SourceViewer(parent, ruler, null, false/*overviewRuler, showsAnnotationOverview*/, styles) /* with IPropertyChangeListener */{
 
   
-  override def propertyChange(event: PropertyChangeEvent) = {
+  /*override def propertyChange(event: PropertyChangeEvent) = {
     invalidateTextPresentation()
-  }
+  }*/
   
 }

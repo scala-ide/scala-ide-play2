@@ -36,4 +36,6 @@ Bundle-Activator: org.scalaide.play2.PlayPlugin
 Bundle-ClassPath: .,
  lib/templates_2.9.1.jar,
  lib/scala-io-core_2.9.1.jar,
- lib/scala-io-file_2.9.1.jar
+ lib/scala-io-file_2.9.1.jar,
+ lib/play_2.9.1.jar,
+ lib/scala-arm_2.9.1.jar

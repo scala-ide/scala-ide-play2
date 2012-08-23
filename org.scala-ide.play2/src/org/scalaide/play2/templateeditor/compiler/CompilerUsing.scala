@@ -14,8 +14,8 @@ object CompilerUsing{
 import play.api.templates.PlayMagic._"""
 
   def compileTemplateToScala(templateFile: File, playProject: PlayProject) = {
-    import playProject.{generatedClasses, sourceDir, generatedDir}
-    
+    import playProject.{generatedClasses, /*sourceDir, */generatedDir}
+    val sourceDir = templateFile.getParentFile()
     try {
       templateCompiler.compile(templateFile, sourceDir, generatedDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", additionalImports) match {
         case Some(generated) => GeneratedSource(generated)
@@ -36,7 +36,8 @@ import play.api.templates.PlayMagic._"""
 
   def main(args: Array[String]): Unit = {
     val playProject = PlayProject(null)
-    val result = compile("a1.scala.html", playProject)
+//    val result = compile("a1.scala.html", playProject)
+    val result = compileTemplateToScala(new File("/Users/shaikhha/Documents/workspace-new/asd/a1.scala.html"), playProject)
     val result2 = compile("a2.scala.html", playProject)
     println(result.matrix)
     println(result.file.getAbsolutePath())
@@ -53,11 +54,11 @@ case class TemplateToScalaCompilationError(source: File, message: String, offset
 object PositionHelper {
   def convertLineColumnToOffset(source: File, line: Int, column: Int) = {
     val content = Path(source).slurpString
-    val lines = content.split("\n")
-    var offset = column
+    var offset = 0
     for (i <- 1 until line) {
-      offset += lines(i - 1).length + 1
+      offset = content.indexOf("\n", offset) + 1
     }
+    offset += column - 1
     offset
   }
 }
