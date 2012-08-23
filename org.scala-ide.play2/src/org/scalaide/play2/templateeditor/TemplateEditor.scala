@@ -55,8 +55,7 @@ class TemplateEditor extends TextEditor with ISourceViewerEditor {
   PlayPlugin.prefStore.addPropertyChangeListener(preferenceListener)
 
   override def createSourceViewer(parent: Composite, verticalRuler: IVerticalRuler, styles: Int) = {
-    val sv = new TemplateSourceViewer(parent, verticalRuler, getOverviewRuler(), true, styles, preferenceStore)
-    sv
+    super.createSourceViewer(parent, verticalRuler, styles)
   }
   
   
