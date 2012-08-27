@@ -29,9 +29,11 @@ class TemplateDeclarationHyperlinkDetector extends BaseHyperlinkDetector with Ha
   override def runDetectionStrategy(scu: InteractiveCompilationUnit, textEditor: ITextEditor, currentSelection: IRegion): List[IHyperlink] = {
     val input = textEditor.getEditorInput
     val doc = textEditor.getDocumentProvider.getDocument(input)
-    if (!  doc.getContentType(currentSelection.getOffset()).equals(TemplatePartitions.TEMPLATE_SCALA)) {
-      return null
+    if (!doc.getContentType(currentSelection.getOffset()).equals(TemplatePartitions.TEMPLATE_SCALA)) {
+      return Nil // should not be null, if it was null, it would throw an exception
     }
+    if (doc.getChar(currentSelection.getOffset()) == '.') // otherwise it will generate an error
+      return Nil
     val wordRegion = ScalaWordFinder.findWord(doc.get, currentSelection.getOffset).asInstanceOf[Region]
     val mappedRegion = scu.asInstanceOf[TemplateCompilationUnit].mapTemplateToScalaRegion(wordRegion)
 
@@ -39,39 +41,39 @@ class TemplateDeclarationHyperlinkDetector extends BaseHyperlinkDetector with Ha
       case None => List()
       case Some(List()) =>
         // FIXME to support java links
-//        scu match {
-//          case scalaCU: TemplateCompilationUnit =>
-//            // the following assumes too heavily a Java compilation unit, being based on the dreaded
-//            // ScalaSelectionEngine. However, this is a last-resort hyperlinking that uses search for
-//            // top-level types, and unless there are bugs, normal hyperlinking (through compiler symbols)
-//            // would find it. So we go here only for `ScalaCompilationUnit`s.
-//            javaDeclarationHyperlinkComputer(textEditor, wordRegion, scalaCU)
-//          case _ =>
-            Nil
-//        }
+        //        scu match {
+        //          case scalaCU: TemplateCompilationUnit =>
+        //            // the following assumes too heavily a Java compilation unit, being based on the dreaded
+        //            // ScalaSelectionEngine. However, this is a last-resort hyperlinking that uses search for
+        //            // top-level types, and unless there are bugs, normal hyperlinking (through compiler symbols)
+        //            // would find it. So we go here only for `ScalaCompilationUnit`s.
+        //            javaDeclarationHyperlinkComputer(textEditor, wordRegion, scalaCU)
+        //          case _ =>
+        Nil
+      //        }
       case Some(hyperlinks) =>
         hyperlinks
     }
   }
 
-//  private def javaDeclarationHyperlinkComputer(textEditor: ITextEditor, wordRegion: IRegion, scu: TemplateCompilationUnit): List[IHyperlink] = {
-//    try {
-//      val environment = scu.newSearchableEnvironment()
-//      val requestor = new ScalaSelectionRequestor(environment.nameLookup, null) // null is not correct
-//      val engine = new ScalaSelectionEngine(environment, requestor, scu.scalaProject.javaProject.getOptions(true))
-//      val offset = wordRegion.getOffset
-//      engine.select(scu, offset, offset + wordRegion.getLength - 1)
-//      val elements = requestor.getElements.toList
-//
-//      lazy val qualify = elements.length > 1
-//      lazy val openAction = new OpenAction(textEditor.asInstanceOf[JavaEditor])
-//      elements.map(new JavaElementHyperlink(wordRegion, openAction, _, qualify))
-//    } catch {
-//      case t: Throwable => 
-//        logger.debug("Exception while computing hyperlink", t)
-//        Nil
-//    }
-//  }
+  //  private def javaDeclarationHyperlinkComputer(textEditor: ITextEditor, wordRegion: IRegion, scu: TemplateCompilationUnit): List[IHyperlink] = {
+  //    try {
+  //      val environment = scu.newSearchableEnvironment()
+  //      val requestor = new ScalaSelectionRequestor(environment.nameLookup, null) // null is not correct
+  //      val engine = new ScalaSelectionEngine(environment, requestor, scu.scalaProject.javaProject.getOptions(true))
+  //      val offset = wordRegion.getOffset
+  //      engine.select(scu, offset, offset + wordRegion.getLength - 1)
+  //      val elements = requestor.getElements.toList
+  //
+  //      lazy val qualify = elements.length > 1
+  //      lazy val openAction = new OpenAction(textEditor.asInstanceOf[JavaEditor])
+  //      elements.map(new JavaElementHyperlink(wordRegion, openAction, _, qualify))
+  //    } catch {
+  //      case t: Throwable => 
+  //        logger.debug("Exception while computing hyperlink", t)
+  //        Nil
+  //    }
+  //  }
 }
 
 object TemplateDeclarationHyperlinkDetector {

@@ -57,7 +57,13 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
 
   override def exists(): Boolean = true
 
-  override def getContents: Array[Char] = document.map(_.get.toCharArray).getOrElse(file.toCharArray)
+  override def getContents: Array[Char] = {
+    withSourceFile({ (sourceFile, compiler) =>
+      sourceFile.content
+    })()
+  }
+
+  def getTemplateContents: Array[Char] = document.map(_.get.toCharArray).getOrElse(file.toCharArray)
 
   /** no-op */
   override def scheduleReconcile(): Response[Unit] = {
@@ -88,7 +94,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     }
   }
 
-  def askReload(newContents: Array[Char] = getContents): Unit =
+  def askReload(newContents: Array[Char] = getTemplateContents): Unit =
     playProject.withPresentationCompiler { pc =>
       pc.askReload(this, newContents)
     }
@@ -116,11 +122,19 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
   object TemplateProblemMarker extends MarkerFactory(PlayPlugin.plugin.problemMarkerId)
 
   def mapTemplateToScalaRegion(region: Region) = {
-    val offset = playProject.withPresentationCompiler { pc =>
-      val gen = pc.generatedSource(this)
-      PositionHelper.mapSourcePosition(gen.matrix, region.getOffset())
+    synchronized {
+      val offset = mapTemplateToScalaOffset(region.getOffset())
+      // TODO it is changed a little!
+      val end = mapTemplateToScalaOffset(region.getOffset() + region.getLength() - 1)
+      new Region(offset, end - offset + 1)
     }
-    new Region(offset, region.getLength)
+  }
+
+  def mapTemplateToScalaOffset(offset: Int) = {
+    playProject.withPresentationCompiler { pc =>
+      val gen = pc.generatedSource(this)
+      PositionHelper.mapSourcePosition(gen.matrix, offset)
+    }
   }
 
   // these lines are for supporting javaHyperlinking XXX

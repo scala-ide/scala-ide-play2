@@ -8,13 +8,13 @@ import play.templates.TemplateCompilationError
 import scalax.file.Path
 import org.scalaide.play2.PlayProject
 
-object CompilerUsing{
+object CompilerUsing {
   val templateCompiler = ScalaTemplateCompiler
   val additionalImports = """import play.api.templates._
 import play.api.templates.PlayMagic._"""
 
   def compileTemplateToScala(templateFile: File, playProject: PlayProject) = {
-    import playProject.{generatedClasses, /*sourceDir, */generatedDir}
+    import playProject.{ generatedClasses, /*sourceDir, */ generatedDir }
     val sourceDir = templateFile.getParentFile()
     try {
       templateCompiler.compile(templateFile, sourceDir, generatedDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", additionalImports) match {
@@ -36,7 +36,7 @@ import play.api.templates.PlayMagic._"""
 
   def main(args: Array[String]): Unit = {
     val playProject = PlayProject(null)
-//    val result = compile("a1.scala.html", playProject)
+    //    val result = compile("a1.scala.html", playProject)
     val result = compileTemplateToScala(new File("/Users/shaikhha/Documents/workspace-new/asd/a1.scala.html"), playProject)
     val result2 = compile("a2.scala.html", playProject)
     println(result.matrix)
@@ -62,8 +62,9 @@ object PositionHelper {
     offset += column - 1
     offset
   }
-  
+
   def mapSourcePosition(matrix: Seq[(Int, Int)], sourcePosition: Int): Int = {
+    synchronized {
       matrix.indexWhere(p => p._2 > sourcePosition) match {
         case 0 => 0
         case i if i > 0 => {
@@ -76,4 +77,5 @@ object PositionHelper {
         }
       }
     }
+  }
 }

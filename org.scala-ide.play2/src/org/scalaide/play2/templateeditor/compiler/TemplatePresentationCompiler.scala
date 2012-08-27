@@ -23,7 +23,8 @@ import scala.tools.eclipse.ScalaPresentationCompiler
 class TemplatePresentationCompiler(playProject: PlayProject) {
   private val sourceFiles = new AutoHashMap((tcu: TemplateCompilationUnit) => tcu.sourceFile())
   def generatedSource(tcu: TemplateCompilationUnit) = {
-    val sourceFile = tcu.file.file.getAbsoluteFile()
+    val sourceFile = tcu.file.file.getAbsoluteFile() // TODO look more closely
+//    val sourceFile = tcu.sourceFile(tcu.getTemplateContents).file.file.getAbsoluteFile()
     val gen = CompilerUsing.compileTemplateToScala(sourceFile, playProject)
     gen
   }

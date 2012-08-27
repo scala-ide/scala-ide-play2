@@ -26,6 +26,9 @@ import org.scalaide.play2.templateeditor.hyperlink.TemplateDeclarationHyperlinkD
 import org.scalaide.play2.templateeditor.hover.TemplateHover
 import org.eclipse.jface.text.DefaultTextHover
 import org.eclipse.jface.text.ITextViewerExtension2
+import org.eclipse.jface.text.contentassist.IContentAssistant
+import org.eclipse.jface.text.contentassist.ContentAssistant
+import org.scalaide.play2.templateeditor.completion.CompletionProposalComputer
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends SourceViewerConfiguration {
 
@@ -61,6 +64,14 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
   override def getAnnotationHover(viewer: ISourceViewer): IAnnotationHover = {
     new DefaultAnnotationHover(true)
 
+  }
+  
+  override def getContentAssistant(sourceViewer: ISourceViewer): IContentAssistant = {
+    val assistant = new ContentAssistant
+    assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer))
+    assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), TemplatePartitions.TEMPLATE_SCALA)
+    assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), TemplatePartitions.TEMPLATE_PLAIN)
+    assistant
   }
 
   //  override def getHyperlinkDetectors(sourceViewer: ISourceViewer) = { TODO
