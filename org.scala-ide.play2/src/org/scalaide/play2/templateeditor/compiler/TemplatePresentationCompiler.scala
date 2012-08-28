@@ -23,8 +23,8 @@ import scala.tools.eclipse.ScalaPresentationCompiler
 class TemplatePresentationCompiler(playProject: PlayProject) {
   private val sourceFiles = new AutoHashMap((tcu: TemplateCompilationUnit) => tcu.sourceFile())
   def generatedSource(tcu: TemplateCompilationUnit) = {
-    val sourceFile = tcu.file.file.getAbsoluteFile() // TODO look more closely
-//    val sourceFile = tcu.sourceFile(tcu.getTemplateContents).file.file.getAbsoluteFile()
+//    val sourceFile = tcu.file.file.getAbsoluteFile() // TODO look more closely
+    val sourceFile = tcu.templateSourceFile.file.getAbsoluteFile()
     val gen = CompilerUsing.compileTemplateToScala(sourceFile, playProject)
     gen
   }
@@ -70,7 +70,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
       def mapLine(line: Int) = gen.mapLine(line)
       problems map (p => p match {
         case problem: DefaultProblem => new DefaultProblem(
-          tcu.file.file.getAbsolutePath().toCharArray,
+          tcu.getTemplateFullPath,
           problem.getMessage(),
           problem.getID(),
           problem.getArguments(),
@@ -99,7 +99,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
         val severityLevel = ProblemSeverities.Error
         val message = e.getMessage()
         val p = new DefaultProblem(
-          tcu.file.file.getAbsolutePath().toCharArray,
+          tcu.getTemplateFullPath,
           message,
           0,
           new Array[String](0),

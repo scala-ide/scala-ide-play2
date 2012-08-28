@@ -42,6 +42,7 @@ class TemplateReconcilingStrategy(textEditor: /*ITextEditor*/ TemplateEditor) ex
   }
 
   def reconcile(partition: IRegion) {
+//    textEditor.doSave(null)
     val errors = templateUnit.reconcile(document.get)
 
     updateErrorAnnotations(errors)
@@ -96,6 +97,7 @@ class TemplateReconcilingStrategy(textEditor: /*ITextEditor*/ TemplateEditor) ex
   private object reloader extends IDocumentListener {
     def documentChanged(event: DocumentEvent) {
 //      templateUnit.askReload() //FIXME
+      templateUnit.updateTemplateSourceFile()
       textEditor.getViewer.invalidateTextPresentation()
     }
 

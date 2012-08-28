@@ -58,6 +58,12 @@ class TemplateEditor extends TextEditor with ISourceViewerEditor {
     super.createSourceViewer(parent, verticalRuler, styles)
   }
   
+  override def editorSaved() = {
+    super.editorSaved()
+//    sourceViewConfiguration.getReconciler(getSourceViewer()).getReconcilingStrategy("").reconcile(null)
+    sourceViewConfiguration.strategy.reconcile(null)
+  }
+  
   
   def getViewer: ISourceViewer = getSourceViewer
   

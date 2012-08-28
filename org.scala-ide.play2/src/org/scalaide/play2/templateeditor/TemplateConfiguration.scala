@@ -29,8 +29,9 @@ import org.eclipse.jface.text.ITextViewerExtension2
 import org.eclipse.jface.text.contentassist.IContentAssistant
 import org.eclipse.jface.text.contentassist.ContentAssistant
 import org.scalaide.play2.templateeditor.completion.CompletionProposalComputer
+import org.eclipse.jface.text.IDocument
 
-class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends SourceViewerConfiguration {
+class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration {
 
   val colorManager = new JavaColorManager()
   private val templateDoubleClickStrategy: RouteDoubleClickStrategy =
@@ -71,6 +72,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer))
     assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), TemplatePartitions.TEMPLATE_SCALA)
     assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), TemplatePartitions.TEMPLATE_PLAIN)
+    assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), IDocument.DEFAULT_CONTENT_TYPE)
     assistant
   }
 

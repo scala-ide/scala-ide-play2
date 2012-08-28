@@ -29,7 +29,9 @@ class CompletionProposalComputer(textEditor: ITextEditor) extends ScalaCompletio
       case Some(tcu: TemplateCompilationUnit) =>
         // TODO: Not sure if this is the best way. Maybe compilation units should always be connected to something..
         tcu.connect(viewer.getDocument)
+//        textEditor.doSave(null) // TODO it's very messy! But it is necessary to make it work
         //        val mappedOffset = tcu.mapTemplateToScalaOffset(offset)
+        tcu.askReload()
         tcu.withSourceFile { findCompletions(viewer, offset, tcu) }(List[ICompletionProposal]()).toArray
       case _ => Array()
     }
@@ -43,34 +45,8 @@ class CompletionProposalComputer(textEditor: ITextEditor) extends ScalaCompletio
     val res = findCompletions(mappedRegion)(mappedPosition, tcu)(sourceFile, compiler).sortBy(_.relevance).reverse
 
     res.map(prop => {
-      val newProp = prop match {
-        case CompletionProposal(kind,
-          startPos,
-          completion,
-          display,
-          tooltip,
-          displayDetail,
-          relevance,
-          hasArgs,
-          isJava,
-          explicitParamNames,
-          fullyQualifiedName,
-          needImport
-          ) =>
-          CompletionProposal(kind,
-            startPos - mappedPosition + position,
-            completion,
-            display,
-            tooltip,
-            displayDetail,
-            relevance,
-            hasArgs,
-            isJava,
-            explicitParamNames,
-            fullyQualifiedName,
-            needImport)
-        case _ => null
-      }
+      val newProp = prop.copy(startPos = prop.startPos - mappedPosition + position)
+
       ScalaCompletionProposal(viewer.getSelectionProvider)(newProp)
     })
 
