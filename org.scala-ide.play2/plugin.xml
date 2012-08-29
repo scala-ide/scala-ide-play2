@@ -8,7 +8,7 @@
             class="org.scalaide.play2.routeeditor.RouteEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
-            filenames="route"
+            filenames="routes"
             icon="icons/play.png"
             id="org.scalaide.play2.routeeditor.RouteEditor"
             name="Route Editor">
