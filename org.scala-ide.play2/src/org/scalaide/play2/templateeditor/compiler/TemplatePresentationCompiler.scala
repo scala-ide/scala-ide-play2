@@ -23,7 +23,7 @@ import scala.tools.eclipse.ScalaPresentationCompiler
 class TemplatePresentationCompiler(playProject: PlayProject) {
   private val sourceFiles = new AutoHashMap((tcu: TemplateCompilationUnit) => tcu.sourceFile())
   def generatedSource(tcu: TemplateCompilationUnit) = {
-//    val sourceFile = tcu.file.file.getAbsoluteFile() // TODO look more closely
+    //    val sourceFile = tcu.file.file.getAbsoluteFile() // TODO look more closely
     val sourceFile = tcu.templateSourceFile.file.getAbsoluteFile()
     val gen = CompilerUsing.compileTemplateToScala(sourceFile, playProject)
     gen
@@ -132,34 +132,38 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
       val src = scalaFileFromGen(gen)
       val sourceList = List(src)
       scalaProject.withPresentationCompiler(pc => {
-                pc.withResponse((response: pc.Response[Unit]) => {
-//        val contents = Path(gen.file).slurpString
-//        val response = pc.askReload(scu, contents.toCharArray)
-//        response.get
-                	pc.askReload(sourceList, response)
-                	response.get
-                })
+        pc.withResponse((response: pc.Response[Unit]) => {
+          //        val contents = Path(gen.file).slurpString
+          //        val response = pc.askReload(scu, contents.toCharArray)
+          //        response.get
+          pc.askReload(sourceList, response)
+          response.get
+        })
       })()
     } catch {
       case _ => // TODO think more!
     }
   }
 
-  def withSourceFile[T](tcu : TemplateCompilationUnit)(op : (SourceFile, ScalaPresentationCompiler) => T) : T =
-    scalaProject.withPresentationCompiler(pc =>{
-    	op(scalaFileFromTCU(tcu), pc)
+  def withSourceFile[T](tcu: TemplateCompilationUnit)(op: (SourceFile, ScalaPresentationCompiler) => T): T =
+    scalaProject.withPresentationCompiler(pc => {
+      op(scalaFileFromTCU(tcu), pc)
     })()
+
+  def destroy() = {
+    CompilerUsing.templateCompiler.TemplateAsFunctionCompiler.CompilerInstance.compiler.askShutdown()
+  }
 }
 
 object ScalaFileManager {
   val scalaFile = new AutoHashMap[String, AbstractFile](fileName => {
-//    new PlainFile(scala.tools.nsc.io.Path.string2path(fileName))
+    //    new PlainFile(scala.tools.nsc.io.Path.string2path(fileName))
     EclipseResource.fromString(fileName) match {
       case Some(v) => v match {
-      	case ef@EclipseFile(_) => ef
-      	case _ => null
+        case ef @ EclipseFile(_) => ef
+        case _ => null
       }
       case None => null
     }
-  }) 
+  })
 }

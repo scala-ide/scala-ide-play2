@@ -119,7 +119,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     }
   }
 
-  // should be added, because this one is the default one
+  // should be added, because this one is called by default one
   override def getTextHover(sv: ISourceViewer, contentType: String) = {
     getTextHover(sv, contentType, ITextViewerExtension2.DEFAULT_HOVER_STATE_MASK);
   }

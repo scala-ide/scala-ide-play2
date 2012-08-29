@@ -24,6 +24,7 @@ import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.PlayProject
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
 import org.eclipse.core.runtime.Path
+import java.io.File
 
 /**
  * A Script compilation unit connects the presentation compiler
@@ -38,16 +39,28 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
 
   lazy val templateSourceFile = {
     def relativePath(first: String, second: String) = {
-      first.substring(first.indexOf(second))
+      first.substring(first.indexOf(second) + second.length())
     }
-    val relPath = relativePath(file.file.getAbsolutePath(), scalaProject.underlying.getFullPath().toString())
-    val fileName = playProject.sourceDir.getAbsolutePath() + relPath
-    EclipseResource.fromString(fileName) match {
-      case Some(v) => v match {
-        case ef @ EclipseFile(_) => ef
-        case _ => null
+    // next line checks whether this resource is already the templateSourceFile for another template file or not,
+    // if it is so, it should return itself. Otherwise, it will create one templateSourceFile for it
+    if (file.file.getAbsolutePath().indexOf(playProject.sourceDir.getAbsolutePath()) != -1){
+      document.get.set("Please close this file")
+      file
+    }
+    else {
+      val relPath = relativePath(file.file.getAbsolutePath(), scalaProject.underlying.getFullPath().toString())
+      val fileName = playProject.sourceDir.getAbsolutePath() + relPath
+      val f = new File(fileName)
+      if (!f.exists()) {
+        scalax.file.Path(f).write(scalax.file.Path(file.file.getAbsoluteFile()).slurpString)
       }
-      case None => null
+      EclipseResource.fromString(fileName) match {
+        case Some(v) => v match {
+          case ef @ EclipseFile(_) => ef
+          case _ => null
+        }
+        case None => null
+      }
     }
   }
 
@@ -76,7 +89,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     })()
   }
 
-  def getTemplateContents: Array[Char] = document.map(_.get.toCharArray).getOrElse(templateSourceFile.toCharArray)
+  def getTemplateContents: Array[Char] = document.map(_.get.toCharArray).getOrElse(scalax.file.Path(file.file).slurpString().toCharArray)
 
   /** no-op */
   override def scheduleReconcile(): Response[Unit] = {
@@ -132,7 +145,6 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     TemplateProblemMarker.create(workspaceFile, IMarker.SEVERITY_ERROR, errorMsg, pos)
   }
 
-
   def mapTemplateToScalaRegion(region: Region) = {
     synchronized {
       val offset = mapTemplateToScalaOffset(region.getOffset())
@@ -148,7 +160,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
       PositionHelper.mapSourcePosition(gen.matrix, offset)
     }
   }
-  
+
   def updateTemplateSourceFile() = {
     scalax.file.Path(templateSourceFile.file).write(document.get.get)
   }
@@ -171,9 +183,13 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
 object TemplateProblemMarker extends MarkerFactory(PlayPlugin.plugin.problemMarkerId)
 
 object TemplateCompilationUnit {
+
+  def fromFile(file: IFile) = {
+    TemplateCompilationUnit.apply(file)
+  }
   //  val instance = new TemplateCompilationUnit(null)
   def fromEditorInput(editorInput: IEditorInput): Option[TemplateCompilationUnit] = {
-    getFile(editorInput).map(TemplateCompilationUnit.apply)
+    getFile(editorInput).map(fromFile)
   }
 
   def fromEditor(textEditor: ITextEditor): Option[TemplateCompilationUnit] = {
