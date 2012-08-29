@@ -10,8 +10,18 @@ import org.scalaide.play2.PlayProject
 
 object CompilerUsing {
   val templateCompiler = ScalaTemplateCompiler
-  val additionalImports = """import play.api.templates._
-import play.api.templates.PlayMagic._"""
+  val additionalImports = """import play.templates._
+import play.templates.TemplateMagic._
+    
+    
+import play.api.templates._
+import play.api.templates.PlayMagic._
+import models._
+import controllers._
+import play.api.i18n._
+import play.api.mvc._
+import play.api.data._
+import views.html._"""
 
   def compileTemplateToScala(templateFile: File, playProject: PlayProject) = {
     import playProject.{ generatedClasses, /*sourceDir, */ generatedDir }

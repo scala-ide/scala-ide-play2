@@ -25,12 +25,10 @@ class PlayPlugin extends AbstractUIPlugin {
     super.start(context);
     PlayPlugin.plugin = this;
     initializeProjects()
-//    ResourcesPlugin.getWorkspace.addResourceChangeListener(ResourceChangeListener, 63)
   }
 
   override def stop(context: BundleContext) = {
     PlayPlugin.plugin = null;
-//    ResourcesPlugin.getWorkspace.removeResourceChangeListener(ResourceChangeListener)
     super.stop(context);
   }
 
@@ -43,7 +41,6 @@ class PlayPlugin extends AbstractUIPlugin {
   }
   
   def initializeProjects() = {
-//    Debugger.show("plugin initialize called!")
     for {
       iProject <- ResourcesPlugin.getWorkspace.getRoot.getProjects
       if iProject.isOpen
