@@ -7,40 +7,13 @@ import scala.tools.nsc.symtab.Flags
 import scala.tools.eclipse.util.EclipseUtils._
 import scala.tools.eclipse.ScalaWordFinder
 import org.eclipse.jface.text.Region
+import scala.tools.eclipse.ScalaHover
 
-// FIXME lots of intersection with ScalaHover
-class TemplateHover(tcu: TemplateCompilationUnit) extends ITextHover {
-
-  private val NoHoverInfo = "" // could return null, but prefer to return empty (see API of ITextHover).
+class TemplateHover(tcu: TemplateCompilationUnit) extends ScalaHover(tcu) {
 
   override def getHoverInfo(viewer: ITextViewer, region: IRegion): String = {
     val mappedRegion = tcu.mapTemplateToScalaRegion(region.asInstanceOf[Region])
-    tcu.withSourceFile({ (src, compiler) =>
-      import compiler._
-
-      def hoverInfo(t: Tree): Option[String] = askOption { () =>
-        def compose(ss: List[String]): String = ss.filter("" !=).mkString("", " ", "")
-        def defString(sym: Symbol, tpe: Type): String = {
-          // NoType is returned for defining occurrences, in this case we want to display symbol info itself.
-          val tpeinfo = if (tpe ne NoType) tpe.widen else sym.info
-          compose(List(sym.hasFlagsToString(Flags.ExplicitFlags), sym.keyString, sym.varianceString + sym.nameString +
-            sym.infoString(tpeinfo)))
-        }
-
-        for (sym <- Option(t.symbol); tpe <- Option(t.tpe))
-          yield if (sym.isClass || sym.isModule) sym.fullName else defString(sym, tpe)
-      } getOrElse None
-
-      val resp = new Response[Tree]
-      askTypeAt(mappedRegion.toRangePos(src), resp)
-      (for (
-        t <- resp.get.left.toOption;
-        hover <- hoverInfo(t)
-      ) yield hover) getOrElse NoHoverInfo
-    })(NoHoverInfo)
+    super.getHoverInfo(viewer, mappedRegion)
   }
 
-  override def getHoverRegion(viewer: ITextViewer, offset: Int) = {
-    ScalaWordFinder.findWord(viewer.getDocument, offset)
-  }
 }
