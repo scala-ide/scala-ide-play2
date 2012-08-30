@@ -6,6 +6,6 @@
    <feature url="features/org.scala-ide.play2.source.feature_0.0.0.jar" id="org.scala-ide.play2.source.feature" version="0.0.0">
       <category name="template-source"/>
    </feature>
-   <category-def name="template" label="Scala IDE plugin template"/>
-   <category-def name="template-source" label="Scala IDE plugin template Source"/> -->
+   <category-def name="template" label="Play 2 support"/>
+   <category-def name="template-source" label="Play 2 support Source"/> -->
 </site>
