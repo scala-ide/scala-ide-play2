@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
   id="org.scala-ide.play2.source.feature"
-  label="Scala IDE plugin template sources"
+  label="Play 2 support in Scala IDE sources"
   version="0.1.0.qualifier"
   provider-name="example.org">
 
-  <description url="http://example.org/">
-     The source of ScalaTest plugin for Scala IDE to provides a platform to run 
-     tests written using ScalaTest or other test frameworks.
+  <description url="http://scala-ide.org/">
+     The source of Play 2 support in Scala IDE
   </description>
 
    <copyright url="http://example.org/downloads/">
-      Copyright (C) 2011-2012 ______TO_UPDATE_______. 
+      Copyright (C) 2012 Typesafe, Inc. 
 All rights reserved.
    </copyright>
 
   <license url="http://scala-lang.org/downloads/license.html">
 SCALA LICENSE
 
-Copyright (C) 2011-2012 Artima, Inc. All rights reserved.
+Copyright (C) 2012 Typesafe, Inc. All rights reserved.
 
-This software was developed by ______TO_UPDATE_______.
+This software was developed by Typesafe, Inc.
 
 Permission to use, copy, modify, and distribute this software in source
 or binary form for any purpose with or without fee is hereby granted,
@@ -38,7 +37,7 @@ provided that the following conditions are met:
       software without specific prior written permission.
 
 
-THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS&apos;&apos; AND
+THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS`` AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
 ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
@@ -52,7 +51,7 @@ SUCH DAMAGE.
   </license>
 
   <url>
-    <update label="Scala IDE plugin template update site" url="http://example.org/update/site"/>
+    <update label="Play 2 support in Scala IDE update site" url="http://example.org/update/site"/>
   </url>
 
   <plugin
