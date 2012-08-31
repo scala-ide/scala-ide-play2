@@ -124,6 +124,10 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     playProject.withPresentationCompiler { pc =>
       pc.askReload(this, newContents)
     }
+  
+  override def doWithSourceFile(op: (SourceFile, ScalaPresentationCompiler) => Unit) {
+    playProject.withSourceFile(this)(op)
+  }
 
   // TODO should be cleaner
   override def withSourceFile[T](op: (SourceFile, ScalaPresentationCompiler) => T)(orElse: => T = scalaProject.defaultOrElse): T = {
