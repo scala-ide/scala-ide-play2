@@ -1,6 +1,7 @@
 package org.scalaide.play2.routeeditor
 
 import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
+import org.scalaide.play2.properties.Category
 
 object RouteSyntaxClasses {
   val DEFAULT = ScalaSyntaxClass("Default", "route.default")
@@ -12,8 +13,6 @@ object RouteSyntaxClasses {
   val ACTION_CLASS = ScalaSyntaxClass("Action class", "route.actionClass")
   val ACTION_METHOD = ScalaSyntaxClass("Action method name", "route.actionMethod")
   val HTTP_KEYWORD = ScalaSyntaxClass("HTTP keyword", "route.httpKeyword")
-
-  case class Category(name: String, children: List[ScalaSyntaxClass])
 
   val routeURICategory = Category("URI", List(
     URI, URI_DYNAMIC))

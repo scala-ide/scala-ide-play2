@@ -197,6 +197,8 @@ object TemplateCompilationUnit {
   }
 
   def fromEditor(textEditor: ITextEditor): Option[TemplateCompilationUnit] = {
+    if (textEditor == null)
+      return None
     val input = textEditor.getEditorInput
     for (unit <- fromEditorInput(input))
       yield unit.connect(textEditor.getDocumentProvider().getDocument(input))

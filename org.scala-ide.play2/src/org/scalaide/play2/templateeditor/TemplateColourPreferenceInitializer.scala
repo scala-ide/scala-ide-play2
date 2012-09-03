@@ -13,8 +13,6 @@ import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.COMMENT
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.DEFAULT
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.PLAIN
-import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.SCALA
-import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.TAG
 
 class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer {
 
@@ -51,9 +49,9 @@ class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer 
     val commentColor = new RGB(63, 127, 95)
     val scalaDefaultColor = new RGB(128, 128, 128)
     setDefaultsForSyntaxClass(COMMENT, commentColor)
-    setDefaultsForSyntaxClass(SCALA, scalaDefaultColor)
+//    setDefaultsForSyntaxClass(SCALA, scalaDefaultColor)
     setDefaultsForSyntaxClass(PLAIN, new RGB(196, 0, 0))
-    setDefaultsForSyntaxClass(TAG, new RGB(200, 0, 255))
+//    setDefaultsForSyntaxClass(TAG, new RGB(200, 0, 255))
     setDefaultsForSyntaxClass(DEFAULT, new RGB(0, 0, 0))
 
     // Scala syntactic

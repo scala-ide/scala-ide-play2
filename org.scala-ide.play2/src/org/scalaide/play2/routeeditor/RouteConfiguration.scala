@@ -2,7 +2,6 @@ package org.scalaide.play2.routeeditor
 
 import scala.Array.canBuildFrom
 import scala.tools.eclipse.lexical.SingleTokenScanner
-
 import org.eclipse.jdt.internal.ui.text.JavaColorManager
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.IDocument
@@ -16,8 +15,9 @@ import org.scalaide.play2.routeeditor.scanners.RouteActionScanner
 import org.scalaide.play2.routeeditor.scanners.RoutePartitions
 import org.scalaide.play2.routeeditor.scanners.RouteScanner
 import org.scalaide.play2.routeeditor.scanners.RouteURIScanner
+import org.scalaide.play2.properties.PropertyChangeHandler
 
-class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) extends SourceViewerConfiguration {
+class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) extends SourceViewerConfiguration  with PropertyChangeHandler{
   val reconciler = new PresentationReconciler();
   val colorManager = new JavaColorManager()
   private val routeDoubleClickStrategy: RouteDoubleClickStrategy =
@@ -50,12 +50,6 @@ class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) 
 
   override def getDoubleClickStrategy(sourceViewer: ISourceViewer, contentType: String) = {
     routeDoubleClickStrategy
-  }
-
-  def handlePartition(partitionType: String, tokenScanner: ITokenScanner) {
-    val dr = new DefaultDamagerRepairer(tokenScanner)
-    reconciler.setDamager(dr, partitionType)
-    reconciler.setRepairer(dr, partitionType)
   }
 
   override def getConfiguredContentTypes(sourceViewer: ISourceViewer) = {

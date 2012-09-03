@@ -30,8 +30,9 @@ import org.eclipse.jface.text.contentassist.IContentAssistant
 import org.eclipse.jface.text.contentassist.ContentAssistant
 import org.scalaide.play2.templateeditor.completion.CompletionProposalComputer
 import org.eclipse.jface.text.IDocument
+import org.scalaide.play2.properties.PropertyChangeHandler
 
-class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration {
+class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration with PropertyChangeHandler{
 
   val colorManager = new JavaColorManager()
   private val templateDoubleClickStrategy: RouteDoubleClickStrategy =
@@ -107,13 +108,16 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
 
   override def getHyperlinkDetectors(sv: ISourceViewer): Array[IHyperlinkDetector] = {
     val detector = TemplateDeclarationHyperlinkDetector()
-    detector.setContext(templateEditor)
+    if (templateEditor != null) detector.setContext(templateEditor)
     Array(detector)
   }
 
   override def getTextHover(sv: ISourceViewer, contentType: String, stateMask: Int) = {
     if (contentType.equals(TemplatePartitions.TEMPLATE_SCALA)) {
-      new TemplateHover(TemplateCompilationUnit.fromEditor(templateEditor).get)
+      TemplateCompilationUnit.fromEditor(templateEditor) match {
+        case Some(tcu) => new TemplateHover(tcu)
+        case None => new DefaultTextHover(sv)
+      }
     } else {
       new DefaultTextHover(sv)
     }

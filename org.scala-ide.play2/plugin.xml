@@ -44,6 +44,18 @@
             id="org.scala-ide.play2.preferences.route.syntaxColouring"
             name="Syntax Coloring">
       </page>
+      <page
+            category="org.scala-ide.play2.preferences"
+            class="org.scalaide.play2.properties.PlayPreferences"
+            id="org.scala-ide.play2.preferences.template"
+            name="Template">
+      </page>
+      <page
+            category="org.scala-ide.play2.preferences.template"
+            class="org.scalaide.play2.properties.TemplateSyntaxColouringPreferencePage"
+            id="org.scala-ide.play2.preferences.template.syntaxColouring"
+            name="Syntax Coloring">
+      </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
