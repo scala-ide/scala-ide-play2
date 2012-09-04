@@ -1,20 +1,39 @@
 package org.scalaide.play2.templateeditor
 
 import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
+import org.scalaide.play2.properties.Category
+import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClasses
 
 object TemplateSyntaxClasses {
   val DEFAULT = ScalaSyntaxClass("Default", "template.default")
   val PLAIN = ScalaSyntaxClass("Plain", "template.plain")
-  val COMMENT = ScalaSyntaxClass("Comment", "template.comment")
-  val SCALA = ScalaSyntaxClass("Scala", "template.scala")
-  val TAG = ScalaSyntaxClass("Tag", "template.tag")
+  val COMMENT = ScalaSyntaxClass("Template Comment", "template.comment")
 
-  case class Category(name: String, children: List[ScalaSyntaxClass])
+  val scalaCategory = Category("Scala", List(ScalaSyntaxClasses.KEYWORD,
+    ScalaSyntaxClasses.STRING,
+    ScalaSyntaxClasses.DEFAULT,
+    ScalaSyntaxClasses.OPERATOR,
+    ScalaSyntaxClasses.BRACKET,
+    ScalaSyntaxClasses.RETURN))
 
-  val templateOtherCategory = Category("Other", List(
-    DEFAULT, COMMENT, SCALA))
+  val htmlCategory = Category("HTML", List(ScalaSyntaxClasses.XML_COMMENT, 
+    ScalaSyntaxClasses.XML_ATTRIBUTE_VALUE, 
+    ScalaSyntaxClasses.XML_ATTRIBUTE_NAME, 
+    ScalaSyntaxClasses.XML_ATTRIBUTE_EQUALS, 
+    ScalaSyntaxClasses.XML_TAG_DELIMITER, 
+    ScalaSyntaxClasses.XML_TAG_NAME, 
+    ScalaSyntaxClasses.XML_PI, 
+    ScalaSyntaxClasses.XML_CDATA_BORDER))
 
-  val categories = List(templateOtherCategory)
+  val commentsCategory = Category("Comments", List(ScalaSyntaxClasses.SINGLE_LINE_COMMENT,
+    ScalaSyntaxClasses.MULTI_LINE_COMMENT,
+    ScalaSyntaxClasses.SCALADOC, 
+    COMMENT))
+
+  val otherCategory = Category("Other", List(
+    DEFAULT, PLAIN))
+
+  val categories = List(scalaCategory, htmlCategory, commentsCategory, otherCategory)
 
   val ALL_SYNTAX_CLASSES = categories.flatMap(_.children)
 

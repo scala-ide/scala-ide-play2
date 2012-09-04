@@ -52,7 +52,7 @@ object TemplatePartitionTokeniser {
         if (scalaCommentRegions.exists(_.containsRange(x.start, x.end - x.start)))
           List()
         else {
-          val elems = scalaCommentRegions.filter(e => x.containsRange(e.start, e.end - e.start + 1))
+          val elems = scalaCommentRegions.filter(e => x.containsRange(e.start, e.end - e.start)) // + 1 is removed!
           if (!elems.isEmpty) {
             var startIndex = x.start
             val newElems = elems.foldLeft[List[ScalaPartitionRegion]](Nil)((prev, n) => {

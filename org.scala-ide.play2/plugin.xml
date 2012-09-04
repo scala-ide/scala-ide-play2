@@ -44,6 +44,18 @@
             id="org.scala-ide.play2.preferences.route.syntaxColouring"
             name="Syntax Coloring">
       </page>
+      <page
+            category="org.scala-ide.play2.preferences"
+            class="org.scalaide.play2.properties.PlayPreferences"
+            id="org.scala-ide.play2.preferences.template"
+            name="Template">
+      </page>
+      <page
+            category="org.scala-ide.play2.preferences.template"
+            class="org.scalaide.play2.properties.TemplateSyntaxColouringPreferencePage"
+            id="org.scala-ide.play2.preferences.template.syntaxColouring"
+            name="Syntax Coloring">
+      </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
@@ -109,6 +121,30 @@
                type="scala.tools.eclipse.InteractiveCompilationUnit">
          </adapter>
       </factory>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="org.scala-ide.sdt.core.wizards"
+            class="org.scalaide.play2.wizards.NewTemplateWizard"
+            finalPerspective="org.scala-ide.sdt.core.perspective"
+            icon="icons/play.png"
+            id="org.scala-ide.play2.wizards.newTemplate"
+            name="Play Template"
+            project="false">
+         <description>
+            Create a Play Template
+         </description>
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.scala-ide.sdt.core.perspective">
+         <newWizardShortcut
+               id="org.scala-ide.play2.wizards.newTemplate">
+         </newWizardShortcut>
+      </perspectiveExtension>
    </extension>
    <!--
    <extension
