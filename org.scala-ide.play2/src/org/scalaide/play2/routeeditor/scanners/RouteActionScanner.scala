@@ -8,7 +8,7 @@ import org.eclipse.jface.text.rules.IWordDetector
 import org.eclipse.jface.text.rules.RuleBasedScanner
 import org.eclipse.jface.text.rules.WordRule
 import org.scalaide.play2.routeeditor.RouteSyntaxClasses._
-import org.scalaide.play2.routeeditor.rules.PackageRule
+import org.scalaide.play2.routeeditor.rules.MethodPackageRule
 
 class RouteActionScanner(prefStore: IPreferenceStore, manager: IColorManager) extends AbstractRouteScanner(ACTION, prefStore, manager) {
 
@@ -21,12 +21,10 @@ class RouteActionScanner(prefStore: IPreferenceStore, manager: IColorManager) ex
     // Add a rule for method argument
     new WordRule(new MethodArgumentDetector(),
       methodArgumentToken),
-    // Add a rule for package
-    new PackageRule(packageToken),
     // Add a rule for class
     new WordRule(new ClassDetector(), classToken),
-    // Add a rule for method
-    new WordRule(new MethodDetector(), methodToken))
+    // Add a rule for method and package
+    new MethodPackageRule(packageToken, methodToken))
 
   setRules(rules);
 
@@ -40,17 +38,6 @@ class RouteActionScanner(prefStore: IPreferenceStore, manager: IColorManager) ex
       Character.isJavaIdentifierPart(c);
     }
 
-  }
-
-  private class MethodDetector extends IWordDetector {
-
-    override def isWordStart(c: Char) = {
-      Character.isLowerCase(c)
-    }
-
-    override def isWordPart(c: Char) = {
-      Character.isJavaIdentifierPart(c);
-    }
   }
 
   private class MethodArgumentDetector extends IWordDetector {

@@ -1,4 +1,4 @@
-package org.scalaide.play2.templateeditor.scanners
+package org.scalaide.play2.templateeditor.lexical
 
 import scala.util.parsing.input.CharSequenceReader
 import play.templates.ScalaTemplateCompiler

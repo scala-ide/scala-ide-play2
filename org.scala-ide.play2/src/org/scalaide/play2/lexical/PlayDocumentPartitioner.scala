@@ -1,19 +1,18 @@
-package org.scalaide.play2.templateeditor.scanners
+package org.scalaide.play2.lexical
 
-import org.eclipse.jface.text._
-import org.eclipse.jface.text.IDocument.DEFAULT_CONTENT_TYPE
 import scala.collection.mutable.ListBuffer
-import scala.math.{ max, min }
+import scala.math.max
+import scala.math.min
 import scala.tools.eclipse.lexical.ScalaPartitionRegion
+import org.eclipse.jface.text._
 
-class TemplateDocumentPartitioner(conservative: Boolean = false) extends IDocumentPartitioner with IDocumentPartitionerExtension with IDocumentPartitionerExtension2 {
 
-  import TemplateDocumentPartitioner._
+abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, defaultPartition: String, conservative: Boolean = false) extends IDocumentPartitioner with IDocumentPartitionerExtension with IDocumentPartitionerExtension2 {
 
   private var partitionRegions: List[ScalaPartitionRegion] = Nil
 
   def connect(document: IDocument) {
-    partitionRegions = TemplatePartitionTokeniser.tokenise(document.get)
+    partitionRegions = tokensiser.tokenise(document.get)
   }
 
   def disconnect() {
@@ -26,7 +25,7 @@ class TemplateDocumentPartitioner(conservative: Boolean = false) extends IDocume
 
   def documentChanged2(event: DocumentEvent): IRegion = {
     val oldPartitions = partitionRegions
-    val newPartitions = TemplatePartitionTokeniser.tokenise(event.getDocument.get)
+    val newPartitions = tokensiser.tokenise(event.getDocument.get)
     partitionRegions = newPartitions
     if (conservative)
       new Region(0, event.getDocument.getLength)
@@ -66,9 +65,9 @@ class TemplateDocumentPartitioner(conservative: Boolean = false) extends IDocume
 
   private def commonPrefixLength[X](xs: List[X], ys: List[X]) = xs.zip(ys).takeWhile(p => p._1 == p._2).size
 
-  def getLegalContentTypes = LEGAL_CONTENT_TYPES
+  def getLegalContentTypes: Array[String]
 
-  def getContentType(offset: Int) = getToken(offset) map { _.contentType } getOrElse DEFAULT_CONTENT_TYPE
+  def getContentType(offset: Int) = getToken(offset) map { _.contentType } getOrElse defaultPartition
 
   private def getToken(offset: Int) = partitionRegions.find(_.containsPosition(offset))
 
@@ -98,7 +97,7 @@ class TemplateDocumentPartitioner(conservative: Boolean = false) extends IDocume
       region.copy(start = max(start, offset), end = min(end, offset + length - 1))
   }
 
-  def getPartition(offset: Int): ITypedRegion = getToken(offset) getOrElse new TypedRegion(offset, 1, TemplatePartitions.TEMPLATE_DEFAULT)
+  def getPartition(offset: Int): ITypedRegion = getToken(offset) getOrElse new TypedRegion(offset, 1, defaultPartition)
 
   def getManagingPositionCategories = null
 
@@ -107,10 +106,10 @@ class TemplateDocumentPartitioner(conservative: Boolean = false) extends IDocume
   def getPartition(offset: Int, preferOpenPartitions: Boolean): ITypedRegion = {
     val region = getPartition(offset)
     if (preferOpenPartitions)
-      if (region.getOffset == offset && region.getType != IDocument.DEFAULT_CONTENT_TYPE)
+      if (region.getOffset == offset && region.getType != defaultPartition)
         if (offset > 0) {
           val previousRegion = getPartition(offset - 1)
-          if (previousRegion.getType == IDocument.DEFAULT_CONTENT_TYPE)
+          if (previousRegion.getType == defaultPartition)
             return previousRegion
         }
     region
@@ -120,16 +119,4 @@ class TemplateDocumentPartitioner(conservative: Boolean = false) extends IDocume
 
 }
 
-object TemplateDocumentPartitioner {
-
-  import TemplatePartitions._
-
-  private val LEGAL_CONTENT_TYPES = Array[String](
-    TEMPLATE_DEFAULT, TEMPLATE_SCALA, TEMPLATE_COMMENT)
-
-  val NO_PARTITION_AT_ALL = "__no_partition_at_all"
-
-  final val EOF = '\u001A'
-
-}
 

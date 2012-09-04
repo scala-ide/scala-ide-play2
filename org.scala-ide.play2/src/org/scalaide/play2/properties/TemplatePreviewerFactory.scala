@@ -2,7 +2,7 @@ package org.scalaide.play2.properties
 
 import org.eclipse.jface.preference.IPreferenceStore
 import org.scalaide.play2.templateeditor.TemplateConfiguration
-import org.scalaide.play2.templateeditor.scanners.TemplateDocumentPartitioner
+import org.scalaide.play2.templateeditor.lexical.TemplateDocumentPartitioner
 
 object TemplatePreviewerFactory extends PreviewerFactory {
   
@@ -10,6 +10,6 @@ object TemplatePreviewerFactory extends PreviewerFactory {
     new TemplateConfiguration(preferenceStore, null)
   
    def getDocumentPartitioner() = 
-     new TemplateDocumentPartitioner()
+     new TemplateDocumentPartitioner(true)
 
 }

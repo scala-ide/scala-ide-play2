@@ -57,36 +57,39 @@ class RouteHyperlinkDetector(routeEditor: RouteEditor) extends IHyperlinkDetecto
     try {
       if (document.charAt(region.getOffset()) == '(')
         return false;
-      if (document.substring(startIndex).trim().charAt(0) == '(')
+      if (Character.isWhitespace(document.charAt(startIndex)) || document.substring(startIndex).trim().charAt(0) == '(')
         return true;
     } catch {
-      case _ => return false;
+      case _ => return true;
     }
     return false;
   }
 
   def findParameterTypes(document: String, endOfMethodNameIndex: Int): Array[String] = {
-    val startIndex = document.indexOf("(", endOfMethodNameIndex);
-    val endIndex = document.indexOf(")", endOfMethodNameIndex);
+    val startIndex = document.indexOf("(", endOfMethodNameIndex)
+    if (startIndex == -1 || startIndex > document.indexOf("\n", endOfMethodNameIndex)) {
+      return Array()
+    }
+    val endIndex = document.indexOf(")", endOfMethodNameIndex)
     if (startIndex + 1 == endIndex) {
       return Array()
     }
-    val parametersString = document.substring(startIndex + 1, endIndex);
-    val paramStringArray = parametersString.split(",");
+    val parametersString = document.substring(startIndex + 1, endIndex)
+    val paramStringArray = parametersString.split(",")
     val paramTypes = paramStringArray map (inferParameterType(_))
     paramTypes
   }
 
   def inferParameterType(parameterString: String): String = {
-    val parameterStringTrimmed = parameterString.trim();
-    val startIndex = parameterStringTrimmed.indexOf(":");
+    val parameterStringTrimmed = parameterString.trim()
+    val startIndex = parameterStringTrimmed.indexOf(":")
     if (startIndex == -1) {
-      return "String";
+      return "String"
     }
-    val typeString = parameterStringTrimmed.substring(startIndex + 1).trim();
-    val r = findWord(typeString, 0);
+    val typeString = parameterStringTrimmed.substring(startIndex + 1).trim()
+    val r = findWord(typeString, 0)
     return typeString.substring(r.getOffset(),
-      r.getOffset() + r.getLength());
+      r.getOffset() + r.getLength())
   }
   
   def findWord(document: String, offset: Int): Region =

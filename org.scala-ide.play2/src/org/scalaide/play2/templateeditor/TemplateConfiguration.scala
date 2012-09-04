@@ -14,8 +14,8 @@ import org.eclipse.jface.util.PropertyChangeEvent
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration
 import org.scalaide.play2.routeeditor.RouteDoubleClickStrategy
 import org.scalaide.play2.templateeditor.reconciler.TemplateReconcilingStrategy
-import org.scalaide.play2.templateeditor.scanners.HtmlTagScanner
-import org.scalaide.play2.templateeditor.scanners.TemplatePartitions
+import org.scalaide.play2.templateeditor.lexical.HtmlTagScanner
+import org.scalaide.play2.templateeditor.lexical.TemplatePartitions
 import scalariform.ScalaVersions
 import org.eclipse.jface.text.source.SourceViewerConfiguration
 import org.eclipse.jface.text.source.IAnnotationHover

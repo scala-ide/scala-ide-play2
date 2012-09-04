@@ -2,7 +2,7 @@ package org.scalaide.play2.properties
 
 import org.eclipse.jface.preference.IPreferenceStore
 import org.scalaide.play2.routeeditor.RouteConfiguration
-import org.scalaide.play2.routeeditor.scanners.RouteDocumentPartitioner
+import org.scalaide.play2.routeeditor.lexical.RouteDocumentPartitioner
 
 object RoutePreviewerFactory extends PreviewerFactory {
   
@@ -10,6 +10,6 @@ object RoutePreviewerFactory extends PreviewerFactory {
     new RouteConfiguration(preferenceStore, null)
   
    def getDocumentPartitioner() = 
-     new RouteDocumentPartitioner()
+     new RouteDocumentPartitioner(true)
 
 }

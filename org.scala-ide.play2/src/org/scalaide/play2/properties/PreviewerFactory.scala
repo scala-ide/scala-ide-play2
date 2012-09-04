@@ -4,6 +4,7 @@ import org.eclipse.jdt.ui.PreferenceConstants
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.resource.JFaceResources
 import org.eclipse.jface.text.Document
+import org.eclipse.jface.text.IDocumentPartitioner
 import org.eclipse.jface.text.source.SourceViewer
 import org.eclipse.jface.text.source.projection.ProjectionViewer
 import org.eclipse.jface.util.IPropertyChangeListener
@@ -12,10 +13,6 @@ import org.eclipse.swt.SWT
 import org.eclipse.swt.widgets.Composite
 import org.eclipse.ui.editors.text.EditorsUI
 import org.eclipse.ui.texteditor.ChainedPreferenceStore
-import org.scalaide.play2.routeeditor.RouteConfiguration
-import org.scalaide.play2.routeeditor.scanners.RouteDocumentPartitioner
-import org.eclipse.jface.text.source.SourceViewerConfiguration
-import org.eclipse.jface.text.IDocumentPartitioner
 
 trait PreviewerFactory extends IPropertyChangeListener {
   var preferenceStore: ChainedPreferenceStore = _

@@ -5,7 +5,7 @@ import org.eclipse.core.runtime.IPath
 import org.eclipse.jface.text.IDocument
 import org.eclipse.ui.IFileEditorInput
 import org.eclipse.ui.editors.text.FileDocumentProvider
-import org.scalaide.play2.templateeditor.scanners.TemplateDocumentPartitioner
+import org.scalaide.play2.templateeditor.lexical.TemplateDocumentPartitioner
 
 class TemplateDocumentProvider extends FileDocumentProvider/* with IAnnotationModelFactory */{
   protected override def createDocument(element: Object): IDocument = {

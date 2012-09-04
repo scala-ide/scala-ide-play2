@@ -1,4 +1,4 @@
-package org.scalaide.play2.templateeditor.scanners
+package org.scalaide.play2.templateeditor.lexical
 
 import scala.tools.eclipse.lexical.XmlTagScanner
 import org.eclipse.jdt.ui.text.IColorManager

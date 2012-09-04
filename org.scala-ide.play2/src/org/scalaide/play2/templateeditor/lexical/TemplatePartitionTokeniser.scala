@@ -1,4 +1,4 @@
-package org.scalaide.play2.templateeditor.scanners
+package org.scalaide.play2.templateeditor.lexical
 
 import org.eclipse.jface.text._
 import org.eclipse.jface.text.IDocument.DEFAULT_CONTENT_TYPE
@@ -9,8 +9,9 @@ import scala.tools.eclipse.lexical.ScalaPartitionRegion
 import scala.tools.eclipse.lexical.ScalaPartitionTokeniser
 import scala.tools.eclipse.lexical.ScalaPartitions
 import scala.util.parsing.input.OffsetPosition
+import org.scalaide.play2.lexical.PlayPartitionTokeniser
 
-object TemplatePartitionTokeniser {
+object TemplatePartitionTokeniser extends PlayPartitionTokeniser{
 
   def getXMLTagRegions(text: String): List[ScalaPartitionRegion] = {
     val toks = ScalaPartitionTokeniser.tokenise(text)

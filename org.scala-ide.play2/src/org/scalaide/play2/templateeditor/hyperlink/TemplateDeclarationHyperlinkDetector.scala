@@ -16,7 +16,7 @@ import scala.tools.eclipse.InteractiveCompilationUnit
 import org.eclipse.jdt.internal.core.JavaProject
 import org.eclipse.jdt.internal.core.DefaultWorkingCopyOwner
 import scala.tools.eclipse.hyperlink.text.detector.BaseHyperlinkDetector
-import org.scalaide.play2.templateeditor.scanners.TemplatePartitions
+import org.scalaide.play2.templateeditor.lexical.TemplatePartitions
 import org.eclipse.jface.text.Region
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
