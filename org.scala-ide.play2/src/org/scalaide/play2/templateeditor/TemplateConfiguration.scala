@@ -35,7 +35,7 @@ import org.scalaide.play2.properties.PropertyChangeHandler
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration with PropertyChangeHandler{
 
   val colorManager = new JavaColorManager()
-  private val templateDoubleClickStrategy: RouteDoubleClickStrategy =
+  private val templateDoubleClickStrategy =
     new RouteDoubleClickStrategy()
 
   private val plainScanner: SingleTokenScanner = {
