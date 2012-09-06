@@ -1,34 +1,30 @@
 package org.scalaide.play2.routeeditor.formatter
 
-import org.eclipse.core.resources.IProject
-import org.eclipse.core.runtime.IAdaptable
-import org.eclipse.jface.text._
-import org.eclipse.jface.text.TextUtilities.getDefaultLineDelimiter
-import org.eclipse.jface.text.formatter._
-import org.eclipse.jface.text.source.ISourceViewer
-import org.eclipse.jface.preference.IPreferenceStore
-import org.eclipse.text.undo.DocumentUndoManagerRegistry
-import org.eclipse.text.edits.{ TextEdit => EclipseTextEdit, _ }
-import org.eclipse.ui.texteditor.ITextEditor
-import scalariform.formatter.ScalaFormatter
-import scalariform.formatter.preferences._
-import scalariform.parser.ScalaParserException
-import scalariform.utils.TextEdit
-import scala.tools.eclipse.properties.PropertyStore
-import scala.tools.eclipse.ScalaPlugin
-import scala.tools.eclipse.util.EclipseUtils._
-import org.eclipse.core.resources.IResource
-import org.scalaide.play2.routeeditor.lexical.RoutePartitionTokeniser
-import scala.tools.eclipse.lexical.ScalaPartitionRegion
-import scala.collection.mutable.Buffer
 import scala.collection.mutable.ArrayBuffer
-import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_DEFAULT
-import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_COMMENT
-import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_URI
-import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_ACTION
-import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_HTTP
-import org.scalaide.play2.routeeditor.rules.HTTPKeywordRule
+import scala.tools.eclipse.lexical.ScalaPartitionRegion
+import scala.tools.eclipse.util.EclipseUtils.adaptableToPimpedAdaptable
+
+import org.eclipse.core.resources.IResource
+import org.eclipse.core.runtime.IAdaptable
+import org.eclipse.jface.text.IDocument
+import org.eclipse.jface.text.IRegion
+import org.eclipse.jface.text.formatter.FormattingContextProperties
+import org.eclipse.jface.text.formatter.IFormattingContext
+import org.eclipse.jface.text.formatter.IFormattingStrategy
+import org.eclipse.jface.text.formatter.IFormattingStrategyExtension
+import org.eclipse.text.edits.MultiTextEdit
+import org.eclipse.text.edits.ReplaceEdit
+import org.eclipse.text.edits.{TextEdit => EclipseTextEdit}
+import org.eclipse.text.edits.TextEditProcessor
+import org.eclipse.text.undo.DocumentUndoManagerRegistry
+import org.eclipse.ui.texteditor.ITextEditor
 import org.scalaide.play2.PlayPlugin
+import org.scalaide.play2.routeeditor.lexical.RoutePartitionTokeniser
+import org.scalaide.play2.routeeditor.lexical.RoutePartitions.ROUTE_ACTION
+import org.scalaide.play2.routeeditor.lexical.RoutePartitions.ROUTE_COMMENT
+import org.scalaide.play2.routeeditor.lexical.RoutePartitions.ROUTE_DEFAULT
+import org.scalaide.play2.routeeditor.lexical.RoutePartitions.ROUTE_HTTP
+import org.scalaide.play2.routeeditor.lexical.RoutePartitions.ROUTE_URI
 
 class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrategy with IFormattingStrategyExtension {
 

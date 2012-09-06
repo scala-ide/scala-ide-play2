@@ -11,12 +11,13 @@ import org.eclipse.jface.text.rules.ITokenScanner
 import org.eclipse.jface.text.source.ISourceViewer
 import org.eclipse.jface.text.source.SourceViewerConfiguration
 import org.eclipse.jface.util.PropertyChangeEvent
-import org.scalaide.play2.routeeditor.scanners.RouteActionScanner
-import org.scalaide.play2.routeeditor.scanners.RoutePartitions
-import org.scalaide.play2.routeeditor.scanners.RouteURIScanner
+import org.scalaide.play2.routeeditor.lexical.RouteActionScanner
+import org.scalaide.play2.routeeditor.lexical.RoutePartitions
+import org.scalaide.play2.routeeditor.lexical.RouteURIScanner
 import org.scalaide.play2.properties.PropertyChangeHandler
 import org.eclipse.jface.text.formatter.MultiPassContentFormatter
 import org.scalaide.play2.routeeditor.formatter.RouteFormattingStrategy
+import org.scalaide.play2.routeeditor.lexical.RoutePartitions
 
 class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) extends SourceViewerConfiguration  with PropertyChangeHandler{
   val reconciler = new PresentationReconciler();

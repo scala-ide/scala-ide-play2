@@ -1,9 +1,9 @@
-package org.scalaide.play2.routeeditor.rules
+package org.scalaide.play2.routeeditor.lexical
 
-import org.eclipse.jface.text.rules.ICharacterScanner;
-import org.eclipse.jface.text.rules.IRule;
-import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.jface.text.rules.Token;
+import org.eclipse.jface.text.rules.ICharacterScanner
+import org.eclipse.jface.text.rules.IRule
+import org.eclipse.jface.text.rules.IToken
+import org.eclipse.jface.text.rules.Token
 
 class MethodPackageRule(packageToken: IToken, methodToken: IToken) extends IRule {
   sealed class PackageReadingState(i: Int)

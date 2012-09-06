@@ -2,13 +2,12 @@ package org.scalaide.play2.routeeditor.lexical
 
 import scala.tools.eclipse.lexical.ScalaPartitionRegion
 import org.scalaide.play2.lexical.PlayPartitionTokeniser
-import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_DEFAULT
-import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_HTTP
-import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_COMMENT
-import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_URI
-import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_ACTION
+import RoutePartitions.ROUTE_DEFAULT
+import RoutePartitions.ROUTE_HTTP
+import RoutePartitions.ROUTE_COMMENT
+import RoutePartitions.ROUTE_URI
+import RoutePartitions.ROUTE_ACTION
 import scala.collection.mutable.ArrayBuffer
-import org.scalaide.play2.routeeditor.rules.HTTPKeywordRule
 
 object RoutePartitionTokeniser extends PlayPartitionTokeniser {
 
@@ -42,7 +41,7 @@ object RoutePartitionTokeniser extends PlayPartitionTokeniser {
       if (offset > startIndex) {
         val word = chars.subSequence(startIndex, offset).toString()
         val contentType =
-          if (HTTPKeywordRule.words.exists(_ equals word)) {
+          if (HTTPKeywords.words.exists(_ equals word)) {
             ROUTE_HTTP
           } else { ROUTE_DEFAULT }
         tokens += ScalaPartitionRegion(contentType, startIndex, offset - 1)

@@ -1,4 +1,4 @@
-package org.scalaide.play2.routeeditor.scanners
+package org.scalaide.play2.routeeditor.lexical
 
 import org.eclipse.jdt.ui.text.IColorManager
 import org.eclipse.jface.preference.IPreferenceStore

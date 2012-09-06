@@ -1,4 +1,4 @@
-package org.scalaide.play2.routeeditor.scanners
+package org.scalaide.play2.routeeditor.lexical
 
 import org.eclipse.jface.text.Document
 import org.eclipse.jface.text.rules.IToken

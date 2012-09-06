@@ -1,7 +1,6 @@
 package org.scalaide.play2.routeeditor
 
 import scala.Array.canBuildFrom
-
 import org.eclipse.jdt.internal.ui.javaeditor.JavaElementHyperlink
 import org.eclipse.jdt.ui.actions.OpenAction
 import org.eclipse.jface.text.BadLocationException
@@ -10,8 +9,9 @@ import org.eclipse.jface.text.ITextViewer
 import org.eclipse.jface.text.Region
 import org.eclipse.jface.text.hyperlink.IHyperlink
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector
-import org.scalaide.play2.routeeditor.scanners.RoutePartitions
+import org.scalaide.play2.routeeditor.lexical.RoutePartitions
 import org.scalaide.play2.routeeditor.tools.MethodFinder
+import org.scalaide.play2.routeeditor.lexical.RoutePartitions
 
 class RouteHyperlinkDetector(routeEditor: RouteEditor) extends IHyperlinkDetector {
   override def detectHyperlinks(textViewer: ITextViewer,

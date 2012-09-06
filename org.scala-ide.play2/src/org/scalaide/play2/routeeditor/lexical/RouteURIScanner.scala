@@ -1,11 +1,9 @@
-package org.scalaide.play2.routeeditor.scanners
+package org.scalaide.play2.routeeditor.lexical
 
 import org.eclipse.jdt.ui.text.IColorManager
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.rules.IRule
-import org.eclipse.jface.text.rules.IToken
 import org.eclipse.jface.text.rules.IWordDetector
-import org.eclipse.jface.text.rules.RuleBasedScanner
 import org.eclipse.jface.text.rules.WordRule
 import org.scalaide.play2.routeeditor.RouteSyntaxClasses._
 

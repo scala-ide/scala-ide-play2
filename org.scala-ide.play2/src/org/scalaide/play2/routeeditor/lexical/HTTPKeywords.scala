@@ -1,6 +1,6 @@
-package org.scalaide.play2.routeeditor.rules
+package org.scalaide.play2.routeeditor.lexical
 
-object HTTPKeywordRule {
+object HTTPKeywords {
   val words = Array(
       "GET", "POST", "PUT", "DELETE", "HEAD"
       )

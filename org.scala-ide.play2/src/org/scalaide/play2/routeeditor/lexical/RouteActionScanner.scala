@@ -1,14 +1,14 @@
-package org.scalaide.play2.routeeditor.scanners
+package org.scalaide.play2.routeeditor.lexical
 
 import org.eclipse.jdt.ui.text.IColorManager
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.rules.IRule
-import org.eclipse.jface.text.rules.IToken
 import org.eclipse.jface.text.rules.IWordDetector
-import org.eclipse.jface.text.rules.RuleBasedScanner
 import org.eclipse.jface.text.rules.WordRule
-import org.scalaide.play2.routeeditor.RouteSyntaxClasses._
-import org.scalaide.play2.routeeditor.rules.MethodPackageRule
+import org.scalaide.play2.routeeditor.RouteSyntaxClasses.ACTION
+import org.scalaide.play2.routeeditor.RouteSyntaxClasses.ACTION_CLASS
+import org.scalaide.play2.routeeditor.RouteSyntaxClasses.ACTION_METHOD
+import org.scalaide.play2.routeeditor.RouteSyntaxClasses.ACTION_PACKAGE
 
 class RouteActionScanner(prefStore: IPreferenceStore, manager: IColorManager) extends AbstractRouteScanner(ACTION, prefStore, manager) {
 
