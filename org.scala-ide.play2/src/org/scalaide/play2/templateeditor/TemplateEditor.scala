@@ -25,8 +25,10 @@ import scala.tools.eclipse.ISourceViewerEditor
 import org.eclipse.jface.text.source.ISourceViewer
 import org.eclipse.ui.texteditor.ChainedPreferenceStore
 import org.eclipse.jdt.internal.ui.JavaPlugin
+import scala.tools.eclipse.ui.InteractiveCompilationUnitEditor
+import scala.tools.eclipse.InteractiveCompilationUnit
 
-class TemplateEditor extends TextEditor with ISourceViewerEditor {
+class TemplateEditor extends TextEditor with ISourceViewerEditor with InteractiveCompilationUnitEditor {
 //  var fProjectionSupport: ProjectionSupport = _
   lazy val preferenceStore = new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.prefStore))
 //  val prefStore = PlayPlugin.prefStore
@@ -67,6 +69,8 @@ class TemplateEditor extends TextEditor with ISourceViewerEditor {
   
   def getViewer: ISourceViewer = getSourceViewer
   
+  override def getInteractiveCompilationUnit(): Option[InteractiveCompilationUnit] = TemplateCompilationUnit.fromEditor(this)
+
 //  override def createSourceViewer(parent: Composite, verticalRuler: IVerticalRuler, styles: Int) = {
 //    val composite = new Composite(parent, SWT.NONE);
 //    val layout = new GridLayout(1, false);
