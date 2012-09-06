@@ -1,8 +1,9 @@
-package org.scalaide.play2.properties
+package org.scalaide.play2.routeeditor.properties
 
 import org.eclipse.jface.preference.IPreferenceStore
 import org.scalaide.play2.routeeditor.RouteConfiguration
 import org.scalaide.play2.routeeditor.lexical.RouteDocumentPartitioner
+import org.scalaide.play2.properties.PreviewerFactory
 
 object RoutePreviewerFactory extends PreviewerFactory {
   

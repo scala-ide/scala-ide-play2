@@ -1,5 +1,6 @@
-package org.scalaide.play2.properties
+package org.scalaide.play2.templateeditor.properties
 
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses
+import org.scalaide.play2.properties.SyntaxColouringTreeContentAndLabelProvider
 
 object TemplateSyntaxColouringTreeContentAndLabelProvider extends SyntaxColouringTreeContentAndLabelProvider(TemplateSyntaxClasses.categories)

@@ -1,13 +1,7 @@
-package org.scalaide.play2.routeeditor
-
-import scala.tools.eclipse.semantichighlighting.SemanticHighlightingAnnotations
-import scala.tools.eclipse.util.SWTUtils.fnToPropertyChangeListener
-import scala.tools.eclipse.ScalaPlugin
+package org.scalaide.play2.routeeditor.properties
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer
-import org.eclipse.jdt.internal.ui.JavaPlugin
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.resource.StringConverter
-import org.eclipse.jface.util.PropertyChangeEvent
 import org.eclipse.swt.graphics.RGB
 import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
 import org.scalaide.play2.PlayPlugin
@@ -20,7 +14,9 @@ class RouteColourPreferenceInitializer extends AbstractPreferenceInitializer {
   }
 
   private def doInitializeDefaultPreferences() {
-    setDefaultsForSyntaxClasses(PlayPlugin.prefStore)
+    val prefStore = PlayPlugin.prefStore
+    setDefaultsForSyntaxClasses(prefStore)
+    prefStore.setDefault(PlayPlugin.plugin.routeFormatterMarginId, 3) // for formatter
   }
 
   private def setDefaultsForSyntaxClass(

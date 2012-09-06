@@ -13,7 +13,6 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration
 import org.eclipse.jface.util.PropertyChangeEvent
 import org.scalaide.play2.routeeditor.scanners.RouteActionScanner
 import org.scalaide.play2.routeeditor.scanners.RoutePartitions
-import org.scalaide.play2.routeeditor.scanners.RouteScanner
 import org.scalaide.play2.routeeditor.scanners.RouteURIScanner
 import org.scalaide.play2.properties.PropertyChangeHandler
 import org.eclipse.jface.text.formatter.MultiPassContentFormatter

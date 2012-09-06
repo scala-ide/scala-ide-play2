@@ -28,6 +28,7 @@ import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_URI
 import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_ACTION
 import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_HTTP
 import org.scalaide.play2.routeeditor.rules.HTTPKeywordRule
+import org.scalaide.play2.PlayPlugin
 
 class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrategy with IFormattingStrategyExtension {
 
@@ -120,7 +121,7 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
   def format() {
     val regions = RoutePartitionTokeniser.tokenise(document.get)
     val lines = getRoutes(regions)
-    val margin = 3
+    val margin = PlayPlugin.prefStore.getInt(PlayPlugin.plugin.routeFormatterMarginId)
     val maxHttpVerbLength = (lines map (_.httpVerb.get.length)).max + margin
     val maxUriLength = (lines map (_.uri.get.length)).max + margin
     val eclipseEdits = lines flatMap { route =>

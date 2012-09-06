@@ -1,10 +1,7 @@
-
-
-package org.scalaide.play2.templateeditor
+package org.scalaide.play2.templateeditor.properties
 
 import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
 import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClasses
-
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.resource.StringConverter
@@ -49,9 +46,9 @@ class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer 
     val commentColor = new RGB(63, 127, 95)
     val scalaDefaultColor = new RGB(128, 128, 128)
     setDefaultsForSyntaxClass(COMMENT, commentColor)
-//    setDefaultsForSyntaxClass(SCALA, scalaDefaultColor)
+    //    setDefaultsForSyntaxClass(SCALA, scalaDefaultColor)
     setDefaultsForSyntaxClass(PLAIN, new RGB(196, 0, 0))
-//    setDefaultsForSyntaxClass(TAG, new RGB(200, 0, 255))
+    //    setDefaultsForSyntaxClass(TAG, new RGB(200, 0, 255))
     setDefaultsForSyntaxClass(DEFAULT, new RGB(0, 0, 0))
 
     // Scala syntactic

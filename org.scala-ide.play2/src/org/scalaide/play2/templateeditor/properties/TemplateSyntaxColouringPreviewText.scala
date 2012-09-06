@@ -1,4 +1,4 @@
-package org.scalaide.play2.properties
+package org.scalaide.play2.templateeditor.properties
 
 object TemplateSyntaxColouringPreviewText {
 
@@ -17,5 +17,4 @@ object TemplateSyntaxColouringPreviewText {
 }
 </html>"""
 
-//  val previewText = """@* Template Comment *@"""
 }

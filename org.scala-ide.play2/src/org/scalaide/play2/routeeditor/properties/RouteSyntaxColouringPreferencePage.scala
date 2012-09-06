@@ -1,7 +1,8 @@
-package org.scalaide.play2.properties
+package org.scalaide.play2.routeeditor.properties
 
 import org.scalaide.play2.routeeditor.RouteSyntaxClasses.ALL_SYNTAX_CLASSES
 import org.scalaide.play2.routeeditor.RouteSyntaxClasses.routeOtherCategory
+import org.scalaide.play2.properties.SyntaxColouringPreferencePage
 
 //import SyntaxColouringPreviewText.ColouringLocation
 

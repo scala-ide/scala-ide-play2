@@ -34,6 +34,7 @@ class PlayPlugin extends AbstractUIPlugin {
 
   val problemMarkerId = PLUGIN_ID + ".templateProblem"
   val templateExtension = ".scala.html"
+  val routeFormatterMarginId = PLUGIN_ID + ".routeeditor.margin"
 
   def asPlayProject(project: IProject): Option[PlayProject] = {
     val scalaProject = ScalaPlugin.plugin.asScalaProject(project)

@@ -1,4 +1,4 @@
-package org.scalaide.play2.properties
+package org.scalaide.play2.routeeditor.properties
 
 object RouteSyntaxColouringPreviewText {
 
