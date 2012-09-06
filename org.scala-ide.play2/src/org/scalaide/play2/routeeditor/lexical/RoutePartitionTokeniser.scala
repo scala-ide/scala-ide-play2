@@ -3,10 +3,12 @@ package org.scalaide.play2.routeeditor.lexical
 import scala.tools.eclipse.lexical.ScalaPartitionRegion
 import org.scalaide.play2.lexical.PlayPartitionTokeniser
 import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_DEFAULT
+import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_HTTP
 import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_COMMENT
 import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_URI
 import org.scalaide.play2.routeeditor.scanners.RoutePartitions.ROUTE_ACTION
 import scala.collection.mutable.ArrayBuffer
+import org.scalaide.play2.routeeditor.rules.HTTPKeywordRule
 
 object RoutePartitionTokeniser extends PlayPartitionTokeniser {
 
@@ -14,25 +16,14 @@ object RoutePartitionTokeniser extends PlayPartitionTokeniser {
     val tokens = new ArrayBuffer[ScalaPartitionRegion]
     val ScalaPartitionRegion(_, start, end) = line
     var offset = start
-    
-    def ch(index: Int) = if(index <= end) chars(index) else RouteDocumentPartitioner.EOF
+
+    def ch(index: Int) = if (index <= end) chars(index) else RouteDocumentPartitioner.EOF
 
     @inline def checkBound = offset <= end
 
     def proceedComment = { // this line is a comment line
       if (ch(offset) == '#') {
         tokens += ScalaPartitionRegion(ROUTE_COMMENT, start, end)
-        true
-      } else {
-        false
-      }
-    }
-
-    def proceedHTTPVerbOrURI(contentType: String) = {
-      val startIndex = offset
-      while (checkBound && !Character.isWhitespace(ch(offset))) offset += 1
-      if (offset > startIndex) {
-        tokens += ScalaPartitionRegion(contentType, startIndex, offset - 1)
         true
       } else {
         false
@@ -46,11 +37,30 @@ object RoutePartitionTokeniser extends PlayPartitionTokeniser {
     }
 
     def proceedHTTPVerb = {
-      proceedHTTPVerbOrURI(ROUTE_DEFAULT)
+      val startIndex = offset
+      while (checkBound && !Character.isWhitespace(ch(offset))) offset += 1
+      if (offset > startIndex) {
+        val word = chars.subSequence(startIndex, offset).toString()
+        val contentType =
+          if (HTTPKeywordRule.words.exists(_ equals word)) {
+            ROUTE_HTTP
+          } else { ROUTE_DEFAULT }
+        tokens += ScalaPartitionRegion(contentType, startIndex, offset - 1)
+        true
+      } else {
+        false
+      }
     }
 
     def proceedURI = {
-      proceedHTTPVerbOrURI(ROUTE_URI)
+      val startIndex = offset
+      while (checkBound && !Character.isWhitespace(ch(offset))) offset += 1
+      if (offset > startIndex) {
+        tokens += ScalaPartitionRegion(ROUTE_URI, startIndex, offset - 1)
+        true
+      } else {
+        false
+      }
     }
 
     def proceedWhitespace = {

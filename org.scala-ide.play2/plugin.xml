@@ -146,6 +146,37 @@
          </newWizardShortcut>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            description="Play2 Route Editor"
+            id="org.scala-ide.play2.routeeditor.editorScope"
+            name="Editing Route Files"
+            parentId="org.eclipse.ui.textEditorScope">
+      </context>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.scala-ide.play2.routeeditor.commands.format"
+            contextId="org.scala-ide.play2.routeeditor.editorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+F">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="org.scala-ide.play2.routeeditor.commands.category"
+            name="Route Editor Commands">
+      </category>
+      <command
+            categoryId="org.scala-ide.play2.routeeditor.commands.category"
+            defaultHandler="org.scalaide.play2.routeeditor.handlers.Format"
+            id="org.scala-ide.play2.routeeditor.commands.format"
+            name="Format">
+      </command>
+   </extension>
    <!--
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">

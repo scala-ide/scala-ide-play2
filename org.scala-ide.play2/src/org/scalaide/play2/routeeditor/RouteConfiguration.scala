@@ -16,30 +16,30 @@ import org.scalaide.play2.routeeditor.scanners.RoutePartitions
 import org.scalaide.play2.routeeditor.scanners.RouteScanner
 import org.scalaide.play2.routeeditor.scanners.RouteURIScanner
 import org.scalaide.play2.properties.PropertyChangeHandler
+import org.eclipse.jface.text.formatter.MultiPassContentFormatter
+import org.scalaide.play2.routeeditor.formatter.RouteFormattingStrategy
 
 class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) extends SourceViewerConfiguration  with PropertyChangeHandler{
   val reconciler = new PresentationReconciler();
   val colorManager = new JavaColorManager()
   private val routeDoubleClickStrategy: RouteDoubleClickStrategy =
     new RouteDoubleClickStrategy()
-  private val scanner: RouteScanner = {
-    val result = new RouteScanner(prefStore, colorManager)
-    //    result.setDefaultReturnToken(RouteColorConstants.getToken("DEFAULT",
-    //      colorManager))
-    result
+  private val scanner = {
+//    val result = new RouteScanner(prefStore, colorManager)
+//    result
+     new SingleTokenScanner(RouteSyntaxClasses.DEFAULT, colorManager, prefStore)
   }
+  
+  private val httpScanner = 
+    new SingleTokenScanner(RouteSyntaxClasses.HTTP_KEYWORD, colorManager, prefStore)
 
   private val uriScanner: RouteURIScanner = {
     val result = new RouteURIScanner(prefStore, colorManager)
-    //    result.setDefaultReturnToken(RouteColorConstants.getToken("ROUTE_URI",
-    //      colorManager))
     result
   }
 
   private val actionScanner: RouteActionScanner = {
     val result = new RouteActionScanner(prefStore, colorManager)
-    //    result.setDefaultReturnToken(RouteColorConstants.getToken("ROUTE_ACTION",
-    //      colorManager))
     result
   }
 
@@ -53,7 +53,7 @@ class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) 
   }
 
   override def getConfiguredContentTypes(sourceViewer: ISourceViewer) = {
-    RoutePartitions.getTypes() ++ Array(IDocument.DEFAULT_CONTENT_TYPE)
+    RoutePartitions.getTypes()
   }
 
   override def getHyperlinkDetectors(sourceViewer: ISourceViewer) = {
@@ -69,13 +69,19 @@ class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) 
   override def getPresentationReconciler(
     sourceViewer: ISourceViewer) = {
 
-    handlePartition(scanner, IDocument.DEFAULT_CONTENT_TYPE)
+    handlePartition(scanner, RoutePartitions.ROUTE_DEFAULT)
+    handlePartition(httpScanner, RoutePartitions.ROUTE_HTTP)
     handlePartition(uriScanner, RoutePartitions.ROUTE_URI)
     handlePartition(actionScanner, RoutePartitions.ROUTE_ACTION)
     handlePartition(commentScanner, RoutePartitions.ROUTE_COMMENT)
-    //    handlePartition(scanner, RoutePartitionScanner.ROUTE_COMMENT)
 
     reconciler
+  }
+  
+  override def getContentFormatter(viewer: ISourceViewer) = {
+    val formatter = new MultiPassContentFormatter(getConfiguredDocumentPartitioning(viewer), IDocument.DEFAULT_CONTENT_TYPE)
+    formatter.setMasterStrategy(new RouteFormattingStrategy(routeEditor))
+    formatter
   }
 
   def handlePropertyChangeEvent(event: PropertyChangeEvent) {
