@@ -67,7 +67,7 @@ class RouteHyperlinkDetector(routeEditor: RouteEditor) extends IHyperlinkDetecto
 
   def findParameterTypes(document: String, endOfMethodNameIndex: Int): Array[String] = {
     val startIndex = document.indexOf("(", endOfMethodNameIndex)
-    if (startIndex == -1 || startIndex > document.indexOf("\n", endOfMethodNameIndex)) {
+    if (startIndex == -1 || {val nlIndex =document.indexOf("\n", endOfMethodNameIndex); startIndex > nlIndex && nlIndex != -1}) {
       return Array()
     }
     val endIndex = document.indexOf(")", endOfMethodNameIndex)

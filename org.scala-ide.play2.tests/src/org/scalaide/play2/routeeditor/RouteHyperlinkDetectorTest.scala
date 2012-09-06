@@ -49,7 +49,7 @@ class RouteHyperlinkDetectorTest {
 
   private def testForFindParameterTypes(document: String, expected: Array[String]) = {
     val r = detector.findWord(document, 0);
-    val endOfMethodNameIndex = r.getLength() + r.getOffset();
+    val endOfMethodNameIndex = r.getLength() + r.getOffset()
     val actual = detector.findParameterTypes(document, endOfMethodNameIndex)
     def sa2s = stringArrayToString _
     assertEquals("findParameterTypes() does not work", sa2s(expected), sa2s(actual))
