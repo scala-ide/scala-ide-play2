@@ -44,8 +44,6 @@ import org.eclipse.ui.editors.text.EditorsUI
 import org.eclipse.jface.viewers.ITreeContentProvider
 import org.eclipse.jface.viewers.LabelProvider
 
-//import SyntaxColouringPreviewText.ColouringLocation
-
 /**
  * @see org.eclipse.jdt.internal.ui.preferences.JavaEditorColoringConfigurationBlock
  */
@@ -267,7 +265,6 @@ class SyntaxColouringPreferencePage(allSyntaxClasses: List[ScalaSyntaxClass], de
       grabExcessVerticalSpace = true,
       widthHint = convertWidthInCharsToPixels(getTextWidth + 2),
       heightHint = convertHeightInCharsToPixels(12)))
-    updatePreviewerColours()
 
     setUpSelectionListeners()
 
@@ -278,9 +275,6 @@ class SyntaxColouringPreferencePage(allSyntaxClasses: List[ScalaSyntaxClass], de
   }
   
   private def setUpSelectionListeners() {
-    overlayStore.addPropertyChangeListener { event: PropertyChangeEvent =>
-      updatePreviewerColours()
-    }
     enabledCheckBox.addSelectionListener { () =>
       for (syntaxClass <- selectedSyntaxClass)
         overlayStore.setValue(syntaxClass.enabledKey, enabledCheckBox.getSelection)
@@ -349,9 +343,6 @@ class SyntaxColouringPreferencePage(allSyntaxClasses: List[ScalaSyntaxClass], de
       massSetEnablement(true)
       enabledCheckBox.setEnabled(canBeDisabled)
       syntaxBackgroundColorEditor.getButton.setEnabled(backgroundColorEnabled)
-  }
-
-  private def updatePreviewerColours() {
   }
 
 }

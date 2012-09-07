@@ -22,34 +22,24 @@ import org.scalaide.play2.routeeditor.lexical.RoutePartitions
 class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) extends SourceViewerConfiguration  with PropertyChangeHandler{
   val reconciler = new PresentationReconciler();
   val colorManager = new JavaColorManager()
-  private val routeDoubleClickStrategy: RouteDoubleClickStrategy =
-    new RouteDoubleClickStrategy()
-  private val scanner = {
-//    val result = new RouteScanner(prefStore, colorManager)
-//    result
+    
+  private val scanner = 
      new SingleTokenScanner(RouteSyntaxClasses.DEFAULT, colorManager, prefStore)
-  }
   
   private val httpScanner = 
     new SingleTokenScanner(RouteSyntaxClasses.HTTP_KEYWORD, colorManager, prefStore)
 
-  private val uriScanner: RouteURIScanner = {
-    val result = new RouteURIScanner(prefStore, colorManager)
-    result
-  }
+  private val uriScanner = 
+    new RouteURIScanner(prefStore, colorManager)
 
-  private val actionScanner: RouteActionScanner = {
-    val result = new RouteActionScanner(prefStore, colorManager)
-    result
-  }
+  private val actionScanner =
+    new RouteActionScanner(prefStore, colorManager)
 
-  private val commentScanner: SingleTokenScanner = {
-    val result = new SingleTokenScanner(RouteSyntaxClasses.COMMENT, colorManager, prefStore)
-    result
-  }
+  private val commentScanner = 
+    new SingleTokenScanner(RouteSyntaxClasses.COMMENT, colorManager, prefStore)
 
   override def getDoubleClickStrategy(sourceViewer: ISourceViewer, contentType: String) = {
-    routeDoubleClickStrategy
+    new RouteDoubleClickStrategy()
   }
 
   override def getConfiguredContentTypes(sourceViewer: ISourceViewer) = {

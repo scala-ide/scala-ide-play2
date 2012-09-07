@@ -8,6 +8,8 @@ object TemplateSyntaxClasses {
   val DEFAULT = ScalaSyntaxClass("Default", "template.default")
   val PLAIN = ScalaSyntaxClass("Plain", "template.plain")
   val COMMENT = ScalaSyntaxClass("Template Comment", "template.comment")
+  val MAGIC_AT = ScalaSyntaxClass("Template Magic @", "template.at")
+  val BRACE = ScalaSyntaxClass("Template Brace", "template.brace")
 
   val scalaCategory = Category("Scala", List(ScalaSyntaxClasses.KEYWORD,
     ScalaSyntaxClasses.STRING,
@@ -31,7 +33,7 @@ object TemplateSyntaxClasses {
     COMMENT))
 
   val otherCategory = Category("Other", List(
-    DEFAULT, PLAIN))
+    DEFAULT, PLAIN, MAGIC_AT, BRACE))
 
   val categories = List(scalaCategory, htmlCategory, commentsCategory, otherCategory)
 

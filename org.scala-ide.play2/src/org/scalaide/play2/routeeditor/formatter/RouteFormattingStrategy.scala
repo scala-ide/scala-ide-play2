@@ -130,10 +130,6 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
       List(new ReplaceEdit(httpEnd, httpSpaceLength, spaces(httpNeededLength)), 
           new ReplaceEdit(uriEnd, uriSpaceLength, spaces(uriNeededLength)))
     }
-    //    val eclipseEdits = List(
-    //        new ReplaceEdit(1, 1, "Hello"),
-    //        new ReplaceEdit(2, 1, "World")
-    //    )
     applyEdits(eclipseEdits)
   }
 

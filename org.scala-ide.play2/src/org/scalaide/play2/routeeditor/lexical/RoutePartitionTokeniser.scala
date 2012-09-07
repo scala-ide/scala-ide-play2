@@ -1,13 +1,15 @@
 package org.scalaide.play2.routeeditor.lexical
 
+import scala.collection.mutable.ArrayBuffer
 import scala.tools.eclipse.lexical.ScalaPartitionRegion
+
 import org.scalaide.play2.lexical.PlayPartitionTokeniser
+
+import RoutePartitions.ROUTE_ACTION
+import RoutePartitions.ROUTE_COMMENT
 import RoutePartitions.ROUTE_DEFAULT
 import RoutePartitions.ROUTE_HTTP
-import RoutePartitions.ROUTE_COMMENT
 import RoutePartitions.ROUTE_URI
-import RoutePartitions.ROUTE_ACTION
-import scala.collection.mutable.ArrayBuffer
 
 object RoutePartitionTokeniser extends PlayPartitionTokeniser {
 
