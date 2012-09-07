@@ -8,6 +8,7 @@ import org.eclipse.jface.resource.StringConverter
 import org.eclipse.swt.graphics.RGB
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.COMMENT
+import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.MAGIC_AT
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.DEFAULT
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.PLAIN
 
@@ -48,6 +49,7 @@ class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer 
     setDefaultsForSyntaxClass(COMMENT, commentColor)
     setDefaultsForSyntaxClass(PLAIN, new RGB(196, 0, 0))
     setDefaultsForSyntaxClass(DEFAULT, new RGB(0, 0, 0))
+    setDefaultsForSyntaxClass(MAGIC_AT, new RGB(128, 40, 128), bold = true)
 
     // Scala syntactic
     setDefaultsForSyntaxClass(ScalaSyntaxClasses.SINGLE_LINE_COMMENT, commentColor)

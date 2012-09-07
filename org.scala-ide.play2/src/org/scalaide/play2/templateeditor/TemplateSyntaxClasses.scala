@@ -8,6 +8,7 @@ object TemplateSyntaxClasses {
   val DEFAULT = ScalaSyntaxClass("Default", "template.default")
   val PLAIN = ScalaSyntaxClass("Plain", "template.plain")
   val COMMENT = ScalaSyntaxClass("Template Comment", "template.comment")
+  val MAGIC_AT = ScalaSyntaxClass("Template Magic @", "template.at")
 
   val scalaCategory = Category("Scala", List(ScalaSyntaxClasses.KEYWORD,
     ScalaSyntaxClasses.STRING,
