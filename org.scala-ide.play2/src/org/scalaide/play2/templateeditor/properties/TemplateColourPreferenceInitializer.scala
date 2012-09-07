@@ -11,6 +11,7 @@ import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.COMMENT
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.MAGIC_AT
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.DEFAULT
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.PLAIN
+import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.BRACE
 
 class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer {
 
@@ -49,7 +50,8 @@ class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer 
     setDefaultsForSyntaxClass(COMMENT, commentColor)
     setDefaultsForSyntaxClass(PLAIN, new RGB(196, 0, 0))
     setDefaultsForSyntaxClass(DEFAULT, new RGB(0, 0, 0))
-    setDefaultsForSyntaxClass(MAGIC_AT, new RGB(128, 40, 128), bold = true)
+    setDefaultsForSyntaxClass(MAGIC_AT, new RGB(180, 40, 160), bold = true)
+    setDefaultsForSyntaxClass(BRACE, new RGB(180, 100, 160), bold = true)
 
     // Scala syntactic
     setDefaultsForSyntaxClass(ScalaSyntaxClasses.SINGLE_LINE_COMMENT, commentColor)

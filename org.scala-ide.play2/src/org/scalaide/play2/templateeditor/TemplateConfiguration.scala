@@ -31,6 +31,7 @@ import org.eclipse.jface.text.contentassist.ContentAssistant
 import org.scalaide.play2.templateeditor.completion.CompletionProposalComputer
 import org.eclipse.jface.text.IDocument
 import org.scalaide.play2.properties.PropertyChangeHandler
+import org.scalaide.play2.templateeditor.lexical.TemplateDefaultScanner
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration with PropertyChangeHandler {
 
@@ -38,24 +39,16 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
   private val templateDoubleClickStrategy =
     new RouteDoubleClickStrategy()
 
-  private val defaultScanner = new SingleTokenScanner(TemplateSyntaxClasses.DEFAULT, colorManager, prefStore)
+//  private val defaultScanner = new SingleTokenScanner(TemplateSyntaxClasses.DEFAULT, colorManager, prefStore)
+  private val defaultScanner = new TemplateDefaultScanner(colorManager, prefStore)
   
-  private val plainScanner: SingleTokenScanner = {
-    val result = new SingleTokenScanner(TemplateSyntaxClasses.PLAIN, colorManager, prefStore)
-    result
-  }
-  private val scalaScanner: ScalaCodeScanner = {
-    val result = new ScalaCodeScanner(colorManager, prefStore, ScalaVersions.DEFAULT)
-    result
-  }
-  private val commentScanner: SingleTokenScanner = {
-    val result = new SingleTokenScanner(TemplateSyntaxClasses.COMMENT, colorManager, prefStore)
-    result
-  }
-  private val tagScanner: HtmlTagScanner = {
-    val result = new HtmlTagScanner(colorManager, prefStore)
-    result
-  }
+  private val plainScanner = new SingleTokenScanner(TemplateSyntaxClasses.PLAIN, colorManager, prefStore)
+
+  private val scalaScanner = new ScalaCodeScanner(colorManager, prefStore, ScalaVersions.DEFAULT)
+
+  private val commentScanner = new SingleTokenScanner(TemplateSyntaxClasses.COMMENT, colorManager, prefStore)
+
+  private val tagScanner = new HtmlTagScanner(colorManager, prefStore)
 
   override def getDoubleClickStrategy(sourceViewer: ISourceViewer, contentType: String) = {
     templateDoubleClickStrategy
