@@ -77,10 +77,6 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     assistant
   }
 
-  //  override def getHyperlinkDetectors(sourceViewer: ISourceViewer) = { TODO
-  //    Array(new RouteHyperlinkDetector(routeEditor));
-  //  }
-
   override def getPresentationReconciler(
     sourceViewer: ISourceViewer) = {
     val reconciler = super.getPresentationReconciler(sourceViewer).asInstanceOf[PresentationReconciler]

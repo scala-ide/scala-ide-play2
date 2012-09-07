@@ -31,15 +31,7 @@ object TemplatePartitionTokeniser extends PlayPartitionTokeniser{
         case DefaultCode(_) => TemplatePartitions.TEMPLATE_PLAIN
         case CommentCode(_) => TemplatePartitions.TEMPLATE_COMMENT
       }
-      // TODO a bit of hack for comment part. it should be removed!
-//      if (contentType != TemplatePartitions.TEMPLATE_COMMENT) {
-//        prevOffset = t.length + t.offset
         ScalaPartitionRegion(contentType, t.offset, t.length + t.offset - 1)
-//      } else {
-//        val offset = text.indexOf("@*", prevOffset)
-//        prevOffset = offset + t.length
-//        ScalaPartitionRegion(contentType, offset, offset + t.length - 1)
-//      }
     })
     tokens.filter(e => (e.start != -1 && e.contentType != TemplatePartitions.TEMPLATE_PLAIN)).sort((a, b) => a.start < b.start)
   }

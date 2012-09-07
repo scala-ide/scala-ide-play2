@@ -1,5 +1,7 @@
 package org.scalaide.play2.templateeditor
 
+import java.io.File
+
 import scala.tools.eclipse.InteractiveCompilationUnit
 import scala.tools.eclipse.ScalaPlugin
 import scala.tools.eclipse.ScalaPresentationCompiler
@@ -10,6 +12,7 @@ import scala.tools.nsc.interactive.Response
 import scala.tools.nsc.io.AbstractFile
 import scala.tools.nsc.util.BatchSourceFile
 import scala.tools.nsc.util.SourceFile
+
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IMarker
 import org.eclipse.core.resources.IResource
@@ -23,11 +26,9 @@ import org.eclipse.ui.texteditor.ITextEditor
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.PlayProject
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
-import org.eclipse.core.runtime.Path
-import java.io.File
 
 /**
- * A Script compilation unit connects the presentation compiler
+ * A Template compilation unit connects the presentation compiler
  *  view of a script with the Eclipse IDE view of the underlying
  *  resource.
  */
@@ -169,19 +170,6 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     scalax.file.Path(templateSourceFile.file).write(document.get.get)
   }
 
-  // these lines are for supporting javaHyperlinking XXX
-
-  //  def newSearchableEnvironment(workingCopyOwner : WorkingCopyOwner) : SearchableEnvironment = {
-  //    val getJavaProject = scalaProject.javaProject
-  //    val javaProject = getJavaProject.asInstanceOf[JavaProject]
-  //    javaProject.newSearchableNameEnvironment(workingCopyOwner)
-  //  }
-  //
-  //  def newSearchableEnvironment() : SearchableEnvironment =
-  //    newSearchableEnvironment(DefaultWorkingCopyOwner.PRIMARY)
-
-  // until here
-
 }
 
 object TemplateProblemMarker extends MarkerFactory(PlayPlugin.plugin.problemMarkerId)
@@ -191,7 +179,6 @@ object TemplateCompilationUnit {
   def fromFile(file: IFile) = {
     TemplateCompilationUnit.apply(file)
   }
-  //  val instance = new TemplateCompilationUnit(null)
   def fromEditorInput(editorInput: IEditorInput): Option[TemplateCompilationUnit] = {
     getFile(editorInput).map(fromFile)
   }
