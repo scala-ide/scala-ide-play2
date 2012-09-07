@@ -8,8 +8,10 @@ import org.eclipse.jface.resource.StringConverter
 import org.eclipse.swt.graphics.RGB
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.COMMENT
+import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.MAGIC_AT
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.DEFAULT
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.PLAIN
+import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.BRACE
 
 class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer {
 
@@ -46,10 +48,10 @@ class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer 
     val commentColor = new RGB(63, 127, 95)
     val scalaDefaultColor = new RGB(128, 128, 128)
     setDefaultsForSyntaxClass(COMMENT, commentColor)
-    //    setDefaultsForSyntaxClass(SCALA, scalaDefaultColor)
     setDefaultsForSyntaxClass(PLAIN, new RGB(196, 0, 0))
-    //    setDefaultsForSyntaxClass(TAG, new RGB(200, 0, 255))
     setDefaultsForSyntaxClass(DEFAULT, new RGB(0, 0, 0))
+    setDefaultsForSyntaxClass(MAGIC_AT, new RGB(180, 40, 160), bold = true)
+    setDefaultsForSyntaxClass(BRACE, new RGB(180, 100, 160), bold = true)
 
     // Scala syntactic
     setDefaultsForSyntaxClass(ScalaSyntaxClasses.SINGLE_LINE_COMMENT, commentColor)

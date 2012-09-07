@@ -60,7 +60,6 @@ object TemplateParsing {
 
   def handleScalaExpPart(scalaExpPart: ScalaExpPart with Positional): List[PlayTemplate] = scalaExpPart match {
     case s @ Simple(code: String) =>
-      //      List(ScalaCode(scalaExpPart))
       List(ScalaCode(fixFor(s)))
     case Block(whitespace: String, args: Option[PosString], content: Seq[TemplateTree]) =>
       args.map(ScalaCode(_)).toList ::: content.flatMap(handleTemplateTree).toList

@@ -25,11 +25,8 @@ import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitDocumentProvider.Pr
 class TemplateReconcilingStrategy(textEditor: /*ITextEditor*/ TemplateEditor) extends IReconcilingStrategy with HasLogger {
   private var document: IDocument = _
   private lazy val annotationModel = textEditor.getDocumentProvider.getAnnotationModel(textEditor.getEditorInput)
-  //  private val annotationModel = textEditor.retrieveSourceViewer.getAnnotationModel()
-  //  val annotationModel = new AnnotationModel()
 
   lazy val templateUnit = TemplateCompilationUnit.fromEditor(textEditor).get // we know the editor is a Template editor
-  //  val templateUnit = TemplateCompilationUnit.instance
 
   def setDocument(doc: IDocument) {
     document = doc
@@ -42,28 +39,14 @@ class TemplateReconcilingStrategy(textEditor: /*ITextEditor*/ TemplateEditor) ex
   }
 
   def reconcile(partition: IRegion) {
-//    textEditor.doSave(null)
     val errors = templateUnit.reconcile(document.get)
 
     updateErrorAnnotations(errors)
   }
 
   private var previousAnnotations = List[ProblemAnnotation]()
-  //  private var previousAnnotations = List[SimpleMarkerAnnotation]()
 
-  def createMarkerAnnotation(problem: IProblem) = {
-    /*
-     val markerType = PlayPlugin.plugin.problemMarkerId
-    val file = textEditor.getEditorInput().asInstanceOf[IFileEditorInput].getFile()
-    val marker = file.createMarker(markerType)
-    marker.setAttribute(IMarker.CHAR_START, problem.getSourceStart());
-    marker.setAttribute(IMarker.CHAR_END, problem.getSourceEnd() + 1);
-    marker.setAttribute(IMarker.LINE_NUMBER, problem.getSourceLineNumber());
-    //marker.setAttribute(IMarker.LOCATION, "#" + problem.getSourceLineNumber());
-    marker.setAttribute(IMarker.MESSAGE, problem.getMessage());
-    marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-    //    marker.setAttribute(IMarker.SOURCE_ID, JavaBuilder.SOURCE_ID);
-     */
+  def createMarkerAnnotation(problem: IProblem) {
     templateUnit.reportBuildError(problem.getMessage(), problem.getSourceStart(), problem.getSourceEnd(), problem.getSourceLineNumber())
   }
 
@@ -96,7 +79,6 @@ class TemplateReconcilingStrategy(textEditor: /*ITextEditor*/ TemplateEditor) ex
    */
   private object reloader extends IDocumentListener {
     def documentChanged(event: DocumentEvent) {
-//      templateUnit.askReload() //FIXME
       templateUnit.updateTemplateSourceFile()
       textEditor.getViewer.invalidateTextPresentation()
     }
