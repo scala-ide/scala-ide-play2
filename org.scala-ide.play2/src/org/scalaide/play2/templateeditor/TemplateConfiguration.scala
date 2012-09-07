@@ -32,12 +32,14 @@ import org.scalaide.play2.templateeditor.completion.CompletionProposalComputer
 import org.eclipse.jface.text.IDocument
 import org.scalaide.play2.properties.PropertyChangeHandler
 
-class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration with PropertyChangeHandler{
+class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration with PropertyChangeHandler {
 
   val colorManager = new JavaColorManager()
   private val templateDoubleClickStrategy =
     new RouteDoubleClickStrategy()
 
+  private val defaultScanner = new SingleTokenScanner(TemplateSyntaxClasses.DEFAULT, colorManager, prefStore)
+  
   private val plainScanner: SingleTokenScanner = {
     val result = new SingleTokenScanner(TemplateSyntaxClasses.PLAIN, colorManager, prefStore)
     result
@@ -67,7 +69,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     new DefaultAnnotationHover(true)
 
   }
-  
+
   override def getContentAssistant(sourceViewer: ISourceViewer): IContentAssistant = {
     val assistant = new ContentAssistant
     assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer))
@@ -86,6 +88,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
       reconciler.setDamager(dr, token);
       reconciler.setRepairer(dr, token);
     }
+    handlePartition(defaultScanner, TemplatePartitions.TEMPLATE_DEFAULT)
     handlePartition(plainScanner, TemplatePartitions.TEMPLATE_PLAIN)
     handlePartition(scalaScanner, TemplatePartitions.TEMPLATE_SCALA)
     handlePartition(commentScanner, TemplatePartitions.TEMPLATE_COMMENT)
