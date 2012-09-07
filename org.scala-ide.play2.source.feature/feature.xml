@@ -3,15 +3,14 @@
   id="org.scala-ide.play2.source.feature"
   label="Play 2 support in Scala IDE sources"
   version="0.1.0.qualifier"
-  provider-name="example.org">
+  provider-name="Scala IDE">
 
-  <description url="http://scala-ide.org/">
+  <description url="http://github.com/scala-ide/scala-ide-play2/wiki/Documentation">
      The source of Play 2 support in Scala IDE
   </description>
 
-   <copyright url="http://example.org/downloads/">
-      Copyright (C) 2012 Typesafe, Inc. 
-All rights reserved.
+   <copyright>
+      Copyright (C) 2012 Typesafe, Inc. All rights reserved.
    </copyright>
 
   <license url="http://www.apache.org/licenses/LICENSE-2.0.html">
@@ -203,7 +202,7 @@ All rights reserved.
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright [yyyy] [name of copyright owner]
+   Copyright 2012 Typesafe, Inc
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

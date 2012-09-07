@@ -3,16 +3,15 @@
       id="org.scala-ide.play2.feature"
       label="Play 2 support in Scala IDE"
       version="0.1.0.qualifier"
-      provider-name="org.scala-ide"
+      provider-name="Scala IDE"
       plugin="org.scala-ide.play2">
 
-   <description url="http://scala-ide.org">
+   <description url="http://github.com/scala-ide/scala-ide-play2/wiki/Documentation">
       Play 2 support in Scala IDE
    </description>
 
-   <copyright url="http://typesafe.com/">
-      Copyright (C) 2012 Typesafe, Inc. 
-All rights reserved.
+   <copyright>
+      Copyright (C) 2012 Typesafe, Inc. All rights reserved.
    </copyright>
 
    <license url="http://www.apache.org/licenses/LICENSE-2.0.html">
@@ -204,7 +203,7 @@ All rights reserved.
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright [yyyy] [name of copyright owner]
+   Copyright 2012 Typesafe, Inc
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -224,19 +223,7 @@ All rights reserved.
    </url>
 
    <requires>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.jface.text"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.ui.editors"/>
-      <import plugin="org.eclipse.ui.console"/>
-      <import plugin="org.eclipse.jdt.core"/>
-      <import plugin="org.eclipse.jdt.ui"/>
-      <import plugin="org.eclipse.jdt.launching"/>
-      <import plugin="org.eclipse.debug.ui"/>
-      <import plugin="org.eclipse.jdt.debug.ui"/>
-      <import plugin="org.eclipse.ui.forms"/>
-      <import plugin="org.scala-ide.sdt.core"/>
+      <import feature="org.scala-ide.sdt.feature"/>
    </requires>
 
    <plugin
