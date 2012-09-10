@@ -17,6 +17,7 @@
         <configuration>
           <testSuite>${project.artifactId}</testSuite>
           <testClass>org.scalaide.play2.RouteTestSuite</testClass>
+          <testClass>org.scalaide.play2.TemplateTestSuite</testClass>
         </configuration>
       </plugin>
     </plugins>
