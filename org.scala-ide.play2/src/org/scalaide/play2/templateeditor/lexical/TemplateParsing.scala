@@ -51,6 +51,9 @@ object TemplateParsing {
   def fixFor(s: Simple): Simple = {
     if (s.code.startsWith("for(")) {
       val indexOfYield = s.code.indexOf(" yield ")
+      if (indexOfYield == -1){
+        return s
+      }
       val newS = Simple(s.code.substring(0, indexOfYield))
       newS.pos = s.pos
       return newS
