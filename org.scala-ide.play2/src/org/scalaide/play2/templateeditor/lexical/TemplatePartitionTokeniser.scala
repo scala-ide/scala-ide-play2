@@ -30,7 +30,6 @@ object TemplatePartitionTokeniser extends PlayPartitionTokeniser {
   def getScalaCommentAndPlainRegions(text: String): (List[ScalaPartitionRegion], List[ScalaPartitionRegion]) = {
     val parts = TemplateParsing.handleTemplateCode(text)
     import TemplateParsing._
-    var prevOffset = 0
     val tokens: List[ScalaPartitionRegion] = parts.map(t => {
       val contentType = t match {
         case ScalaCode(_) => TemplatePartitions.TEMPLATE_SCALA
@@ -39,7 +38,7 @@ object TemplatePartitionTokeniser extends PlayPartitionTokeniser {
       }
       ScalaPartitionRegion(contentType, t.offset, t.length + t.offset - 1)
     })
-    val sortedUsefulRegions = tokens.filter(e => (e.start != -1)).sort((a, b) => a.start < b.start)
+    val sortedUsefulRegions = tokens.filter(e => (e.start != -1)&&(e.end >= e.start)).sort((a, b) => a.start < b.start)
     val plainRegions = sortedUsefulRegions.filter(e => e.contentType == TemplatePartitions.TEMPLATE_PLAIN)
     val scalaCommentRegions = sortedUsefulRegions.filter(e => e.contentType != TemplatePartitions.TEMPLATE_PLAIN)
     (scalaCommentRegions, plainRegions)
