@@ -53,6 +53,10 @@ class TemplatePartitionTokeniserTest {
 val x = "x string"
 }"""
     t(List(d(0, 0), s(1, 4), d(5, 8), s(9, 30)), p2)
+    // bug #18
+    // for statements without yield
+    val p3 = """@for()"""
+    t(List(d(0, 0), s(1, 5)), p3)
   }
 
   private def testForTokenise(expected: List[ScalaPartitionRegion], program: String)(implicit methodName: String) = {
