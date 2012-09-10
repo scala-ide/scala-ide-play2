@@ -48,7 +48,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
       def mapLine(line: Int) = gen.mapLine(line)
       problems map (p => p match {
         case problem: DefaultProblem => new DefaultProblem(
-          tcu.getTemplateFullPath,
+          tcu.getTemplateFullPath.toCharArray(),
           problem.getMessage(),
           problem.getID(),
           problem.getArguments(),
@@ -77,7 +77,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
         val severityLevel = ProblemSeverities.Error
         val message = e.getMessage()
         val p = new DefaultProblem(
-          tcu.getTemplateFullPath,
+          tcu.getTemplateFullPath.toCharArray(),
           message,
           0,
           new Array[String](0),
@@ -131,12 +131,13 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
 
 object ScalaFileManager {
   val scalaFile = new AutoHashMap[String, AbstractFile](fileName => {
-    EclipseResource.fromString(fileName) match {
-      case Some(v) => v match {
-        case ef @ EclipseFile(_) => ef
-        case _ => null
-      }
-      case None => null
-    }
+//    EclipseResource.fromString(fileName) match {
+//      case Some(v) => v match {
+//        case ef @ EclipseFile(_) => ef
+//        case _ => null
+//      }
+//      case None => null
+//    }
+    new VirtualFile(fileName)
   })
 }

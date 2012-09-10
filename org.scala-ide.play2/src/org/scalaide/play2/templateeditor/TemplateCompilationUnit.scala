@@ -1,7 +1,6 @@
 package org.scalaide.play2.templateeditor
 
 import java.io.File
-
 import scala.tools.eclipse.InteractiveCompilationUnit
 import scala.tools.eclipse.ScalaPlugin
 import scala.tools.eclipse.ScalaPresentationCompiler
@@ -12,7 +11,6 @@ import scala.tools.nsc.interactive.Response
 import scala.tools.nsc.io.AbstractFile
 import scala.tools.nsc.util.BatchSourceFile
 import scala.tools.nsc.util.SourceFile
-
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IMarker
 import org.eclipse.core.resources.IResource
@@ -26,6 +24,8 @@ import org.eclipse.ui.texteditor.ITextEditor
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.PlayProject
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
+import scala.tools.nsc.io.VirtualFile
+import java.io.PrintStream
 
 /**
  * A Template compilation unit connects the presentation compiler
@@ -39,30 +39,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
   override val file: AbstractFile = EclipseResource(workspaceFile)
 
   lazy val templateSourceFile = {
-    def relativePath(first: String, second: String) = {
-      first.substring(first.indexOf(second) + second.length())
-    }
-    // next line checks whether this resource is already the templateSourceFile for another template file or not,
-    // if it is so, it should return itself. Otherwise, it will create one templateSourceFile for it
-    if (file.file.getAbsolutePath().indexOf(playProject.sourceDir.getAbsolutePath()) != -1){
-      document.get.set("Please close this file")
-      file
-    }
-    else {
-      val relPath = relativePath(file.file.getAbsolutePath(), scalaProject.underlying.getFullPath().toString())
-      val fileName = playProject.sourceDir.getAbsolutePath() + relPath
-      val f = new File(fileName)
-      if (!f.exists()) {
-        scalax.file.Path(f).write(scalax.file.Path(file.file.getAbsoluteFile()).slurpString)
-      }
-      EclipseResource.fromString(fileName) match {
-        case Some(v) => v match {
-          case ef @ EclipseFile(_) => ef
-          case _ => null
-        }
-        case None => null
-      }
-    }
+    new VirtualFile(getTemplateFullPath)
   }
 
   override lazy val scalaProject = ScalaPlugin.plugin.asScalaProject(workspaceFile.getProject).get
@@ -70,7 +47,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
 
   def getTemplateName = workspaceFile.getName()
 
-  def getTemplateFullPath = file.file.getAbsolutePath().toCharArray
+  def getTemplateFullPath = file.file.getAbsolutePath()
 
   /** Return the compiler ScriptSourceFile corresponding to this unit. */
   override def sourceFile(contents: Array[Char]): SourceFile = {
@@ -167,7 +144,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
   }
 
   def updateTemplateSourceFile() = {
-    scalax.file.Path(templateSourceFile.file).write(document.get.get)
+    new PrintStream(templateSourceFile.output).print(document.get.get)
   }
 
 }
