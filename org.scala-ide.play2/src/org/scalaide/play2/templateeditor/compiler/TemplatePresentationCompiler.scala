@@ -19,19 +19,17 @@ import java.io.File
 import scala.tools.eclipse.util.EclipseFile
 import scala.tools.eclipse.util.EclipseResource
 import scala.tools.eclipse.ScalaPresentationCompiler
+import play.templates.GeneratedSourceVirtual
 
 class TemplatePresentationCompiler(playProject: PlayProject) {
   private val sourceFiles = new AutoHashMap((tcu: TemplateCompilationUnit) => tcu.sourceFile())
   def generatedSource(tcu: TemplateCompilationUnit) = {
-    //    val sourceFile = tcu.file.file.getAbsoluteFile() // TODO look more closely
-    val sourceFile = tcu.templateSourceFile.file.getAbsoluteFile()
-    val gen = CompilerUsing.compileTemplateToScala(sourceFile, playProject)
-    gen
+    CompilerUsing.compileTemplateToScalaVirtual(tcu.getTemplateContents.toString(), tcu.templateSourceFile.path, playProject)
   }
-  def scalaFileFromGen(gen: GeneratedSource) = {
+  def scalaFileFromGen(gen: GeneratedSourceVirtual) = {
     val fileName = gen.file.getAbsolutePath()
     val file = ScalaFileManager.scalaFile(fileName)
-    new BatchSourceFile(file, Path(gen.file).slurpString)
+    new BatchSourceFile(file, gen.content)
   }
 
   def scalaFileFromTCU(tcu: TemplateCompilationUnit) = {
