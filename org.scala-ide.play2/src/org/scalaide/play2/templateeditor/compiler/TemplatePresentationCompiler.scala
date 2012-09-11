@@ -87,6 +87,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
           1,
           1)
         List(p)
+        throw e // FIXME should be removed
       }
     }
   }

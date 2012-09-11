@@ -35,7 +35,7 @@ class PlayProject private (val scalaProject: ScalaProject) {
     presentationCompiler.destroy()
   }
 
-  lazy val sourceDir = new File(scalaProject.underlying.getLocation().toString() + "/target/test/src")
+  lazy val sourceDir = new File(scalaProject.underlying.getLocation().toString() + "/app/views")
   lazy val generatedDir = new File(scalaProject.underlying.getLocation().toString() + "/target/test/generated-templates")
   lazy val generatedClasses = new File(scalaProject.underlying.getLocation().toString() + "/target/test/generated-classes")
 }

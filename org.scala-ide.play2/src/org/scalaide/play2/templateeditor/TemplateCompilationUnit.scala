@@ -67,7 +67,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     })()
   }
 
-  def getTemplateContents: Array[Char] = document.map(_.get.toCharArray).getOrElse(scalax.file.Path(file.file).slurpString().toCharArray)
+  def getTemplateContents: String = document.map(_.get).getOrElse(scalax.file.Path(file.file).slurpString())
 
   /** no-op */
   override def scheduleReconcile(): Response[Unit] = {
@@ -98,7 +98,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     }
   }
 
-  def askReload(newContents: Array[Char] = getTemplateContents): Unit =
+  def askReload(newContents: Array[Char] = getTemplateContents.toCharArray): Unit =
     playProject.withPresentationCompiler { pc =>
       pc.askReload(this, newContents)
     }
