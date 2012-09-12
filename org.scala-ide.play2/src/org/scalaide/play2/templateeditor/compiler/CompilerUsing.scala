@@ -23,12 +23,12 @@ import play.api.mvc._
 import play.api.data._
 import views.html._"""
 
-  def compileTemplateToScalaVirtual(content: String, absolutePath: String, playProject: PlayProject) = {
+  def compileTemplateToScalaVirtual(content: String, source: File, playProject: PlayProject) = {
     val sourcePath = playProject.sourceDir.getAbsolutePath()
-    if (absolutePath.indexOf(sourcePath) == -1)
+    if (source.getAbsolutePath().indexOf(sourcePath) == -1)
       throw new Exception("Template files must locate in '" + sourcePath + "' or its subfolders!")
     try {
-      templateCompiler.compileVirtual(content, absolutePath, playProject.sourceDir.getAbsolutePath(), "play.api.templates.Html", "play.api.templates.HtmlFormat", additionalImports)
+      templateCompiler.compileVirtual(content, source, playProject.sourceDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", additionalImports)
     } catch {
       case e @ TemplateCompilationError(source: File, message: String, line: Int, column: Int) =>
         val offset = PositionHelper.convertLineColumnToOffset(content, line, column)
@@ -41,7 +41,7 @@ import views.html._"""
     //    val result = compile("a1.scala.html", playProject)
     //    val result = compileTemplateToScala(new File("/Users/shaikhha/Documents/workspace-new/asd/a1.scala.html"), playProject)
     val file1 = new File("/Users/shaikhha/Documents/workspace-new/asd/app/views/a/a1.scala.html")
-    val result = compileTemplateToScalaVirtual(Path(file1).slurpString, file1.getAbsolutePath(), playProject)
+    val result = compileTemplateToScalaVirtual(Path(file1).slurpString, file1, playProject)
     //    val result2 = compile("a2.scala.html", playProject)
     println(result.matrix)
     println(PositionHelper.mapSourcePosition(result.matrix, 58))

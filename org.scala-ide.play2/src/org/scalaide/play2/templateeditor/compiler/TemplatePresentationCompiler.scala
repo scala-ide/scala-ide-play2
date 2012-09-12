@@ -24,10 +24,10 @@ import play.templates.GeneratedSourceVirtual
 class TemplatePresentationCompiler(playProject: PlayProject) {
   private val sourceFiles = new AutoHashMap((tcu: TemplateCompilationUnit) => tcu.sourceFile())
   def generatedSource(tcu: TemplateCompilationUnit) = {
-    CompilerUsing.compileTemplateToScalaVirtual(tcu.getTemplateContents.toString(), tcu.templateSourceFile.path, playProject)
+    CompilerUsing.compileTemplateToScalaVirtual(tcu.getTemplateContents.toString(), tcu.file.file, playProject)
   }
   def scalaFileFromGen(gen: GeneratedSourceVirtual) = {
-    val fileName = gen.file.getAbsolutePath()
+    val fileName = gen.path
     val file = ScalaFileManager.scalaFile(fileName)
     new BatchSourceFile(file, gen.content)
   }
