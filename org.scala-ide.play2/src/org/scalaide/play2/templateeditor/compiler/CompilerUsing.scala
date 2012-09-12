@@ -72,14 +72,15 @@ object PositionHelper {
   }
 
   def mapSourcePosition(matrix: Seq[(Int, Int)], sourcePosition: Int): Int = {
-    matrix.indexWhere(p => p._2 > sourcePosition) match {
+    val sortedMatrix = matrix.sortBy(_._2)
+    sortedMatrix.indexWhere(p => p._2 > sourcePosition) match {
       case 0 => 0
       case i if i > 0 => {
-        val pos = matrix(i - 1)
+        val pos = sortedMatrix(i - 1)
         pos._1 + (sourcePosition - pos._2)
       }
       case _ => {
-        val pos = matrix.takeRight(1)(0)
+        val pos = sortedMatrix.takeRight(1)(0)
         pos._1 + (sourcePosition - pos._2)
       }
     }
