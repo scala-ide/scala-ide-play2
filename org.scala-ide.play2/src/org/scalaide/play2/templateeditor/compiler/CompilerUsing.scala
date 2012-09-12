@@ -8,7 +8,7 @@ import play.templates.TemplateCompilationError
 import scalax.file.Path
 import org.scalaide.play2.PlayProject
 
-object CompilerUsing{
+object CompilerUsing {
   val templateCompiler = ScalaTemplateCompiler
   val additionalImports = """import play.templates._
 import play.templates.TemplateMagic._
@@ -23,48 +23,30 @@ import play.api.mvc._
 import play.api.data._
 import views.html._"""
 
-  def compileTemplateToScala(templateFile: File, playProject: PlayProject) = {
-    import playProject.{generatedClasses, /*sourceDir, */generatedDir}
-    val sourceDir = templateFile.getParentFile()
-    try {
-      templateCompiler.compile(templateFile, sourceDir, generatedDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", additionalImports) match {
-        case Some(generated) => GeneratedSource(generated)
-        case _ => generatedFile(templateFile, sourceDir, generatedDir)._2
-      }
-    } catch {
-      case TemplateCompilationError(source: File, message: String, line: Int, column: Int) =>
-        val offset = PositionHelper.convertLineColumnToOffset(source, line, column)
-        throw new TemplateToScalaCompilationError(source, message, offset, line, column)
-    }
-  }
-  
   def compileTemplateToScalaVirtual(content: String, absolutePath: String, playProject: PlayProject) = {
+    val sourcePath = playProject.sourceDir.getAbsolutePath()
+    if (absolutePath.indexOf(sourcePath) == -1)
+      throw new Exception("Template files must locate in '" + sourcePath + "' or its subfolders!")
     try {
       templateCompiler.compileVirtual(content, absolutePath, playProject.sourceDir.getAbsolutePath(), "play.api.templates.Html", "play.api.templates.HtmlFormat", additionalImports)
     } catch {
-      case e@TemplateCompilationError(source: File, message: String, line: Int, column: Int) =>
+      case e @ TemplateCompilationError(source: File, message: String, line: Int, column: Int) =>
         val offset = PositionHelper.convertLineColumnToOffset(content, line, column)
         throw new TemplateToScalaCompilationError(source, message, offset, line, column)
     }
   }
 
-  def compile(templateName: String, playProject: PlayProject) = {
-    import playProject.sourceDir
-    val templateFile = new File(sourceDir, templateName)
-    compileTemplateToScala(templateFile, playProject)
-  }
-
   def main(args: Array[String]): Unit = {
     val playProject = PlayProject(null)
-//    val result = compile("a1.scala.html", playProject)
-//    val result = compileTemplateToScala(new File("/Users/shaikhha/Documents/workspace-new/asd/a1.scala.html"), playProject)
+    //    val result = compile("a1.scala.html", playProject)
+    //    val result = compileTemplateToScala(new File("/Users/shaikhha/Documents/workspace-new/asd/a1.scala.html"), playProject)
     val file1 = new File("/Users/shaikhha/Documents/workspace-new/asd/app/views/a/a1.scala.html")
     val result = compileTemplateToScalaVirtual(Path(file1).slurpString, file1.getAbsolutePath(), playProject)
-//    val result2 = compile("a2.scala.html", playProject)
+    //    val result2 = compile("a2.scala.html", playProject)
     println(result.matrix)
     println(PositionHelper.mapSourcePosition(result.matrix, 58))
-//    println(result.content)
-//    println(result2.matrix)
+    //    println(result.content)
+    //    println(result2.matrix)
     TemplateAsFunctionCompiler.CompilerInstance.compiler.askShutdown
   }
 
@@ -78,7 +60,7 @@ object PositionHelper {
   def convertLineColumnToOffset(source: File, line: Int, column: Int): Int = {
     convertLineColumnToOffset(Path(source).slurpString, line, column)
   }
-  
+
   def convertLineColumnToOffset(content: String, line: Int, column: Int): Int = {
     // splitting the string will cause some problems
     var offset = 0
@@ -88,18 +70,18 @@ object PositionHelper {
     offset += column - 1
     offset
   }
-  
+
   def mapSourcePosition(matrix: Seq[(Int, Int)], sourcePosition: Int): Int = {
-      matrix.indexWhere(p => p._2 > sourcePosition) match {
-        case 0 => 0
-        case i if i > 0 => {
-          val pos = matrix(i - 1)
-          pos._1 + (sourcePosition - pos._2)
-        }
-        case _ => {
-          val pos = matrix.takeRight(1)(0)
-          pos._1 + (sourcePosition - pos._2)
-        }
+    matrix.indexWhere(p => p._2 > sourcePosition) match {
+      case 0 => 0
+      case i if i > 0 => {
+        val pos = matrix(i - 1)
+        pos._1 + (sourcePosition - pos._2)
+      }
+      case _ => {
+        val pos = matrix.takeRight(1)(0)
+        pos._1 + (sourcePosition - pos._2)
       }
     }
+  }
 }
