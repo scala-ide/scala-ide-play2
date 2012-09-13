@@ -18,6 +18,7 @@ import org.scalaide.play2.properties.PropertyChangeHandler
 import org.eclipse.jface.text.formatter.MultiPassContentFormatter
 import org.scalaide.play2.routeeditor.formatter.RouteFormattingStrategy
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions
+import org.scalaide.play2.routeeditor.hyperlink.RouteHyperlinkDetector
 
 class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) extends SourceViewerConfiguration  with PropertyChangeHandler{
   val reconciler = new PresentationReconciler();

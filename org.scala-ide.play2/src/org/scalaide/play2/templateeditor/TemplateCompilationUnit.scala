@@ -38,6 +38,10 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
 
   override val file: AbstractFile = EclipseResource(workspaceFile)
 
+  /**
+   * A virtual file which is in synch with content of the document
+   * in order not to use a temporary real file
+   */
   lazy val templateSourceFile = {
     new VirtualFile(getTemplateFullPath)
   }
@@ -61,12 +65,18 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
 
   override def exists(): Boolean = true
 
+  /**
+   * Return contents of generated scala file
+   */
   override def getContents: Array[Char] = {
     withSourceFile({ (sourceFile, compiler) =>
       sourceFile.content
     })()
   }
 
+  /**
+   * Return contents of template file
+   */
   def getTemplateContents: String = document.map(_.get).getOrElse(scalax.file.Path(file.file).slurpString())
 
   /** no-op */
@@ -107,7 +117,6 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     playProject.withSourceFile(this)(op)
   }
 
-  // TODO should be cleaner
   override def withSourceFile[T](op: (SourceFile, ScalaPresentationCompiler) => T)(orElse: => T = scalaProject.defaultOrElse): T = {
     playProject.withSourceFile(this)(op)
   }
@@ -119,6 +128,8 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
   def reportBuildError(errorMsg: String, start: Int, end: Int, line: Int): Unit = {
     reportBuildError(errorMsg, new Position(start, end - start + 1), line)
   }
+  
+  
   def reportBuildError(errorMsg: String, position: Position, line: Int): Unit = {
     def positionConvertor(position: Position, line: Int) = {
       MarkerFactory.RegionPosition(position.offset, position.length, line)
@@ -127,15 +138,20 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     TemplateProblemMarker.create(workspaceFile, IMarker.SEVERITY_ERROR, errorMsg, pos)
   }
 
+  /**
+   * maps a region in template file into generated scala file
+   */
   def mapTemplateToScalaRegion(region: Region) = {
     synchronized {
       val offset = mapTemplateToScalaOffset(region.getOffset())
-      // TODO it is changed a little!
       val end = mapTemplateToScalaOffset(region.getOffset() + region.getLength() - 1)
       new Region(offset, end - offset + 1)
     }
   }
 
+  /**
+   * maps an offset in template file into generated scala file
+   */
   def mapTemplateToScalaOffset(offset: Int) = {
     playProject.withPresentationCompiler { pc =>
       val gen = pc.generatedSource(this)
@@ -143,6 +159,9 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     }
   }
 
+  /**
+   * updates template virtual file
+   */
   def updateTemplateSourceFile() = {
     new PrintStream(templateSourceFile.output).print(document.get.get)
   }

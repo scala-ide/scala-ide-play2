@@ -1,4 +1,4 @@
-package org.scalaide.play2.routeeditor
+package org.scalaide.play2.routeeditor.hyperlink
 
 import scala.tools.eclipse.testsetup.TestProjectSetup
 import org.junit.Test

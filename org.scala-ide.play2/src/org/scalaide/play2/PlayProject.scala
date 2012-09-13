@@ -22,6 +22,9 @@ class PlayProject private (val scalaProject: ScalaProject) {
     }
   }
 
+  /**
+   * Tries to load the scala template files
+   */
   def initialize() {
     val templateCompilationUnits = for (
       r <- scalaProject.underlying.members() if r.isInstanceOf[IFile] if r.getFullPath().toString().endsWith(PlayPlugin.plugin.templateExtension)
@@ -35,6 +38,9 @@ class PlayProject private (val scalaProject: ScalaProject) {
     presentationCompiler.destroy()
   }
 
+  /**
+   * It has the source directory of scala template files
+   */
   lazy val sourceDir = new File(scalaProject.underlying.getLocation().toString() + "/app/views")
 }
 

@@ -1,4 +1,4 @@
-package org.scalaide.play2.routeeditor
+package org.scalaide.play2.routeeditor.hyperlink
 
 import scala.Array.canBuildFrom
 import org.eclipse.jdt.internal.ui.javaeditor.JavaElementHyperlink
@@ -12,6 +12,8 @@ import org.eclipse.jface.text.hyperlink.IHyperlinkDetector
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions
 import org.scalaide.play2.routeeditor.tools.MethodFinder
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions
+import org.scalaide.play2.routeeditor.RouteEditor
+import scala.Array.apply
 
 class RouteHyperlinkDetector(routeEditor: RouteEditor) extends IHyperlinkDetector {
   override def detectHyperlinks(textViewer: ITextViewer,

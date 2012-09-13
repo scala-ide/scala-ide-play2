@@ -17,10 +17,16 @@ object ScalaPartitionRegionUtils {
     AdvancedScalaPartitionRegionList(spr)
   }
 
+  /**
+   * Intersects between two lists of regions
+   */
   def intersect(a: List[ScalaPartitionRegion], b: List[ScalaPartitionRegion]): List[ScalaPartitionRegion] = {
     subtract(a, subtract(a, b))
   }
 
+  /**
+   * Subtracts a list of regions from another one 
+   */
   def subtract(a: List[ScalaPartitionRegion], b: List[ScalaPartitionRegion]): List[ScalaPartitionRegion] = {
     (a, b) match {
       case (x :: xs, y :: ys) =>
@@ -76,6 +82,10 @@ object ScalaPartitionRegionUtils {
     }
   }
 
+  /**
+   * Unions two lists of regions
+   * The lists must have no intersection
+   */
   def union(a: List[ScalaPartitionRegion], b: List[ScalaPartitionRegion]): List[ScalaPartitionRegion] = {
     merge[ScalaPartitionRegion](a, b, ((x, y) => x.start < y.start))
   }
