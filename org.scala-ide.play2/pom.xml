@@ -20,7 +20,7 @@
     <dependency>
       <groupId>play</groupId>
       <artifactId>templates_2.9.2</artifactId>
-      <version>2.1-08292012</version>
+      <version>2.1-09142012</version>
     </dependency>
     <dependency>
       <groupId>com.github.scala-incubator.io</groupId>
