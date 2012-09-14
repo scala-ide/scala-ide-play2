@@ -7,7 +7,9 @@ import org.eclipse.jface.text.rules.IWordDetector
 import org.eclipse.jface.text.rules.WordRule
 import org.scalaide.play2.routeeditor.RouteSyntaxClasses.URI
 import org.scalaide.play2.routeeditor.RouteSyntaxClasses.URI_DYNAMIC
-
+/**
+ * scanner for URI part of route file
+ */
 class RouteURIScanner(prefStore: IPreferenceStore, manager: IColorManager) extends AbstractRouteScanner(URI, prefStore, manager) {
   def dynamic = getToken(URI_DYNAMIC)
 

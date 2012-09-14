@@ -12,6 +12,7 @@ import scala.tools.eclipse.ScalaHover
 class TemplateHover(tcu: TemplateCompilationUnit) extends ScalaHover(tcu) {
 
   override def getHoverInfo(viewer: ITextViewer, region: IRegion): String = {
+    // maps the region to scala generated source
     val mappedRegion = tcu.mapTemplateToScalaRegion(region.asInstanceOf[Region])
     super.getHoverInfo(viewer, mappedRegion)
   }

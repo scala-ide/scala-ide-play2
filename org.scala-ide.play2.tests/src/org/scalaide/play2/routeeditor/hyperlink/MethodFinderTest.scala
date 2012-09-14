@@ -1,4 +1,4 @@
-package org.scalaide.play2.routeeditor.tools
+package org.scalaide.play2.routeeditor.hyperlink
 
 import org.junit.Test
 import org.junit.Assert._
@@ -7,6 +7,9 @@ import org.eclipse.jdt.core.IJavaElement
 import MethodFinder._
 import org.eclipse.jdt.core.IMethod
 import org.eclipse.jdt.core.Signature
+import org.junit.Test
+import scala.Array.apply
+import scala.Array.canBuildFrom
 
 object MethodFinderTest extends TestProjectSetup("aProject", bundleName = "org.scala-ide.play2.tests")
 

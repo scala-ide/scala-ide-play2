@@ -23,7 +23,10 @@ class RouteEditor extends TextEditor {
     PlayPlugin.prefStore.removePropertyChangeListener(preferenceListener)
   }
   
-    override def initializeKeyBindingScopes() {
+  /**
+   * It is necessary for binding ctrl+shift+f to formatting
+   */
+  override def initializeKeyBindingScopes() {
     setKeyBindingScopes(Array("org.scala-ide.play2.routeeditor.editorScope"))
   }
 

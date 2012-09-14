@@ -17,6 +17,9 @@ import scala.util.parsing.input.Positional
 import scala.util.parsing.input.OffsetPosition
 import scala.util.parsing.input.NoPosition
 
+/**
+ * A helper for using tmeplate parser
+ */
 object TemplateParsing {
   implicit def stringToCharSeq(str: String) = new CharSequenceReader(str)
   val compiler = ScalaTemplateCompiler
@@ -96,6 +99,9 @@ object TemplateParsing {
       namePart ::: commentPart ::: paramsPart ::: importsPart ::: defsPart ::: subsPart ::: contentPart
   }
 
+  /**
+   * Returns list of different types of region of the template code
+   */
   def handleTemplateCode(templateCode: String) = {
     val result = parser.parser(templateCode) match {
       case parser.Success(p, _) =>

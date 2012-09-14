@@ -4,7 +4,9 @@ import org.eclipse.jface.text.rules.ICharacterScanner
 import org.eclipse.jface.text.rules.IRule
 import org.eclipse.jface.text.rules.IToken
 import org.eclipse.jface.text.rules.Token
-
+/**
+ * A rule for identifying a method name or package name 
+ */
 class MethodPackageRule(packageToken: IToken, methodToken: IToken) extends IRule {
   sealed class PackageReadingState(i: Int)
   case object Middle extends PackageReadingState(0)

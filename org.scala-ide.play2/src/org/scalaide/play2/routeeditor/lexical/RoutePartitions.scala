@@ -2,7 +2,6 @@ package org.scalaide.play2.routeeditor.lexical
 
 import org.eclipse.jface.text.IDocument
 
-
 object RoutePartitions {
   val ROUTE_PARTITIONING = "___route_partitioning"
   val ROUTE_URI = "__route_uri"

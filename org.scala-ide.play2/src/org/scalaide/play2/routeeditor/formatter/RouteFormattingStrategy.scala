@@ -25,7 +25,9 @@ import org.scalaide.play2.routeeditor.lexical.RoutePartitions.ROUTE_COMMENT
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions.ROUTE_DEFAULT
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions.ROUTE_HTTP
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions.ROUTE_URI
-
+/**
+ * formatter of route files
+ */
 class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrategy with IFormattingStrategyExtension {
 
   private var document: IDocument = _
@@ -37,8 +39,17 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
     this.regionOpt = Option(context.getProperty(FormattingContextProperties.CONTEXT_REGION).asInstanceOf[IRegion])
   }
 
+  /**
+   * a helper class for each line of code
+   */
   case class Route(httpVerb: Option[ScalaPartitionRegion], uri: Option[ScalaPartitionRegion], action: Option[ScalaPartitionRegion])
 
+  /**
+   * Returns lines of code which should be formatted.
+   * Formatted lines are the lines which are complete, which means
+   * have all 3 parts.
+   * @param regions     all of regions of route file
+   */
   def getRoutes(regions: List[ScalaPartitionRegion]): List[Route] = {
     val routes = new ArrayBuffer[Route]
     sealed trait State

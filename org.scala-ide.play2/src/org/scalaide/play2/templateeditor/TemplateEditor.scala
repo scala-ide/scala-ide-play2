@@ -51,15 +51,10 @@ class TemplateEditor extends TextEditor with ISourceViewerEditor with Interactiv
 
   PlayPlugin.prefStore.addPropertyChangeListener(preferenceListener)
 
-  override def createSourceViewer(parent: Composite, verticalRuler: IVerticalRuler, styles: Int) = {
-    super.createSourceViewer(parent, verticalRuler, styles)
-  }
-  
   override def editorSaved() = {
     super.editorSaved()
     sourceViewConfiguration.strategy.reconcile(null)
   }
-  
   
   def getViewer: ISourceViewer = getSourceViewer
   

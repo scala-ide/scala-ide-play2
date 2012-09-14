@@ -9,7 +9,9 @@ import org.scalaide.play2.routeeditor.RouteSyntaxClasses.ACTION
 import org.scalaide.play2.routeeditor.RouteSyntaxClasses.ACTION_CLASS
 import org.scalaide.play2.routeeditor.RouteSyntaxClasses.ACTION_METHOD
 import org.scalaide.play2.routeeditor.RouteSyntaxClasses.ACTION_PACKAGE
-
+/**
+ * scanner for action part of route file
+ */
 class RouteActionScanner(prefStore: IPreferenceStore, manager: IColorManager) extends AbstractRouteScanner(ACTION, prefStore, manager) {
 
   val packageToken = getToken(ACTION_PACKAGE);

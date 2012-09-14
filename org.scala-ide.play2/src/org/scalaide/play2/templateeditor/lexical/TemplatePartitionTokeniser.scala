@@ -19,16 +19,22 @@ import org.scalaide.play2.util.ScalaPartitionRegionUtils.advanceScalaPartitionRe
 
 object TemplatePartitionTokeniser extends PlayPartitionTokeniser {
 
-  def getXMLTagRegions(text: String): List[ScalaPartitionRegion] = {
-    val toks = ScalaPartitionTokeniser.tokenise(text)
+  /**
+   * calculates XML tag regions by using scala partition tokensier
+   */
+  def getXMLTagRegions(templateCode: String): List[ScalaPartitionRegion] = {
+    val toks = ScalaPartitionTokeniser.tokenise(templateCode)
     val newToks = toks.filter(_.contentType == ScalaPartitions.XML_TAG).map(t => {
       ScalaPartitionRegion(TemplatePartitions.TEMPLATE_TAG, t.start, t.end)
     })
     newToks
   }
 
-  def getScalaCommentAndPlainRegions(text: String): (List[ScalaPartitionRegion], List[ScalaPartitionRegion]) = {
-    val parts = TemplateParsing.handleTemplateCode(text)
+  /**
+   * calculates scala, comment, and plain regions using template parser
+   */
+  def getScalaCommentAndPlainRegions(templateCode: String): (List[ScalaPartitionRegion], List[ScalaPartitionRegion]) = {
+    val parts = TemplateParsing.handleTemplateCode(templateCode)
     import TemplateParsing._
     val tokens: List[ScalaPartitionRegion] = parts.map(t => {
       val contentType = t match {
@@ -44,23 +50,29 @@ object TemplatePartitionTokeniser extends PlayPartitionTokeniser {
     (scalaCommentRegions, plainRegions)
   }
 
-  
-
-  def calculateAllRegions(xmlTagPlainRegions: List[ScalaPartitionRegion], scalaCommentRegions: List[ScalaPartitionRegion], plainWithoutXmlTagRegions: List[ScalaPartitionRegion], text: String): List[ScalaPartitionRegion] = {
+  /**
+   * calculates the template partitions.
+   * 
+   * @param xmlTagPlainRegions 			tags which are plain text, which means are represented to user
+   * @param scalaCommentRegions			scala and comment regions
+   * @param plainWithoutXmlTagRegions 	plain texts which are not part of tag
+   * @param templateCode				template code which we'd like to tokenise
+   */
+  def calculateAllRegions(xmlTagPlainRegions: List[ScalaPartitionRegion], scalaCommentRegions: List[ScalaPartitionRegion], plainWithoutXmlTagRegions: List[ScalaPartitionRegion], templateCode: String): List[ScalaPartitionRegion] = {
     def defaultRegion(start: Int, end: Int) =
       ScalaPartitionRegion(TemplatePartitions.TEMPLATE_DEFAULT, start, end)
     val allRegions = (xmlTagPlainRegions U scalaCommentRegions) U plainWithoutXmlTagRegions
-    val globalRegion = defaultRegion(0, text.length() - 1)
+    val globalRegion = defaultRegion(0, templateCode.length() - 1)
     val defaultRegions = List(globalRegion) \ allRegions
     allRegions U defaultRegions
   }
 
-  def tokenise(text: String): List[ScalaPartitionRegion] = {
-    val xmlTagRegions = getXMLTagRegions(text)
-    val (scalaCommentRegions, plainRegions) = getScalaCommentAndPlainRegions(text)
+  def tokenise(templateCode: String): List[ScalaPartitionRegion] = {
+    val xmlTagRegions = getXMLTagRegions(templateCode)
+    val (scalaCommentRegions, plainRegions) = getScalaCommentAndPlainRegions(templateCode)
     val xmlTagPlainRegions = xmlTagRegions ^ plainRegions
     val plainWithoutXmlTagRegions = plainRegions \ xmlTagRegions
-    calculateAllRegions(xmlTagPlainRegions, scalaCommentRegions, plainWithoutXmlTagRegions, text)
+    calculateAllRegions(xmlTagPlainRegions, scalaCommentRegions, plainWithoutXmlTagRegions, templateCode)
   }
 
 }

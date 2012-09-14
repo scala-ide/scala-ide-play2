@@ -46,6 +46,13 @@ import org.eclipse.jface.viewers.LabelProvider
 
 /**
  * @see org.eclipse.jdt.internal.ui.preferences.JavaEditorColoringConfigurationBlock
+ * Constructs the preference page for syntax coloring.
+ * 
+ * @param allSyntaxClasses all of the syntax classes which we'd like to configure
+ * @param defaultCategory the category which is selected when the page is opened
+ * @param labelContentProvider provides tree view of categories and syntax classes
+ * @param initialText the text which is displayed in previewer
+ * @param previewerFactory creates the preview part
  */
 class SyntaxColouringPreferencePage(allSyntaxClasses: List[ScalaSyntaxClass], defaultCategory: Category, labelContentProvider: PlayTypes.LabelContentProvider, initialText: String, previewerFactory: PreviewerFactory ) extends PreferencePage with IWorkbenchPreferencePage {
   lazy val preferenceStore = new ChainedPreferenceStore(Array(PlayPlugin.prefStore, EditorsUI.getPreferenceStore))

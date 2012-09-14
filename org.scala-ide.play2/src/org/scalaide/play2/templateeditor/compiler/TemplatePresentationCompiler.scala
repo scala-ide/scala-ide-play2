@@ -20,18 +20,36 @@ import scala.tools.eclipse.util.EclipseFile
 import scala.tools.eclipse.util.EclipseResource
 import scala.tools.eclipse.ScalaPresentationCompiler
 import play.templates.GeneratedSourceVirtual
-
+/**
+ * presentation compiler for template files
+ */
 class TemplatePresentationCompiler(playProject: PlayProject) {
+  /**
+   * A map between compilation units and associated batch source files
+   */
   private val sourceFiles = new AutoHashMap((tcu: TemplateCompilationUnit) => tcu.sourceFile())
+  
+  /**
+   * Returns generated source of the given compilation unit
+   */
   def generatedSource(tcu: TemplateCompilationUnit) = {
     CompilerUsing.compileTemplateToScalaVirtual(tcu.getTemplateContents.toString(), tcu.file.file, playProject)
   }
+  
+  /**
+   * Returns scala batch source file (which is a virtual file) associated to
+   * the given generated source.
+   */
   def scalaFileFromGen(gen: GeneratedSourceVirtual) = {
     val fileName = gen.path
     val file = ScalaFileManager.scalaFile(fileName)
     new BatchSourceFile(file, gen.content)
   }
 
+  /**
+   * Returns scala batch source file (which is a virtual file) which is 
+   * the result of compiling the given template compilation unit
+   */
   def scalaFileFromTCU(tcu: TemplateCompilationUnit) = {
     val gen = generatedSource(tcu)
     scalaFileFromGen(gen)
@@ -47,6 +65,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
       def mapOffset(offset: Int) = gen.mapPosition(offset)
       def mapLine(line: Int) = gen.mapLine(line)
       problems map (p => p match {
+        // problems of the generated scala file
         case problem: DefaultProblem => new DefaultProblem(
           tcu.getTemplateFullPath.toCharArray(),
           problem.getMessage(),
@@ -59,6 +78,8 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
           1)
       })
     } catch {
+      // template file could not be compiled to scala file. So now there is only a single
+      // problem which is the thrown exception
       case TemplateToScalaCompilationError(source, message, offset, line, column) => {
         val severityLevel = ProblemSeverities.Error
         val p = new DefaultProblem(
@@ -73,6 +94,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
           column)
         List(p)
       }
+      // any other exception will be shown at first character of document
       case e: Exception => {
         val severityLevel = ProblemSeverities.Error
         val message = e.getMessage()
@@ -115,7 +137,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
         })
       })()
     } catch {
-      case _ => // TODO think more!
+      case _ => 
     }
   }
 
@@ -131,13 +153,6 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
 
 object ScalaFileManager {
   val scalaFile = new AutoHashMap[String, AbstractFile](fileName => {
-//    EclipseResource.fromString(fileName) match {
-//      case Some(v) => v match {
-//        case ef @ EclipseFile(_) => ef
-//        case _ => null
-//      }
-//      case None => null
-//    }
     new VirtualFile(fileName)
   })
 }

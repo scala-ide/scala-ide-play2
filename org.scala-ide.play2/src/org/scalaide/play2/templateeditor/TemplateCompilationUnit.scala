@@ -29,7 +29,7 @@ import java.io.PrintStream
 
 /**
  * A Template compilation unit connects the presentation compiler
- *  view of a script with the Eclipse IDE view of the underlying
+ *  view of a tmeplate with the Eclipse IDE view of the underlying
  *  resource.
  */
 case class TemplateCompilationUnit(val workspaceFile: IFile) extends InteractiveCompilationUnit {

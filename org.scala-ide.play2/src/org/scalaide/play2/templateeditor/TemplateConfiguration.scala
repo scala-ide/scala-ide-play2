@@ -39,7 +39,6 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
   private val templateDoubleClickStrategy =
     new RouteDoubleClickStrategy()
 
-//  private val defaultScanner = new SingleTokenScanner(TemplateSyntaxClasses.DEFAULT, colorManager, prefStore)
   private val defaultScanner = new TemplateDefaultScanner(colorManager, prefStore)
   
   private val plainScanner = new SingleTokenScanner(TemplateSyntaxClasses.PLAIN, colorManager, prefStore)
@@ -58,11 +57,16 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     TemplatePartitions.getTypes()
   }
 
+  /**
+   * Necessary for hover over annotations
+   */
   override def getAnnotationHover(viewer: ISourceViewer): IAnnotationHover = {
     new DefaultAnnotationHover(true)
-
   }
 
+  /**
+   * Necessary for code completion
+   */
   override def getContentAssistant(sourceViewer: ISourceViewer): IContentAssistant = {
     val assistant = new ContentAssistant
     assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer))

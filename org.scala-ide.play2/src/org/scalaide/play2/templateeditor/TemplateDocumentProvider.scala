@@ -18,9 +18,4 @@ class TemplateDocumentProvider extends FileDocumentProvider/* with IAnnotationMo
     document
   }
 
-  override def getAnnotationModel(element: Object) = {
-    val result = super.getAnnotationModel(element)
-    result
-  }
-
 } 

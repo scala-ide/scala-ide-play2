@@ -1,7 +1,9 @@
 package org.scalaide.play2.util
 
 import scala.tools.eclipse.lexical.ScalaPartitionRegion
-
+/**
+ * Contains some useful methods for list of regions
+ */
 object ScalaPartitionRegionUtils {
   case class AdvancedScalaPartitionRegionList(a: List[ScalaPartitionRegion]) {
     def U(b: List[ScalaPartitionRegion]) =

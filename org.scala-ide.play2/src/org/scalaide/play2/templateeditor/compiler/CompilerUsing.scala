@@ -7,7 +7,9 @@ import play.templates.GeneratedSource
 import play.templates.TemplateCompilationError
 import scalax.file.Path
 import org.scalaide.play2.PlayProject
-
+/**
+ * a helper for using template compiler
+ */
 object CompilerUsing {
   val templateCompiler = ScalaTemplateCompiler
   val additionalImports = """import play.templates._
@@ -23,6 +25,10 @@ import play.api.mvc._
 import play.api.data._
 import views.html._"""
 
+  /**
+   * invokes compile method of template compiler and returns generated source object or
+   * in the case of error, returns appropriate exception
+   */
   def compileTemplateToScalaVirtual(content: String, source: File, playProject: PlayProject) = {
     val sourcePath = playProject.sourceDir.getAbsolutePath()
     if (source.getAbsolutePath().indexOf(sourcePath) == -1)
@@ -34,20 +40,6 @@ import views.html._"""
         val offset = PositionHelper.convertLineColumnToOffset(content, line, column)
         throw new TemplateToScalaCompilationError(source, message, offset, line, column)
     }
-  }
-
-  def main(args: Array[String]): Unit = {
-    val playProject = PlayProject(null)
-    //    val result = compile("a1.scala.html", playProject)
-    //    val result = compileTemplateToScala(new File("/Users/shaikhha/Documents/workspace-new/asd/a1.scala.html"), playProject)
-    val file1 = new File("/Users/shaikhha/Documents/workspace-new/asd/app/views/a/a1.scala.html")
-    val result = compileTemplateToScalaVirtual(Path(file1).slurpString, file1, playProject)
-    //    val result2 = compile("a2.scala.html", playProject)
-    println(result.matrix)
-    println(PositionHelper.mapSourcePosition(result.matrix, 58))
-    //    println(result.content)
-    //    println(result2.matrix)
-    TemplateAsFunctionCompiler.CompilerInstance.compiler.askShutdown
   }
 
 }

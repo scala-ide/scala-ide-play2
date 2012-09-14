@@ -27,7 +27,6 @@ class CompletionProposalComputer(textEditor: ITextEditor) extends ScalaCompletio
   def computeCompletionProposals(viewer: ITextViewer, offset: Int): Array[ICompletionProposal] = {
     EditorUtils.getEditorCompilationUnit(textEditor) match {
       case Some(tcu: TemplateCompilationUnit) =>
-        // TODO: Not sure if this is the best way. Maybe compilation units should always be connected to something..
         tcu.connect(viewer.getDocument)
         tcu.askReload()
         tcu.withSourceFile { findCompletions(viewer, offset, tcu) }(List[ICompletionProposal]()).toArray

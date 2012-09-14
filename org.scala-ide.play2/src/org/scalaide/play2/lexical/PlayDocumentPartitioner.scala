@@ -6,7 +6,9 @@ import scala.math.min
 import scala.tools.eclipse.lexical.ScalaPartitionRegion
 import org.eclipse.jface.text._
 
-
+/**
+ * Partitions the document according to given tokeniser
+ */
 abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, defaultPartition: String, conservative: Boolean = false) extends IDocumentPartitioner with IDocumentPartitionerExtension with IDocumentPartitionerExtension2 {
 
   private var partitionRegions: List[ScalaPartitionRegion] = Nil

@@ -10,7 +10,6 @@ import org.eclipse.jface.text.Region
 import org.eclipse.jface.text.hyperlink.IHyperlink
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions
-import org.scalaide.play2.routeeditor.tools.MethodFinder
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions
 import org.scalaide.play2.routeeditor.RouteEditor
 import scala.Array.apply

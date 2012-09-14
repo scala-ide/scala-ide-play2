@@ -7,7 +7,7 @@ import org.junit.runner.RunWith
 import org.junit.Assert._
 import org.junit.runners.Suite.SuiteClasses
 import org.scalaide.play2.routeeditor.hyperlink.RouteHyperlinkDetectorTest
-import org.scalaide.play2.routeeditor.tools.MethodFinderTest
+import org.scalaide.play2.routeeditor.hyperlink.MethodFinderTest
 
 @RunWith(value=classOf[org.junit.runners.Suite])
 @SuiteClasses(value=Array(

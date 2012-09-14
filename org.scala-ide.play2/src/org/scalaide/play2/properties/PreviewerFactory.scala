@@ -13,7 +13,9 @@ import org.eclipse.swt.SWT
 import org.eclipse.swt.widgets.Composite
 import org.eclipse.ui.editors.text.EditorsUI
 import org.eclipse.ui.texteditor.ChainedPreferenceStore
-
+/**
+ * interface for factory of preview which is used inside preference for syntax coloring
+ */
 trait PreviewerFactory extends IPropertyChangeListener {
   var preferenceStore: ChainedPreferenceStore = _
   var previewViewer: ProjectionViewer = _
@@ -49,7 +51,9 @@ trait PreviewerFactory extends IPropertyChangeListener {
   }
 
   def propertyChange(event: PropertyChangeEvent) {
+    // tell configuration to take into account the changes as well
     configuration.handlePropertyChangeEvent(event)
+    // refreshes the highlighting
     previewViewer.invalidateTextPresentation()
   }
 
