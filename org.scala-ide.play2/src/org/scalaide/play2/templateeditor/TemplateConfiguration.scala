@@ -40,7 +40,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     new RouteDoubleClickStrategy()
 
   private val defaultScanner = new TemplateDefaultScanner(colorManager, prefStore)
-  
+
   private val plainScanner = new SingleTokenScanner(TemplateSyntaxClasses.PLAIN, colorManager, prefStore)
 
   private val scalaScanner = new ScalaCodeScanner(colorManager, prefStore, ScalaVersions.DEFAULT)
@@ -125,6 +125,8 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
   }
 
   def handlePropertyChangeEvent(event: PropertyChangeEvent) {
+    defaultScanner.adaptToPreferenceChange(event)
+    tagScanner.adaptToPreferenceChange(event)
     plainScanner.adaptToPreferenceChange(event)
     scalaScanner.adaptToPreferenceChange(event)
     commentScanner.adaptToPreferenceChange(event)
