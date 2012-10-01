@@ -32,6 +32,7 @@ import org.scalaide.play2.templateeditor.completion.CompletionProposalComputer
 import org.eclipse.jface.text.IDocument
 import org.scalaide.play2.properties.PropertyChangeHandler
 import org.scalaide.play2.templateeditor.lexical.TemplateDefaultScanner
+import org.scalaide.play2.templateeditor.hyperlink.LocalTemplateHyperlinkComputer
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration with PropertyChangeHandler {
 
@@ -57,15 +58,13 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     TemplatePartitions.getTypes()
   }
 
-  /**
-   * Necessary for hover over annotations
+  /** Necessary for hover over annotations
    */
   override def getAnnotationHover(viewer: ISourceViewer): IAnnotationHover = {
     new DefaultAnnotationHover(true)
   }
 
-  /**
-   * Necessary for code completion
+  /** Necessary for code completion
    */
   override def getContentAssistant(sourceViewer: ISourceViewer): IContentAssistant = {
     val assistant = new ContentAssistant
@@ -104,15 +103,20 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
 
   override def getHyperlinkDetectors(sv: ISourceViewer): Array[IHyperlinkDetector] = {
     val detector = TemplateDeclarationHyperlinkDetector()
-    if (templateEditor != null) detector.setContext(templateEditor)
-    Array(detector)
+    val localDetector = new LocalTemplateHyperlinkComputer
+    if (templateEditor != null) {
+      detector.setContext(templateEditor)
+      localDetector.setContext(templateEditor)
+    }
+
+    Array(detector, localDetector)
   }
 
   override def getTextHover(sv: ISourceViewer, contentType: String, stateMask: Int) = {
     if (contentType.equals(TemplatePartitions.TEMPLATE_SCALA)) {
       TemplateCompilationUnit.fromEditor(templateEditor) match {
         case Some(tcu) => new TemplateHover(tcu)
-        case None => new DefaultTextHover(sv)
+        case None      => new DefaultTextHover(sv)
       }
     } else {
       new DefaultTextHover(sv)

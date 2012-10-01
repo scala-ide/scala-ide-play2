@@ -26,9 +26,11 @@ import org.scalaide.play2.PlayProject
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
 import scala.tools.nsc.io.VirtualFile
 import java.io.PrintStream
+import org.eclipse.jface.text.IRegion
+import org.scalaide.play2.templateeditor.compiler.CompilerUsing
+import play.templates.GeneratedSourceVirtual
 
-/**
- * A Template compilation unit connects the presentation compiler
+/** A Template compilation unit connects the presentation compiler
  *  view of a tmeplate with the Eclipse IDE view of the underlying
  *  resource.
  */
@@ -38,11 +40,10 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
 
   override val file: AbstractFile = EclipseResource(workspaceFile)
 
-  /**
-   * A virtual file which is in synch with content of the document
-   * in order not to use a temporary real file
+  /** A virtual file which is in synch with content of the document
+   *  in order not to use a temporary real file
    */
-  lazy val templateSourceFile = {
+  private lazy val templateSourceFile = {
     new VirtualFile(getTemplateFullPath)
   }
 
@@ -65,8 +66,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
 
   override def exists(): Boolean = true
 
-  /**
-   * Return contents of generated scala file
+  /** Return contents of generated scala file
    */
   override def getContents: Array[Char] = {
     withSourceFile({ (sourceFile, compiler) =>
@@ -74,8 +74,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     })()
   }
 
-  /**
-   * Return contents of template file
+  /** Return contents of template file
    */
   def getTemplateContents: String = document.map(_.get).getOrElse(scalax.file.Path(file.file).slurpString())
 
@@ -97,8 +96,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     }
   }
 
-  /**
-   * Reconcile the unit. Return all compilation errors.
+  /** Reconcile the unit. Return all compilation errors.
    *  Blocks until the unit is type-checked.
    */
   override def reconcile(newContents: String): List[IProblem] = {
@@ -112,7 +110,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     playProject.withPresentationCompiler { pc =>
       pc.askReload(this, newContents)
     }
-  
+
   override def doWithSourceFile(op: (SourceFile, ScalaPresentationCompiler) => Unit) {
     playProject.withSourceFile(this)(op)
   }
@@ -128,8 +126,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
   def reportBuildError(errorMsg: String, start: Int, end: Int, line: Int): Unit = {
     reportBuildError(errorMsg, new Position(start, end - start + 1), line)
   }
-  
-  
+
   def reportBuildError(errorMsg: String, position: Position, line: Int): Unit = {
     def positionConvertor(position: Position, line: Int) = {
       MarkerFactory.RegionPosition(position.offset, position.length, line)
@@ -138,10 +135,9 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     TemplateProblemMarker.create(workspaceFile, IMarker.SEVERITY_ERROR, errorMsg, pos)
   }
 
-  /**
-   * maps a region in template file into generated scala file
+  /** maps a region in template file into generated scala file
    */
-  def mapTemplateToScalaRegion(region: Region) = {
+  def mapTemplateToScalaRegion(region: IRegion) = {
     synchronized {
       val offset = mapTemplateToScalaOffset(region.getOffset())
       val end = mapTemplateToScalaOffset(region.getOffset() + region.getLength() - 1)
@@ -149,18 +145,37 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     }
   }
 
-  /**
-   * maps an offset in template file into generated scala file
+  /** maps an offset in template file into generated scala file
    */
   def mapTemplateToScalaOffset(offset: Int) = {
     playProject.withPresentationCompiler { pc =>
-      val gen = pc.generatedSource(this)
+      val gen = generatedSource()
       PositionHelper.mapSourcePosition(gen.matrix, offset)
     }
   }
 
-  /**
-   * updates template virtual file
+  /** Return the offset in the template file, given an offset in the generated source file.
+   *  It is the inverse of `mapTemplateToScalaOffset`. */
+  def templateOffset(generatedOffset: Int): Int = {
+    generatedSource().mapPosition(generatedOffset)
+  }
+
+  private var cachedGenerated = generatedSource()
+  private var oldContents = getTemplateContents
+
+  /** Returns generated source of the given compilation unit.
+   * 
+   *  It caches results in order to save on (relatively expensive) calls to the template compiler.
+   */
+  def generatedSource(): GeneratedSourceVirtual = {
+    if (oldContents != getTemplateContents) synchronized {
+      println("[generating template] " + getTemplateFullPath)
+      cachedGenerated = CompilerUsing.compileTemplateToScalaVirtual(getTemplateContents.toString(), file.file, playProject)
+    }
+    cachedGenerated
+  }
+
+  /** updates template virtual file
    */
   def updateTemplateSourceFile() = {
     new PrintStream(templateSourceFile.output).print(document.get.get)

@@ -30,13 +30,6 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
   private val sourceFiles = new AutoHashMap((tcu: TemplateCompilationUnit) => tcu.sourceFile())
   
   /**
-   * Returns generated source of the given compilation unit
-   */
-  def generatedSource(tcu: TemplateCompilationUnit) = {
-    CompilerUsing.compileTemplateToScalaVirtual(tcu.getTemplateContents.toString(), tcu.file.file, playProject)
-  }
-  
-  /**
    * Returns scala batch source file (which is a virtual file) associated to
    * the given generated source.
    */
@@ -51,7 +44,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
    * the result of compiling the given template compilation unit
    */
   def scalaFileFromTCU(tcu: TemplateCompilationUnit) = {
-    val gen = generatedSource(tcu)
+    val gen = tcu.generatedSource()
     scalaFileFromGen(gen)
   }
 
@@ -59,7 +52,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
 
   def problemsOf(tcu: TemplateCompilationUnit): List[IProblem] = {
     try {
-      val gen = generatedSource(tcu)
+      val gen = tcu.generatedSource()
       val src = scalaFileFromGen(gen)
       val problems = scalaProject.withPresentationCompiler(pc => pc.problemsOf(src.file))()
       def mapOffset(offset: Int) = gen.mapPosition(offset)
@@ -127,7 +120,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) {
         }
     }
     try {
-      val gen = generatedSource(tcu)
+      val gen = tcu.generatedSource()
       val src = scalaFileFromGen(gen)
       val sourceList = List(src)
       scalaProject.withPresentationCompiler(pc => {
