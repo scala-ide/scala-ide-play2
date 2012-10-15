@@ -8,14 +8,16 @@ import org.eclipse.core.resources.ResourcesPlugin
 
 object PlayPlugin {
   @volatile var plugin: PlayPlugin = _
-  val PLUGIN_ID = "org.scala-ide.play2"
 
-  def getDefault = PlayPlugin.plugin
+  private final val PluginId = "org.scala-ide.play2"
+  final val ProblemMarkerId = PluginId + ".templateProblem"
+  final val RouteFormatterMarginId = PluginId + ".routeeditor.margin"
+  final val TemplateExtension = "scala.html"
 
   def prefStore = plugin.getPreferenceStore
 
   def getImageDescriptor(path: String) = {
-    AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
+    AbstractUIPlugin.imageDescriptorFromPlugin(PluginId, path);
   }
 }
 
@@ -31,10 +33,6 @@ class PlayPlugin extends AbstractUIPlugin {
     PlayPlugin.plugin = null;
     super.stop(context);
   }
-
-  val problemMarkerId = PLUGIN_ID + ".templateProblem"
-  val templateExtension = ".scala.html"
-  val routeFormatterMarginId = PLUGIN_ID + ".routeeditor.margin"
 
   def asPlayProject(project: IProject): Option[PlayProject] = {
     val scalaProject = ScalaPlugin.plugin.asScalaProject(project)

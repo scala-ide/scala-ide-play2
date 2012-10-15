@@ -120,7 +120,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
   }
 
   def clearBuildErrors(): Unit = {
-    workspaceFile.deleteMarkers(PlayPlugin.plugin.problemMarkerId, true, IResource.DEPTH_INFINITE)
+    workspaceFile.deleteMarkers(PlayPlugin.ProblemMarkerId, true, IResource.DEPTH_INFINITE)
   }
 
   def reportBuildError(errorMsg: String, start: Int, end: Int, line: Int): Unit = {
@@ -183,29 +183,25 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
 
 }
 
-object TemplateProblemMarker extends MarkerFactory(PlayPlugin.plugin.problemMarkerId)
+object TemplateProblemMarker extends MarkerFactory(PlayPlugin.ProblemMarkerId)
 
 object TemplateCompilationUnit {
+  private def fromEditorInput(editorInput: IEditorInput): TemplateCompilationUnit = TemplateCompilationUnit(getFile(editorInput))
 
-  def fromFile(file: IFile) = {
-    TemplateCompilationUnit.apply(file)
-  }
-  def fromEditorInput(editorInput: IEditorInput): Option[TemplateCompilationUnit] = {
-    getFile(editorInput).map(fromFile)
-  }
-
-  def fromEditor(textEditor: ITextEditor): Option[TemplateCompilationUnit] = {
-    if (textEditor == null)
-      return None
-    val input = textEditor.getEditorInput
-    for (unit <- fromEditorInput(input))
-      yield unit.connect(textEditor.getDocumentProvider().getDocument(input))
+  def fromEditor(templateEditor: TemplateEditor): TemplateCompilationUnit = {
+    val input = templateEditor.getEditorInput
+    if(input == null) 
+      throw new NullPointerException("No editor input for the passed `templateEditor`. Hint: Maybe the editor isn't yet fully initialized?")
+    else {
+      val unit = fromEditorInput(input)
+      unit.connect(templateEditor.getDocumentProvider().getDocument(input))
+    }
   }
 
-  private def getFile(editorInput: IEditorInput): Option[IFile] =
+  private def getFile(editorInput: IEditorInput): IFile = 
     editorInput match {
-      case fileEditorInput: FileEditorInput if fileEditorInput.getName.endsWith("scala.html") =>
-        Some(fileEditorInput.getFile)
-      case _ => None
+      case fileEditorInput: FileEditorInput if fileEditorInput.getName.endsWith(PlayPlugin.TemplateExtension) =>
+        fileEditorInput.getFile
+      case _ => throw new IllegalArgumentException("Expected to open file with extension %s, found %s.".format(PlayPlugin.TemplateExtension, editorInput.getName))
     }
 }
