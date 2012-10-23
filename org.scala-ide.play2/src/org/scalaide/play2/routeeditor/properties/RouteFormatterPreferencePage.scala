@@ -11,7 +11,7 @@ class RouteFormatterPreferencePage extends FieldEditorPreferencePage with IWorkb
   setPreferenceStore(PlayPlugin.plugin.getPreferenceStore)
   
   override def createFieldEditors() {
-    val marginField = new IntegerFieldEditor(PlayPlugin.plugin.routeFormatterMarginId, "Number of spaces between columns", getFieldEditorParent)
+    val marginField = new IntegerFieldEditor(PlayPlugin.RouteFormatterMarginId, "Number of spaces between columns", getFieldEditorParent)
     marginField.setValidRange(1, 10)
     addField(marginField)
   }

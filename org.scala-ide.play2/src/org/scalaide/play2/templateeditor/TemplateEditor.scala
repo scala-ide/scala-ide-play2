@@ -29,9 +29,9 @@ import scala.tools.eclipse.ui.InteractiveCompilationUnitEditor
 import scala.tools.eclipse.InteractiveCompilationUnit
 
 class TemplateEditor extends TextEditor with ISourceViewerEditor with InteractiveCompilationUnitEditor {
-  lazy val preferenceStore = new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.prefStore))
-  val sourceViewConfiguration = new TemplateConfiguration(preferenceStore, this)
-  val documentProvider = new TemplateDocumentProvider()
+  private lazy val preferenceStore = new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.prefStore))
+  private val sourceViewConfiguration = new TemplateConfiguration(preferenceStore, this)
+  private val documentProvider = new TemplateDocumentProvider()
   
   setSourceViewerConfiguration(sourceViewConfiguration);
   setPreferenceStore(preferenceStore)
@@ -56,8 +56,7 @@ class TemplateEditor extends TextEditor with ISourceViewerEditor with Interactiv
     sourceViewConfiguration.strategy.reconcile(null)
   }
   
-  def getViewer: ISourceViewer = getSourceViewer
+  override def getViewer: ISourceViewer = getSourceViewer
   
-  override def getInteractiveCompilationUnit(): Option[InteractiveCompilationUnit] = TemplateCompilationUnit.fromEditor(this)
-
+  override def getInteractiveCompilationUnit(): InteractiveCompilationUnit = TemplateCompilationUnit.fromEditor(this)
 }

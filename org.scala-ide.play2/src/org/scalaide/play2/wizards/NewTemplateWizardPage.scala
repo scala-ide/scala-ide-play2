@@ -2,12 +2,12 @@ package org.scalaide.play2.wizards
 
 import java.io.ByteArrayInputStream
 import java.io.InputStream
-
 import org.eclipse.core.runtime.IStatus
 import org.eclipse.core.runtime.Status
 import org.eclipse.jface.viewers.IStructuredSelection
 import org.eclipse.swt.widgets.Composite
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage
+import org.scalaide.play2.PlayPlugin
 
 /**
  * Wizard page based of the new file creation page from the framework.
@@ -56,14 +56,14 @@ class NewTemplateWizardPage(selection: IStructuredSelection) extends WizardNewFi
   // set the page values
   setTitle("Play Template")
   setDescription("Create a new Play Template")
-  setFileExtension("scala.html")
+  setFileExtension(PlayPlugin.TemplateExtension)
 
   /**
    * Return the name of the object to be created, or empty if not available.
    */
   def objectName = {
     val fileName = getFileName()
-    val extenstionLength = ".scala.html".length()
+    val extenstionLength = ("." + PlayPlugin.TemplateExtension).length()
     if (fileName.length > extenstionLength) {
     	fileName.substring(0, fileName.length() - extenstionLength)
     } else {

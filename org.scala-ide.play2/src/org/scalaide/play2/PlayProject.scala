@@ -27,8 +27,8 @@ class PlayProject private (val scalaProject: ScalaProject) {
    */
   def initialize() {
     val templateCompilationUnits = for (
-      r <- scalaProject.underlying.members() if r.isInstanceOf[IFile] if r.getFullPath().toString().endsWith(PlayPlugin.plugin.templateExtension)
-    )  yield TemplateCompilationUnit.fromFile(r.asInstanceOf[IFile])
+      r <- scalaProject.underlying.members() if r.isInstanceOf[IFile] if r.getFullPath().toString().endsWith("." + PlayPlugin.TemplateExtension)
+    )  yield TemplateCompilationUnit(r.asInstanceOf[IFile])
     templateCompilationUnits foreach (_.askReload())
     templateCompilationUnits.reverse foreach (_.askReload())
     // FIXME not works!!!

@@ -33,6 +33,7 @@ import org.eclipse.jface.text.IDocument
 import org.scalaide.play2.properties.PropertyChangeHandler
 import org.scalaide.play2.templateeditor.lexical.TemplateDefaultScanner
 import org.scalaide.play2.templateeditor.hyperlink.LocalTemplateHyperlinkComputer
+import org.eclipse.jface.text.ITextHover
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration with PropertyChangeHandler {
 
@@ -112,15 +113,12 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     Array(detector, localDetector)
   }
 
-  override def getTextHover(sv: ISourceViewer, contentType: String, stateMask: Int) = {
+  override def getTextHover(sv: ISourceViewer, contentType: String, stateMask: Int): ITextHover = {
     if (contentType.equals(TemplatePartitions.TEMPLATE_SCALA)) {
-      TemplateCompilationUnit.fromEditor(templateEditor) match {
-        case Some(tcu) => new TemplateHover(tcu)
-        case None      => new DefaultTextHover(sv)
-      }
-    } else {
-      new DefaultTextHover(sv)
-    }
+      val cu = TemplateCompilationUnit.fromEditor(templateEditor)
+      new TemplateHover(cu)
+    } 
+    else new DefaultTextHover(sv)
   }
 
   // should be added, because this one is called by default one
