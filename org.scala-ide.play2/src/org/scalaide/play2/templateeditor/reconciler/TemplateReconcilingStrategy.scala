@@ -26,7 +26,7 @@ class TemplateReconcilingStrategy(textEditor: /*ITextEditor*/ TemplateEditor) ex
   private var document: IDocument = _
   private lazy val annotationModel = textEditor.getDocumentProvider.getAnnotationModel(textEditor.getEditorInput)
 
-  lazy val templateUnit = TemplateCompilationUnit.fromEditor(textEditor).get // we know the editor is a Template editor
+  private lazy val templateUnit = TemplateCompilationUnit.fromEditor(textEditor)
 
   def setDocument(doc: IDocument) {
     document = doc
