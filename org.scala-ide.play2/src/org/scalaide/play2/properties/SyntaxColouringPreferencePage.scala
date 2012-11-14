@@ -112,7 +112,6 @@ class SyntaxColouringPreferencePage(allSyntaxClasses: List[ScalaSyntaxClass], de
   override def performOk() = {
     super.performOk()
     overlayStore.propagate()
-    PlayPlugin.plugin.savePluginPreferences()
     true
   }
 
