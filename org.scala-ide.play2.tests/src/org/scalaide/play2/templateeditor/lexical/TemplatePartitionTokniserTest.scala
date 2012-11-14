@@ -9,11 +9,19 @@ import org.eclipse.jdt.core.IMethod
 import org.eclipse.jdt.core.Signature
 import scala.tools.eclipse.lexical.ScalaPartitionRegion
 import scala.tools.eclipse.lexical.ScalaPartitionRegion
+import org.junit.AfterClass
+import scala.tools.eclipse.testsetup.SDTTestUtils
 
-object TemplatePartitionTokeniserTest extends TestProjectSetup("aProject", bundleName = "org.scala-ide.play2.tests")
+object TemplatePartitionTokeniserTest extends TestProjectSetup("aProject", bundleName = "org.scala-ide.play2.tests") {
+  @AfterClass
+  def projectCleanUp() {
+    SDTTestUtils.deleteProjects(project)
+  }
+}
 
 class TemplatePartitionTokeniserTest {
-  TemplatePartitionTokeniserTest
+  import TemplatePartitionTokeniserTest._
+
   def s(start: Int, end: Int) = ScalaPartitionRegion(TemplatePartitions.TEMPLATE_SCALA, start, end)
   def d(start: Int, end: Int) = ScalaPartitionRegion(TemplatePartitions.TEMPLATE_DEFAULT, start, end)
   def c(start: Int, end: Int) = ScalaPartitionRegion(TemplatePartitions.TEMPLATE_COMMENT, start, end)
