@@ -169,6 +169,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
    */
   def generatedSource(): GeneratedSourceVirtual = {
     if (oldContents != getTemplateContents) synchronized {
+      oldContents = getTemplateContents
       println("[generating template] " + getTemplateFullPath)
       cachedGenerated = CompilerUsing.compileTemplateToScalaVirtual(getTemplateContents.toString(), file.file, playProject)
     }
