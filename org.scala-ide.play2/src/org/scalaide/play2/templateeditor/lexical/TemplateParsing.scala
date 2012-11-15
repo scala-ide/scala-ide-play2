@@ -64,10 +64,10 @@ object TemplateParsing {
     s
   }
 
-  def handleScalaExpPart(scalaExpPart: ScalaExpPart with Positional): List[PlayTemplate] = scalaExpPart match {
+  def handleScalaExpPart(scalaExpPart: ScalaExpPart): List[PlayTemplate] = scalaExpPart match {
     case s @ Simple(code: String) =>
       List(ScalaCode(fixFor(s)))
-    case Block(whitespace: String, args: Option[PosString], content: Seq[TemplateTree]) =>
+    case Block(whitespace, args, content) =>
       args.map(ScalaCode(_)).toList ::: content.flatMap(handleTemplateTree).toList
   }
 
@@ -83,12 +83,12 @@ object TemplateParsing {
           handleTemplateTree(exp)
     case cm @ Comment(msg: String) =>
       List(CommentCode(cm))
-    case ScalaExp(parts: Seq[ScalaExpPart with Positional]) =>
+    case ScalaExp(parts) =>
       parts.flatMap(handleScalaExpPart).toList
   }
 
   def handleTemplate(template: Template): List[PlayTemplate] = template match {
-    case Template(name: PosString, comment: Option[Comment], params: PosString, imports: Seq[Simple], defs: Seq[Def], sub: Seq[Template], content: Seq[TemplateTree]) =>
+    case Template(name, comment, params, imports, defs, sub, content) =>
       val namePart = if (name != null && name.str.length != 0) List(ScalaCode(name)) else List()
       val commentPart = comment.map(CommentCode(_)).toList
       val paramsPart = if (params.pos != NoPosition) List(ScalaCode(params)) else List()
