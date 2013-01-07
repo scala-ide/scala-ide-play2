@@ -22,6 +22,7 @@ of the Scala IDE and Scala compiler you want to build against:
 * `scala-ide-2.0-scala-2.9`
 * `scala-ide-2.0.x-scala-2.9`
 * `scala-ide-master-scala-2.9`
+* `scala-ide-juno-scala-2.10`
 * `scala-ide-master-scala-trunk`
 
 Run maven like this:

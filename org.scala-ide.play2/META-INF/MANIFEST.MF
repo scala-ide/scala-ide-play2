@@ -34,8 +34,8 @@ Import-Package:
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Activator: org.scalaide.play2.PlayPlugin
 Bundle-ClassPath: .,
- target/lib/play_2.9.2-2.1-08292012.jar,
- target/lib/scala-arm_2.9.1-1.1.jar,
- target/lib/scala-io-core_2.9.2-0.4.0.jar,
- target/lib/scala-io-file_2.9.2-0.4.0.jar,
- target/lib/templates_2.9.2-2.1-09142012.jar
+ target/lib/_PLAY_.jar,
+ target/lib/_SCALA_ARM_.jar,
+ target/lib/_SCALA_IO_CORE_.jar,
+ target/lib/_SCALA_IO_FILE_.jar,
+ target/lib/_TEMPLATES_.jar

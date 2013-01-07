@@ -10,37 +10,114 @@
   <artifactId>org.scala-ide.play2</artifactId>
   <packaging>eclipse-plugin</packaging>
 
+  <properties>
+    <play.artifactId>play_2.9.2</play.artifactId>
+    <play.version>2.1-08292012</play.version>
+    <templates.artifactId>templates_2.9.2</templates.artifactId>
+    <templates.version>2.1-09142012</templates.version>
+    <scala.io.core.artifactId>scala-io-core_2.9.2</scala.io.core.artifactId>
+    <scala.io.core.version>0.4.0</scala.io.core.version>
+    <scala.io.file.artifactId>scala-io-file_2.9.2</scala.io.file.artifactId>
+    <scala.io.file.version>0.4.0</scala.io.file.version>
+    <scala.arm.groupId>com.github.jsuereth.scala-arm</scala.arm.groupId>
+    <scala.arm.artifactId>scala-arm_2.9.1</scala.arm.artifactId>
+    <scala.arm.version>1.1</scala.arm.version>
+  </properties>
+
+  <profiles>
+    <profile>
+      <!-- nightly Scala IDE with Scala 2.10 -->
+      <id>scala-ide-juno-scala-2.10</id>
+      <properties>
+        <play.artifactId>play_2.10</play.artifactId>
+        <play.version>2.1-12142012</play.version>
+        <templates.artifactId>templates_2.10</templates.artifactId>
+        <templates.version>2.1-12142012</templates.version>
+        <scala.io.core.artifactId>scala-io-core_2.10.0-RC1</scala.io.core.artifactId>
+        <scala.io.core.version>0.4.1</scala.io.core.version>
+        <scala.io.file.artifactId>scala-io-file_2.10.0-RC1</scala.io.file.artifactId>
+        <scala.io.file.version>0.4.1</scala.io.file.version>
+        <scala.arm.groupId>com.jsuereth</scala.arm.groupId>
+        <scala.arm.artifactId>scala-arm_2.10</scala.arm.artifactId>
+        <scala.arm.version>1.2</scala.arm.version>
+      </properties>
+    </profile>
+  </profiles>
+
 
   <dependencies>
     <dependency>
       <groupId>play</groupId>
-      <artifactId>play_2.9.2</artifactId>
-      <version>2.1-08292012</version>
+      <artifactId>${play.artifactId}</artifactId>
+      <version>${play.version}</version>
     </dependency>
     <dependency>
       <groupId>play</groupId>
-      <artifactId>templates_2.9.2</artifactId>
-      <version>2.1-09142012</version>
+      <artifactId>${templates.artifactId}</artifactId>
+      <version>${templates.version}</version>
     </dependency>
     <dependency>
       <groupId>com.github.scala-incubator.io</groupId>
-      <artifactId>scala-io-core_2.9.2</artifactId>
-      <version>0.4.0</version>
+      <artifactId>${scala.io.core.artifactId}</artifactId>
+      <version>${scala.io.core.version}</version>
     </dependency>
     <dependency>
       <groupId>com.github.scala-incubator.io</groupId>
-      <artifactId>scala-io-file_2.9.2</artifactId>
-      <version>0.4.0</version>
+      <artifactId>${scala.io.file.artifactId}</artifactId>
+      <version>${scala.io.file.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.github.jsuereth.scala-arm</groupId>
-      <artifactId>scala-arm_2.9.1</artifactId>
-      <version>1.1</version>
+      <groupId>${scala.arm.groupId}</groupId>
+      <artifactId>${scala.arm.artifactId}</artifactId>
+      <version>${scala.arm.version}</version>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <id>prepare-package</id>
+            <phase>prepare-package</phase>
+            <configuration>
+              <target>
+                <replace file="META-INF/MANIFEST.MF">
+                  <replacefilter token="_PLAY_" value="${play.artifactId}-${play.version}" />
+                  <replacefilter token="_SCALA_ARM_" value="${scala.arm.artifactId}-${scala.arm.version}" />
+                  <replacefilter token="_SCALA_IO_CORE_" value="${scala.io.core.artifactId}-${scala.io.core.version}" />
+                  <replacefilter token="_SCALA_IO_FILE_" value="${scala.io.file.artifactId}-${scala.io.file.version}" />
+                  <replacefilter token="_TEMPLATES_" value="${templates.artifactId}-${templates.version}" />
+                </replace>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>package</id>
+            <phase>package</phase>
+            <configuration>
+              <target>
+                <replace file="META-INF/MANIFEST.MF">
+                  <replacefilter token="${play.artifactId}-${play.version}" value="_PLAY_" />
+                  <replacefilter token="${scala.arm.artifactId}-${scala.arm.version}" value="_SCALA_ARM_" />
+                  <replacefilter token="${scala.io.core.artifactId}-${scala.io.core.version}" value="_SCALA_IO_CORE_" />
+                  <replacefilter token="${scala.io.file.artifactId}-${scala.io.file.version}" value="_SCALA_IO_FILE_" />
+                  <replacefilter token="${templates.artifactId}-${templates.version}" value="_TEMPLATES_" />
+                </replace>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <!-- copy the mockito jar, so it can be used in eclipse -->
         <groupId>org.apache.maven.plugins</groupId>
@@ -56,27 +133,27 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>play</groupId>
-                  <artifactId>play_2.9.2</artifactId>
+                  <artifactId>${play.artifactId}</artifactId>
                   <outputDirectory>${project.build.directory}/lib</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>play</groupId>
-                  <artifactId>templates_2.9.2</artifactId>
+                  <artifactId>${templates.artifactId}</artifactId>
                   <outputDirectory>${project.build.directory}/lib</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>com.github.scala-incubator.io</groupId>
-                  <artifactId>scala-io-core_2.9.2</artifactId>
+                  <artifactId>${scala.io.core.artifactId}</artifactId>
                   <outputDirectory>${project.build.directory}/lib</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>com.github.scala-incubator.io</groupId>
-                  <artifactId>scala-io-file_2.9.2</artifactId>
+                  <artifactId>${scala.io.file.artifactId}</artifactId>
                   <outputDirectory>${project.build.directory}/lib</outputDirectory>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>com.github.jsuereth.scala-arm</groupId>
-                  <artifactId>scala-arm_2.9.1</artifactId>
+                  <groupId>${scala.arm.groupId}</groupId>
+                  <artifactId>${scala.arm.artifactId}</artifactId>
                   <outputDirectory>${project.build.directory}/lib</outputDirectory>
                 </artifactItem>
               </artifactItems>
