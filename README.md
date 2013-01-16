@@ -19,11 +19,11 @@ based on Tycho, enabling command line builds.
 There is no default profile. You need to specify a profile manually, choosing what version
 of the Scala IDE and Scala compiler you want to build against:
 
-* `scala-ide-2.0-scala-2.9`
-* `scala-ide-2.0.x-scala-2.9`
-* `scala-ide-master-scala-2.9`
-* `scala-ide-master-scala-trunk`
+* `scala-ide-milestone-indigo-scala-2.9`
+* `scala-ide-milestone-juno-scala-2.9`
+* `scala-ide-milestone-indigo-scala-2.10`
+* `scala-ide-milestone-juno-scala-2.10`
 
 Run maven like this:
 
-    mvn -P scala-ide-master-scala-trunk clean install
+    mvn -P scala-ide-milestone-juno-scala-2.10 clean install

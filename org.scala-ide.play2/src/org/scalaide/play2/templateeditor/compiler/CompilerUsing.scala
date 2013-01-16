@@ -50,7 +50,7 @@ case class TemplateToScalaCompilationError(source: File, message: String, offset
 
 object PositionHelper {
   def convertLineColumnToOffset(source: File, line: Int, column: Int): Int = {
-    convertLineColumnToOffset(Path(source).slurpString, line, column)
+    convertLineColumnToOffset(Path(source).string, line, column)
   }
 
   def convertLineColumnToOffset(content: String, line: Int, column: Int): Int = {
