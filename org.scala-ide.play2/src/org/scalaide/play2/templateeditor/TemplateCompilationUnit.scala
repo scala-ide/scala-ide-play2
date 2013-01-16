@@ -76,7 +76,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
 
   /** Return contents of template file
    */
-  def getTemplateContents: String = document.map(_.get).getOrElse(scalax.file.Path(file.file).slurpString())
+  def getTemplateContents: String = document.map(_.get).getOrElse(scalax.file.Path(file.file).string())
 
   /** no-op */
   override def scheduleReconcile(): Response[Unit] = {
