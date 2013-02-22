@@ -1,1 +1,1 @@
-mvn -P scala-ide-master-scala-2.9 clean install
+mvn -P scala-ide-milestone-juno-scala-2.10 clean install
