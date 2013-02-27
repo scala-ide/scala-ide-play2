@@ -5,6 +5,7 @@ package play.templates {
   import scalax.file._
   import java.io.File
   import scala.annotation.tailrec
+  import io.Codec
 
   object Hash {
 
@@ -172,7 +173,7 @@ package play.templates {
     def compile(source: File, sourceDirectory: File, generatedDirectory: File, resultType: String, formatterType: String, additionalImports: String = "") = {
       val (templateName, generatedSource) = generatedFile(source, sourceDirectory, generatedDirectory)
       if (generatedSource.needRecompilation) {
-        val generated = parseAndGenerateCode(templateName, Path(source).string, source.getAbsolutePath, resultType, formatterType, additionalImports)
+        val generated = parseAndGenerateCode(templateName, Path(source).byteArray, source.getAbsolutePath, resultType, formatterType, additionalImports)
 
         Path(generatedSource.file).write(generated.toString)
 
@@ -184,13 +185,13 @@ package play.templates {
 
     def compileVirtual(content: String, source: File, sourceDirectory: File, resultType: String, formatterType: String, additionalImports: String = "") = {
       val (templateName, generatedSource) = generatedFileVirtual(source, sourceDirectory)
-      val generated = parseAndGenerateCode(templateName, content, source.getAbsolutePath, resultType, formatterType, additionalImports)
+      val generated = parseAndGenerateCode(templateName, content.getBytes("UTF-8"), source.getAbsolutePath, resultType, formatterType, additionalImports)
       generatedSource.setContent(generated)
       generatedSource
     }
     
-    def parseAndGenerateCode(templateName: Array[String], content: String, absolutePath: String, resultType: String, formatterType: String, additionalImports: String) = {
-      templateParser.parser(new CharSequenceReader(content)) match {
+    def parseAndGenerateCode(templateName: Array[String], content: Array[Byte], absolutePath: String, resultType: String, formatterType: String, additionalImports: String) = {
+      templateParser.parser(new CharSequenceReader(new String(content, "UTF-8"))) match {
         case templateParser.Success(parsed, rest) if rest.atEnd => {
           generateFinalTemplate(absolutePath, 
             content,
@@ -245,7 +246,7 @@ package play.templates {
         Parser(in => parser(in) match {
           case s @ Success(_, _) => s
           case Failure(_, next) => Failure("`" + error + "' expected but `" + next.first + "' found", next)
-          case Error(_, _) => Error(error, in)
+          case Error(_, next) => Error(error, next)
         })
       }
 
@@ -425,7 +426,6 @@ package play.templates {
               Success(plainString, r)
             }
             case Failure(s, t) => Failure(s, t)
-            case Error(_, _) => Error(s, in)
           }
         }
       }
@@ -555,16 +555,21 @@ object """ :+ name :+ """ extends BaseScalaTemplate[""" :+ resultType :+ """,For
 
     @deprecated("use generateFinalTemplate with 8 parameters instead", "Play 2.1")
     def generateFinalTemplate(template: File, packageName: String, name: String, root: Template, resultType: String, formatterType: String, additionalImports: String): String = {
-      generateFinalTemplate(template.getAbsolutePath, Path(template).string, packageName, name, root, resultType, formatterType, additionalImports)
+      generateFinalTemplate(template.getAbsolutePath, Path(template).byteArray, packageName, name, root, resultType, formatterType, additionalImports)
     }
 
-    def generateFinalTemplate(absolutePath: String, contents: String, packageName: String, name: String, root: Template, resultType: String, formatterType: String, additionalImports: String): String = {
+    def generateFinalTemplate(absolutePath: String, contents: Array[Byte], packageName: String, name: String, root: Template, resultType: String, formatterType: String, additionalImports: String): String = {
       val generated = generateCode(packageName, name, root, resultType, formatterType, additionalImports)
 
-      Source.finalSource(absolutePath, contents.getBytes, generated)
+      Source.finalSource(absolutePath, contents, generated)
     }
 
     object TemplateAsFunctionCompiler {
+
+      // Note, the presentation compiler is not thread safe, all access to it must be synchronized.  If access to it
+      // is not synchronized, then weird things happen like FreshRunReq exceptions are thrown when multiple sub projects
+      // are compiled (done in parallel by default by SBT).  So if adding any new methods to this object, make sure you
+      // make them synchronized.
 
       import java.io.File
       import scala.tools.nsc.interactive.{ Response, Global }
@@ -573,7 +578,7 @@ object """ :+ name :+ """ extends BaseScalaTemplate[""" :+ resultType :+ """,For
       import scala.tools.nsc.Settings
       import scala.tools.nsc.reporters.ConsoleReporter
 
-      def getFunctionMapping(signature: String, returnType: String): (String, String, String) = {
+      def getFunctionMapping(signature: String, returnType: String): (String, String, String) = synchronized {
 
         type Tree = PresentationCompiler.global.Tree
         type DefDef = PresentationCompiler.global.DefDef
@@ -596,13 +601,13 @@ object """ :+ name :+ """ extends BaseScalaTemplate[""" :+ resultType :+ """,For
           PresentationCompiler.treeFrom("object FT { def signature" + signature + " }")).get.vparamss
 
         val functionType = "(" + params.map(group => "(" + group.map {
-          //case a if a.mods.isByNameParam => " => " + a.tpt.children(1).toString
+          case a if a.symbol.isByNameParam => " => " + a.tpt.children(1).toString
           case a => filterType(a.tpt.toString)
         }.mkString(",") + ")").mkString(" => ") + " => " + returnType + ")"
 
         val renderCall = "def render%s: %s = apply%s".format(
           "(" + params.flatten.map {
-            //case a if a.mods.isByNameParam => a.name.toString + ":" + a.tpt.children(1).toString
+            case a if a.symbol.isByNameParam => a.name.toString + ":" + a.tpt.children(1).toString
             case a => a.name.toString + ":" + filterType(a.tpt.toString)
           }.mkString(",") + ")",
            returnType,
@@ -613,7 +618,7 @@ object """ :+ name :+ """ extends BaseScalaTemplate[""" :+ resultType :+ """,For
         var templateType = "play.api.templates.Template%s[%s%s]".format(
           params.flatten.size,
           params.flatten.map {
-            //case a if a.mods.isByNameParam => a.tpt.children(1).toString
+            case a if a.symbol.isByNameParam => a.tpt.children(1).toString
             case a => filterType(a.tpt.toString)
           }.mkString(","),
           (if (params.flatten.isEmpty) "" else ",") + returnType)
@@ -640,8 +645,10 @@ object """ :+ name :+ """ extends BaseScalaTemplate[""" :+ resultType :+ """,For
 
           // is null in Eclipse/OSGI but luckily we don't need it there
           if (scalaObjectSource != null) {
-            val compilerPath = Class.forName("scala.tools.nsc.Interpreter").getProtectionDomain.getCodeSource.getLocation.getFile
-            val libPath = scalaObjectSource.getLocation.getFile
+            import java.security.CodeSource
+            def toAbsolutePath(cs: CodeSource) = new File(cs.getLocation.getFile).getAbsolutePath
+            val compilerPath = toAbsolutePath(Class.forName("scala.tools.nsc.Interpreter").getProtectionDomain.getCodeSource)
+            val libPath = toAbsolutePath(scalaObjectSource)
             val pathList = List(compilerPath, libPath)
             val origBootclasspath = settings.bootclasspath.value
             settings.bootclasspath.value = ((origBootclasspath :: pathList) ::: additionalClassPathEntry.toList) mkString File.pathSeparator
@@ -651,7 +658,7 @@ object """ :+ name :+ """ extends BaseScalaTemplate[""" :+ resultType :+ """,For
             override def printMessage(pos: Position, msg: String) = ()
           })
 
-          new compiler.Run
+          compiler.ask(() => new compiler.Run)
 
           compiler
         }
