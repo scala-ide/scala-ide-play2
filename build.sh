@@ -1,1 +1,3 @@
-mvn -P scala-ide-milestone-juno-scala-2.10 clean install
+#!/bin/bash
+
+mvn -Peclipse-juno -Pscala-2.10.x -Pscala-ide-dev clean package
