@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.Status
 object PlayPlugin {
   @volatile var plugin: PlayPlugin = _
 
-  private final val PluginId = "org.scala-ide.play2"
+  final val PluginId = "org.scala-ide.play2"
   final val RouteFormatterMarginId = PluginId + ".routeeditor.margin"
   final val TemplateExtension = "scala.html"
 
