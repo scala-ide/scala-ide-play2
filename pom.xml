@@ -31,6 +31,7 @@
     <!-- fixed versions -->
     <tycho.version>0.15.0</tycho.version>
     <scala.plugin.version>3.1.0</scala.plugin.version>
+    <junit.version>4.10</junit.version>
 
     <!-- tycho test related -->
     <tycho.test.OSspecific></tycho.test.OSspecific>
@@ -38,61 +39,93 @@
     <tycho.test.weaving>-XX:+UnlockDiagnosticVMOptions -XX:+UnsyncloadClass -Dosgi.classloader.lock=classname</tycho.test.weaving>
     <tycho.test.jvmArgs>-Xmx800m -XX:MaxPermSize=256m -Dsdtcore.headless ${tycho.test.weaving} ${tycho.test.OSspecific}</tycho.test.jvmArgs>
 
-    <!-- dependencies repos -->
-    <eclipse.codename>indigo</eclipse.codename>
-    <repo.eclipse>${repo.eclipse.indigo}</repo.eclipse>
-    <repo.ajdt>${repo.ajdt.indigo}</repo.ajdt>
+    <!-- properties which need to be defined -->
+    <!-- linked to Eclipse version -->
+    <eclipse.codename>Select an Eclipse profile !</eclipse.codename>
+    <repo.eclipse>Select an Eclipse profile !</repo.eclipse>
+    <repo.ajdt>Select an Eclipse profile !</repo.ajdt>
+    <weaving.hook.plugin.version>Select an Eclipse profile !</weaving.hook.plugin.version>
+    <ecosystem-eclipse-version>Select an Eclipse profile !</ecosystem-eclipse-version>
 
-    <!-- some default values, can be overwritten by profiles -->
-    <scala.version>2.9.3-SNAPSHOT</scala.version>
-    <version.suffix>2_09</version.suffix>
-    <scala.version.short>2.9</scala.version.short>
+    <!-- linked to Scala version -->
+    <scala.version>Select a Scala profile !</scala.version>
+    <version.suffix>Select a Scala profile !</version.suffix>
+    <scala.version.short>Select a Scala profile !</scala.version.short>
+      <!-- play version depend on Scala version. 2.9.x -> 2.0.x, 2.10.x -> 2.1.x !-->
+    <play.artifactId>Select a Scala profile !</play.artifactId>
+    <play.version>Select a Scala profile !</play.version>
+    <templates.artifactId>Select a Scala profile !</templates.artifactId>
+    <templates.version>Select a Scala profile !</templates.version>
+    <scala.io.core.artifactId>Select a Scala profile !</scala.io.core.artifactId>
+    <scala.io.core.version>Select a Scala profile !</scala.io.core.version>
+    <scala.io.file.artifactId>Select a Scala profile !</scala.io.file.artifactId>
+    <scala.io.file.version>Select a Scala profile !</scala.io.file.version>
+    <scala.arm.groupId>Select a Scala profile !</scala.arm.groupId>
+    <scala.arm.artifactId>Select a Scala profile !</scala.arm.artifactId>
+    <scala.arm.version>Select a Scala profile !</scala.arm.version>
+
+    <!-- linked to Scala IDE version -->
+    <repo.scala-ide>Select a Scala IDE profile !</repo.scala-ide>
+
+    <!-- other -->
     <version.tag>local</version.tag>
-    <weaving.hook.plugin.version>1.0.200.I20120427-0800</weaving.hook.plugin.version>
-    <repo.scala-ide>${repo.scala-ide.root}/sdk/e37/scala29/dev/site</repo.scala-ide>
-    <junit.version>4.10</junit.version>
-    <play.artifactId>play_2.9.2</play.artifactId>
-    <play.version>2.1-09142012</play.version>
-    <templates.artifactId>templates_2.9.2</templates.artifactId>
-    <templates.version>2.1-09142012</templates.version>
-    <scala.io.core.artifactId>scala-io-core_2.9.2</scala.io.core.artifactId>
-    <scala.io.core.version>0.4.1</scala.io.core.version>
-    <scala.io.file.artifactId>scala-io-file_2.9.2</scala.io.file.artifactId>
-    <scala.io.file.version>0.4.1</scala.io.file.version>
-    <scala.arm.groupId>com.github.jsuereth.scala-arm</scala.arm.groupId>
-    <scala.arm.artifactId>scala-arm_2.9.1</scala.arm.artifactId>
-    <scala.arm.version>1.1</scala.arm.version>
   </properties>
 
   <profiles>
     <profile>
-      <!-- this is the default profile, for the latest Scala IDE build -->
-      <!-- it is using the default values for the properties -->
-      <!-- latest Scala IDE build, Eclipse Indigo, Scala 2.9 -->
-      <id>scala-ide-milestone-indigo-scala-2.9</id>
-    </profile>
-    <profile>
-      <!-- latest Scala IDE build, Eclipse Juno, Scala 2.9 -->
-      <id>scala-ide-milestone-juno-scala-2.9</id>
+      <id>eclipse-indigo</id>
       <properties>
-        <eclipse.codename>juno</eclipse.codename>
-        <repo.eclipse>${repo.eclipse.juno}</repo.eclipse>
-        <repo.ajdt>${repo.ajdt.juno}</repo.ajdt>
-        <weaving.hook.plugin.version>1.0.200.v20120524-1707</weaving.hook.plugin.version>
-        <repo.scala-ide>${repo.scala-ide.root}/sdk/e38/scala29/dev/site</repo.scala-ide>
-      </properties>
-    </profile>
-    <profile>
-      <!-- latest Scala IDE build, Eclipse Indigo, Scala 2.10 -->
-      <id>scala-ide-milestone-indigo-scala-2.10</id>
-      <properties>
-        <eclipse.codename>juno</eclipse.codename>
+        <eclipse.codename>indigo</eclipse.codename>
         <repo.eclipse>${repo.eclipse.indigo}</repo.eclipse>
         <repo.ajdt>${repo.ajdt.indigo}</repo.ajdt>
-        <scala.version>2.10.0</scala.version>
+        <weaving.hook.plugin.version>1.0.200.I20120427-0800</weaving.hook.plugin.version>
+        <ecosystem-eclipse-version>e37</ecosystem-eclipse-version>
+        <nightly-eclipse-version>3.0.x</nightly-eclipse-version><!-- strange but right -->
+      </properties>
+    </profile>
+
+    <profile>
+      <id>eclipse-juno</id>
+      <properties>
+        <eclipse.codename>juno</eclipse.codename>
+        <repo.eclipse>${repo.eclipse.juno}</repo.eclipse>
+        <repo.ajdt>${repo.ajdt.juno}</repo.ajdt>
+        <weaving.hook.plugin.version>1.0.200.v20120524-1707</weaving.hook.plugin.version>
+        <ecosystem-eclipse-version>e38</ecosystem-eclipse-version>
+        <nightly-eclipse-version>juno</nightly-eclipse-version>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>scala-2.9.x</id>
+      <properties>
+        <scala.version>2.9.3-RC2</scala.version>
+        <version.suffix>2_09</version.suffix>
+        <scala.version.short>2.9</scala.version.short>
+        <ecosystem-scala-version>29</ecosystem-scala-version>
+
+        <play.artifactId>play_2.9.2</play.artifactId>
+        <play.version>2.1-09142012</play.version>
+        <templates.artifactId>templates_2.9.2</templates.artifactId>
+        <templates.version>2.1-09142012</templates.version>
+        <scala.io.core.artifactId>scala-io-core_2.9.2</scala.io.core.artifactId>
+        <scala.io.core.version>0.4.1</scala.io.core.version>
+        <scala.io.file.artifactId>scala-io-file_2.9.2</scala.io.file.artifactId>
+        <scala.io.file.version>0.4.1</scala.io.file.version>
+        <scala.arm.groupId>com.github.jsuereth.scala-arm</scala.arm.groupId>
+        <scala.arm.artifactId>scala-arm_2.9.1</scala.arm.artifactId>
+        <scala.arm.version>1.1</scala.arm.version>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>scala-2.10.x</id>
+      <properties>
+        <scala.version>2.10.1-RC2</scala.version>
         <version.suffix>2_10</version.suffix>
         <scala.version.short>2.10</scala.version.short>
-        <repo.scala-ide>${repo.scala-ide.root}/sdk/e37/scala210/dev/site</repo.scala-ide>
+        <ecosystem-scala-version>210</ecosystem-scala-version>
+
         <play.artifactId>play_2.10</play.artifactId>
         <play.version>2.1.0</play.version>
         <templates.artifactId>templates_2.10</templates.artifactId>
@@ -106,29 +139,25 @@
         <scala.arm.version>1.3</scala.arm.version>
       </properties>
     </profile>
+
     <profile>
-      <!-- latest Scala IDE build, Eclipse Juno, Scala 2.10 -->
-      <id>scala-ide-milestone-juno-scala-2.10</id>
+      <id>scala-ide-nightly</id>
       <properties>
-        <eclipse.codename>juno</eclipse.codename>
-        <repo.eclipse>${repo.eclipse.juno}</repo.eclipse>
-        <repo.ajdt>${repo.ajdt.juno}</repo.ajdt>
-        <scala.version>2.10.0</scala.version>
-        <version.suffix>2_10</version.suffix>
-        <scala.version.short>2.10</scala.version.short>
-        <weaving.hook.plugin.version>1.0.200.v20120524-1707</weaving.hook.plugin.version>
-        <repo.scala-ide>${repo.scala-ide.root}/sdk/e38/scala210/dev/site</repo.scala-ide>
-        <play.artifactId>play_2.10</play.artifactId>
-        <play.version>2.1.0</play.version>
-        <templates.artifactId>templates_2.10</templates.artifactId>
-        <templates.version>2.1.0</templates.version>
-        <scala.io.core.artifactId>scala-io-core_2.10</scala.io.core.artifactId>
-        <scala.io.core.version>0.4.2</scala.io.core.version>
-        <scala.io.file.artifactId>scala-io-file_2.10</scala.io.file.artifactId>
-        <scala.io.file.version>0.4.2</scala.io.file.version>
-        <scala.arm.groupId>com.jsuereth</scala.arm.groupId>
-        <scala.arm.artifactId>scala-arm_2.10</scala.arm.artifactId>
-        <scala.arm.version>1.3</scala.arm.version>
+         <repo.scala-ide>${repo.scala-ide.root}/nightly-scala-ide-${nightly-eclipse-version}-${ecosystem-scala-version}x</repo.scala-ide>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>scala-ide-dev</id>
+      <properties>
+        <repo.scala-ide>${repo.scala-ide.root}/sdk/${ecosystem-eclipse-version}/scala${ecosystem-scala-version}/dev/site</repo.scala-ide>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>scala-ide-stable (not available yet)</id>
+      <properties>
+        <repo.scala-ide>${repo.scala-ide.root}/sdk/${ecosystem-eclipse-version}/scala${ecosystem-scala-version}/stable/site</repo.scala-ide>
       </properties>
     </profile>
 

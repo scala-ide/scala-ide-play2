@@ -1,29 +1,36 @@
-scala-ide-plugin.g8
-===================
+# Scala IDE plugin for Play 2.x
 
-Giger8 template for Eclipse plugins based on the Scala IDE.
+This is an extension to Scala IDE to support Play 2.x routes and template files. 
 
-This template produces 5 Eclipse plugins:
+For user documentation, check the [wiki](https://github.com/scala-ide/scala-ide-play2/wiki).
 
-* the plugin itself
-* the `plugin.tests` fragment
+## Project structure
+
+The project is composed of 5 Eclipse plugins:
+
+* the core plugin
+* the test plugin
 * an Eclipse feature
 * an Eclipse source feature
 * an Eclipse update-site
 
-The projects can readily be imported inside Eclipse. Additionally, you have maven `pom` files
-based on Tycho, enabling command line builds.
+The projects can be imported inside Scala IDE. And they are fully configured to be compiled with maven and tycho.
 
-## Note:
+## Building
 
-There is no default profile. You need to specify a profile manually, choosing what version
-of the Scala IDE and Scala compiler you want to build against:
+The maven build is configured using a combination of 3 profiles:
 
-* `scala-ide-milestone-indigo-scala-2.9`
-* `scala-ide-milestone-juno-scala-2.9`
-* `scala-ide-milestone-indigo-scala-2.10`
-* `scala-ide-milestone-juno-scala-2.10`
+* An Eclipse platform profile:
+  * `eclipse-indigo`
+  * `eclipse-juno`
+* A Scala version profile:
+  * `scala-2.9.x`
+  * `scala-2.10.x`
+* A Scala IDE version profile:
+  * `scala-ide-nightly`
+  * `scala-ide-dev`
+  * `scala-ide-stable` (not available yet)
 
-Run maven like this:
+After choosing the flavor you wish to build, maven is run using:
 
-    mvn -P scala-ide-milestone-juno-scala-2.10 clean install
+    mvn -Peclipse-juno -Pscala-2.10.x -Pscala-ide-dev clean package
