@@ -21,10 +21,12 @@ import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import org.scalaide.play2.PlayPlugin
 import org.eclipse.ui.texteditor.SimpleMarkerAnnotation
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitDocumentProvider.ProblemAnnotation
+import org.eclipse.jface.text.source.IAnnotationModelExtension
 
 class TemplateReconcilingStrategy(textEditor: /*ITextEditor*/ TemplateEditor) extends IReconcilingStrategy with HasLogger {
   private var document: IDocument = _
-  private lazy val annotationModel = textEditor.getDocumentProvider.getAnnotationModel(textEditor.getEditorInput)
+  private lazy val annotationModel = 
+    textEditor.getDocumentProvider.getAnnotationModel(textEditor.getEditorInput).asInstanceOf[IAnnotationModelExtension]
 
   private lazy val templateUnit = TemplateCompilationUnit.fromEditor(textEditor)
 
@@ -52,20 +54,15 @@ class TemplateReconcilingStrategy(textEditor: /*ITextEditor*/ TemplateEditor) ex
   }
 
   private def updateErrorAnnotations(errors: List[IProblem]) {
-    def position(p: IProblem) = new Position(p.getSourceStart, p.getSourceEnd - p.getSourceStart + 1)
+    import scala.collection.JavaConverters._
 
-    previousAnnotations.foreach(annotationModel.removeAnnotation _)
-    templateUnit.clearBuildErrors
+    def position(p: IProblem) =
+      new Position(p.getSourceStart, p.getSourceEnd - p.getSourceStart + 1)
 
-    for (e <- errors) {
-      createMarkerAnnotation(e)
-      val annotation = new ProblemAnnotation(e, null) {
-        setQuickFixable(true)
-      }
-      annotationModel.addAnnotation(annotation, position(e))
+    val newAnnotations = for (e <- errors) yield { (new ProblemAnnotation(e, null), position(e)) }
 
-      previousAnnotations ::= annotation
-    }
+    annotationModel.replaceAnnotations(previousAnnotations.toArray, newAnnotations.toMap.asJava)
+    previousAnnotations = newAnnotations.unzip._1
   }
 
   /**
