@@ -179,7 +179,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
   /** updates template virtual file
    */
   def updateTemplateSourceFile() = {
-    new PrintStream(templateSourceFile.output).print(document.get.get)
+    new PrintStream(templateSourceFile.output).print(document.map(_.get))
   }
 
 }
