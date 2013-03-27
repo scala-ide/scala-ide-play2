@@ -44,6 +44,7 @@ class TemplateReconcilingStrategy(textEditor: /*ITextEditor*/ TemplateEditor) ex
     updateErrorAnnotations(errors)
   }
 
+  @volatile
   private var previousAnnotations = List[ProblemAnnotation]()
 
   def createMarkerAnnotation(problem: IProblem) {
@@ -53,7 +54,6 @@ class TemplateReconcilingStrategy(textEditor: /*ITextEditor*/ TemplateEditor) ex
   private def updateErrorAnnotations(errors: List[IProblem]) {
     def position(p: IProblem) = new Position(p.getSourceStart, p.getSourceEnd - p.getSourceStart + 1)
 
-    annotationModel.connect(document)
     previousAnnotations.foreach(annotationModel.removeAnnotation _)
     templateUnit.clearBuildErrors
 
@@ -66,7 +66,6 @@ class TemplateReconcilingStrategy(textEditor: /*ITextEditor*/ TemplateEditor) ex
 
       previousAnnotations ::= annotation
     }
-    annotationModel.disconnect(document)
   }
 
   /**
