@@ -36,17 +36,21 @@ class CompletionProposalComputer(textEditor: ITextEditor) extends ScalaCompletio
 
   private def findCompletions(viewer: ITextViewer, position: Int, tcu: TemplateCompilationUnit)(sourceFile: SourceFile, compiler: ScalaPresentationCompiler): List[ICompletionProposal] = {
     val region = ScalaWordFinder.findCompletionPoint(tcu.getTemplateContents, position)
-    val mappedRegion = tcu.mapTemplateToScalaRegion(region.asInstanceOf[Region])
-    val mappedPosition = tcu.mapTemplateToScalaOffset(position - 1) + 1
-
-    val res = findCompletions(mappedRegion)(mappedPosition, tcu)(sourceFile, compiler).sortBy(_.relevance).reverse
-
-    res.map(prop => {
-      val newProp = prop.copy(startPos = prop.startPos - mappedPosition + position)
-
-      ScalaCompletionProposal(viewer.getSelectionProvider)(newProp)
-    })
-
+    
+    val completions = {
+      for {
+        mappedRegion <- tcu.mapTemplateToScalaRegion(region)
+        mappedPosition <- tcu.mapTemplateToScalaOffset(position - 1)
+        realPosition = mappedPosition + 1
+      } yield {
+        findCompletions(mappedRegion)(realPosition, tcu)(sourceFile, compiler).sortBy(_.relevance).reverse map { prop =>
+          val newProp = prop.copy(startPos = prop.startPos - realPosition + position)
+          ScalaCompletionProposal(viewer.getSelectionProvider)(newProp)  
+        }
+      }
+    }
+    
+    completions getOrElse Nil
   }
 
   def computeContextInformation(viewer: ITextViewer, offset: Int): Array[IContextInformation] = {

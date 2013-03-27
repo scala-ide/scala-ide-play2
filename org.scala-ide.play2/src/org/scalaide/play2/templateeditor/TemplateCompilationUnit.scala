@@ -1,40 +1,38 @@
 package org.scalaide.play2.templateeditor
 
-import java.io.File
+import java.io.PrintStream
+
 import scala.tools.eclipse.InteractiveCompilationUnit
 import scala.tools.eclipse.ScalaPlugin
 import scala.tools.eclipse.ScalaPresentationCompiler
-import scala.tools.eclipse.resources.MarkerFactory
-import scala.tools.eclipse.util.EclipseFile
+import scala.tools.eclipse.logging.HasLogger
 import scala.tools.eclipse.util.EclipseResource
 import scala.tools.nsc.interactive.Response
 import scala.tools.nsc.io.AbstractFile
+import scala.tools.nsc.io.VirtualFile
 import scala.tools.nsc.util.BatchSourceFile
 import scala.tools.nsc.util.SourceFile
+import scala.util.Try
+
 import org.eclipse.core.resources.IFile
-import org.eclipse.core.resources.IMarker
-import org.eclipse.core.resources.IResource
 import org.eclipse.jdt.core.compiler.IProblem
 import org.eclipse.jface.text.IDocument
-import org.eclipse.jface.text.Position
+import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.Region
 import org.eclipse.ui.IEditorInput
 import org.eclipse.ui.part.FileEditorInput
-import org.eclipse.ui.texteditor.ITextEditor
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.PlayProject
-import org.scalaide.play2.templateeditor.compiler.PositionHelper
-import scala.tools.nsc.io.VirtualFile
-import java.io.PrintStream
-import org.eclipse.jface.text.IRegion
 import org.scalaide.play2.templateeditor.compiler.CompilerUsing
+import org.scalaide.play2.templateeditor.compiler.PositionHelper
+
 import play.templates.GeneratedSourceVirtual
 
 /** A Template compilation unit connects the presentation compiler
  *  view of a tmeplate with the Eclipse IDE view of the underlying
  *  resource.
  */
-case class TemplateCompilationUnit(val workspaceFile: IFile) extends InteractiveCompilationUnit {
+case class TemplateCompilationUnit(val workspaceFile: IFile) extends InteractiveCompilationUnit with HasLogger {
 
   private var document: Option[IDocument] = None
 
@@ -71,7 +69,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
   override def getContents: Array[Char] = {
     withSourceFile({ (sourceFile, compiler) =>
       sourceFile.content
-    })()
+    })(null)
   }
 
   /** Return contents of template file
@@ -116,61 +114,46 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
   }
 
   override def withSourceFile[T](op: (SourceFile, ScalaPresentationCompiler) => T)(orElse: => T = scalaProject.defaultOrElse): T = {
-    playProject.withSourceFile(this)(op)
-  }
-
-  def clearBuildErrors(): Unit = {
-    workspaceFile.deleteMarkers(PlayPlugin.ProblemMarkerId, true, IResource.DEPTH_INFINITE)
-  }
-
-  def reportBuildError(errorMsg: String, start: Int, end: Int, line: Int): Unit = {
-    reportBuildError(errorMsg, new Position(start, end - start + 1), line)
-  }
-
-  def reportBuildError(errorMsg: String, position: Position, line: Int): Unit = {
-    def positionConvertor(position: Position, line: Int) = {
-      MarkerFactory.RegionPosition(position.offset, position.length, line)
-    }
-    val pos = positionConvertor(position, line)
-    TemplateProblemMarker.create(workspaceFile, IMarker.SEVERITY_ERROR, errorMsg, pos)
+    playProject.withSourceFile(this)(op) getOrElse (orElse)
   }
 
   /** maps a region in template file into generated scala file
    */
-  def mapTemplateToScalaRegion(region: IRegion) = {
-    synchronized {
-      val offset = mapTemplateToScalaOffset(region.getOffset())
-      val end = mapTemplateToScalaOffset(region.getOffset() + region.getLength() - 1)
-      new Region(offset, end - offset + 1)
-    }
+  def mapTemplateToScalaRegion(region: IRegion): Option[IRegion] = synchronized {
+    for { 
+      start <- mapTemplateToScalaOffset(region.getOffset())
+      end <- mapTemplateToScalaOffset(region.getOffset() + region.getLength() - 1)
+    } yield new Region(start, end - start + 1)
   }
 
   /** maps an offset in template file into generated scala file
    */
-  def mapTemplateToScalaOffset(offset: Int) = {
-    playProject.withPresentationCompiler { pc =>
-      val gen = generatedSource()
-      PositionHelper.mapSourcePosition(gen.matrix, offset)
+  def mapTemplateToScalaOffset(offset: Int): Option[Int] = synchronized {
+    for(genSource <- generatedSource().toOption) yield {
+      playProject.withPresentationCompiler { pc =>
+        PositionHelper.mapSourcePosition(genSource.matrix, offset)
+      }
     }
   }
 
   /** Return the offset in the template file, given an offset in the generated source file.
    *  It is the inverse of `mapTemplateToScalaOffset`. */
-  def templateOffset(generatedOffset: Int): Int = {
-    generatedSource().mapPosition(generatedOffset)
+  def templateOffset(generatedOffset: Int): Option[Int] = synchronized {
+    generatedSource().toOption.map(_.mapPosition(generatedOffset))
   }
-
-  private var cachedGenerated = generatedSource()
+  /* guarded by `this`*/
+  private var cachedGenerated: Try[GeneratedSourceVirtual] = generatedSource()
+  /* guarded by `this`*/
   private var oldContents = getTemplateContents
 
   /** Returns generated source of the given compilation unit.
    * 
    *  It caches results in order to save on (relatively expensive) calls to the template compiler.
    */
-  def generatedSource(): GeneratedSourceVirtual = {
-    if (oldContents != getTemplateContents) synchronized {
+  def generatedSource(): Try[GeneratedSourceVirtual] = synchronized {
+    if (oldContents != getTemplateContents) {
       oldContents = getTemplateContents
-      println("[generating template] " + getTemplateFullPath)
+      logger.debug("[generating template] " + getTemplateFullPath)
       cachedGenerated = CompilerUsing.compileTemplateToScalaVirtual(getTemplateContents.toString(), file.file, playProject)
     }
     cachedGenerated
@@ -183,8 +166,6 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
   }
 
 }
-
-object TemplateProblemMarker extends MarkerFactory(PlayPlugin.ProblemMarkerId)
 
 object TemplateCompilationUnit {
   private def fromEditorInput(editorInput: IEditorInput): TemplateCompilationUnit = TemplateCompilationUnit(getFile(editorInput))

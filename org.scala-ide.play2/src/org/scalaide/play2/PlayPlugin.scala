@@ -10,7 +10,6 @@ object PlayPlugin {
   @volatile var plugin: PlayPlugin = _
 
   private final val PluginId = "org.scala-ide.play2"
-  final val ProblemMarkerId = PluginId + ".templateProblem"
   final val RouteFormatterMarginId = PluginId + ".routeeditor.margin"
   final val TemplateExtension = "scala.html"
 
@@ -24,14 +23,14 @@ object PlayPlugin {
 class PlayPlugin extends AbstractUIPlugin {
   import PlayPlugin._
   override def start(context: BundleContext) = {
-    super.start(context);
-    PlayPlugin.plugin = this;
+    super.start(context)
+    PlayPlugin.plugin = this
     initializeProjects()
   }
 
   override def stop(context: BundleContext) = {
-    PlayPlugin.plugin = null;
-    super.stop(context);
+    PlayPlugin.plugin = null
+    super.stop(context)
   }
 
   def asPlayProject(project: IProject): Option[PlayProject] = {

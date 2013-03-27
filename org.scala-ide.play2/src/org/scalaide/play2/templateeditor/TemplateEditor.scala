@@ -1,32 +1,24 @@
 package org.scalaide.play2.templateeditor
 
+import scala.collection.JavaConverters
+import scala.tools.eclipse.ISourceViewerEditor
+import scala.tools.eclipse.InteractiveCompilationUnit
+import scala.tools.eclipse.ui.InteractiveCompilationUnitEditor
 import scala.tools.eclipse.util.SWTUtils.fnToPropertyChangeListener
-import org.eclipse.jdt.internal.ui.text.java.hover.SourceViewerInformationControl
-import org.eclipse.jface.preference.IPreferenceStore
-import org.eclipse.jface.text.IInformationControlCreator
-import org.eclipse.jface.text.source.IOverviewRuler
-import org.eclipse.jface.text.source.IVerticalRuler
-import org.eclipse.jface.text.source.projection.ProjectionSupport
-import org.eclipse.jface.text.source.projection.ProjectionViewer
+
+import org.eclipse.jdt.core.compiler.IProblem
+import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitDocumentProvider.ProblemAnnotation
+import org.eclipse.jface.text.Position
+import org.eclipse.jface.text.source.IAnnotationModel
+import org.eclipse.jface.text.source.IAnnotationModelExtension
+import org.eclipse.jface.text.source.IAnnotationModelExtension2
+import org.eclipse.jface.text.source.ISourceViewer
 import org.eclipse.jface.util.IPropertyChangeListener
 import org.eclipse.jface.util.PropertyChangeEvent
-import org.eclipse.swt.SWT
-import org.eclipse.swt.layout.FillLayout
-import org.eclipse.swt.layout.GridData
-import org.eclipse.swt.layout.GridLayout
-import org.eclipse.swt.widgets.Composite
-import org.eclipse.swt.widgets.Shell
 import org.eclipse.ui.editors.text.EditorsUI
 import org.eclipse.ui.editors.text.TextEditor
-import org.eclipse.ui.texteditor.AnnotationPreference
-import org.eclipse.ui.texteditor.MarkerAnnotationPreferences
-import org.scalaide.play2.PlayPlugin
-import scala.tools.eclipse.ISourceViewerEditor
-import org.eclipse.jface.text.source.ISourceViewer
 import org.eclipse.ui.texteditor.ChainedPreferenceStore
-import org.eclipse.jdt.internal.ui.JavaPlugin
-import scala.tools.eclipse.ui.InteractiveCompilationUnitEditor
-import scala.tools.eclipse.InteractiveCompilationUnit
+import org.scalaide.play2.PlayPlugin
 
 class TemplateEditor extends TextEditor with ISourceViewerEditor with InteractiveCompilationUnitEditor {
   private lazy val preferenceStore = new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.prefStore))
@@ -38,7 +30,7 @@ class TemplateEditor extends TextEditor with ISourceViewerEditor with Interactiv
   setDocumentProvider(documentProvider);
 
   override def dispose() = {
-    super.dispose();
+    super.dispose()
     PlayPlugin.prefStore.removePropertyChangeListener(preferenceListener)
   }
 
@@ -59,4 +51,23 @@ class TemplateEditor extends TextEditor with ISourceViewerEditor with Interactiv
   override def getViewer: ISourceViewer = getSourceViewer
   
   override def getInteractiveCompilationUnit(): InteractiveCompilationUnit = TemplateCompilationUnit.fromEditor(this)
+
+  @volatile
+  private var previousAnnotations: List[ProblemAnnotation] = Nil
+  
+  private type IAnnotationModelExtended = IAnnotationModel with IAnnotationModelExtension with IAnnotationModelExtension2
+
+  /** Return the annotation model associated with the current document. */
+  private def annotationModel: IAnnotationModelExtended = getDocumentProvider.getAnnotationModel(getEditorInput).asInstanceOf[IAnnotationModelExtended]
+
+  def updateErrorAnnotations(errors: List[IProblem]) {
+    import scala.collection.JavaConverters._
+
+    def position(p: IProblem) = new Position(p.getSourceStart, p.getSourceEnd - p.getSourceStart + 1)
+
+    val newAnnotations = for (e <- errors) yield { (new ProblemAnnotation(e, null), position(e)) }
+
+    annotationModel.replaceAnnotations(previousAnnotations.toArray, newAnnotations.toMap.asJava)
+    previousAnnotations = newAnnotations.unzip._1 
+  }
 }
