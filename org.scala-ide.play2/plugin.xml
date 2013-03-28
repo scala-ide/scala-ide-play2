@@ -73,41 +73,6 @@
       </initializer>
    </extension>
    <extension
-         point="org.eclipse.ui.editors.annotationTypes">
-      <type
-            markerSeverity="2"
-            markerType="org.scala-ide.play2.templateProblem"
-            name="org.scala-ide.play2.error"
-            super="org.eclipse.ui.workbench.texteditor.error">
-      </type>
-      <type
-            markerSeverity="1"
-            markerType="org.scala-ide.play2.templateProblem"
-            name="org.scala-ide.play2.warning"
-            super="org.eclipse.ui.workbench.texteditor.warning">
-      </type>
-      <type
-            markerSeverity="0"
-            markerType="org.scala-ide.play2.templateProblem"
-            name="org.scala-ide.play2.info"
-            super="org.eclipse.ui.workbench.texteditor.info">
-      </type>
-   </extension>
-   <extension
-         id="templateProblem"
-         name="Template Problem"
-         point="org.eclipse.core.resources.markers">
-      <super
-            type="org.eclipse.core.resources.problemmarker">
-      </super>
-      <super
-            type="org.eclipse.core.resources.textmarker">
-      </super>
-      <persistent
-            value="false">
-      </persistent>
-   </extension>
-   <extension
          point="org.eclipse.core.contenttype.contentTypes">
       <content-type
             base-type="org.eclipse.core.runtime.text"

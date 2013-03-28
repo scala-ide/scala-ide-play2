@@ -16,8 +16,7 @@
         <artifactId>tycho-surefire-plugin</artifactId>
         <configuration>
           <testSuite>${project.artifactId}</testSuite>
-          <testClass>org.scalaide.play2.RouteTestSuite</testClass>
-          <testClass>org.scalaide.play2.TemplateTestSuite</testClass>
+          <testClass>org.scalaide.play2.TestSuite</testClass>
         </configuration>
       </plugin>
     </plugins>

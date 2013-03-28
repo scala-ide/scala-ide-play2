@@ -16,7 +16,7 @@ class PlayProject private (val scalaProject: ScalaProject) {
     op(presentationCompiler)
   }
 
-  def withSourceFile[T](tcu: TemplateCompilationUnit)(op: (SourceFile, ScalaPresentationCompiler) => T): T = {
+  def withSourceFile[T](tcu: TemplateCompilationUnit)(op: (SourceFile, ScalaPresentationCompiler) => T): Option[T] = {
     withPresentationCompiler { compiler =>
       compiler.withSourceFile(tcu)(op)
     }
