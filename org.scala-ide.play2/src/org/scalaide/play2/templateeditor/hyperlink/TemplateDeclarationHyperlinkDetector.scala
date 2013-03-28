@@ -21,6 +21,7 @@ import org.eclipse.jface.text.Region
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import scala.tools.eclipse.hyperlink.text.detector.DeclarationHyperlinkDetector
+import scala.tools.eclipse.util.Utils
 
 class TemplateDeclarationHyperlinkDetector extends DeclarationHyperlinkDetector {
 
@@ -32,10 +33,15 @@ class TemplateDeclarationHyperlinkDetector extends DeclarationHyperlinkDetector 
     }
     if (doc.getChar(currentSelection.getOffset()) == '.') // otherwise it will generate an error
       return Nil
-    val wordRegion = ScalaWordFinder.findWord(doc.get, currentSelection.getOffset).asInstanceOf[Region]
-    val mappedRegion = icu.asInstanceOf[TemplateCompilationUnit].mapTemplateToScalaRegion(wordRegion)
+    val wordRegion = ScalaWordFinder.findWord(doc.get, currentSelection.getOffset)
+    
+    import Utils.any2optionable
+    val tu = icu.asInstanceOfOpt[TemplateCompilationUnit]
 
-    super.findHyperlinks(textEditor, icu, wordRegion, mappedRegion)
+    tu.flatMap(_.mapTemplateToScalaRegion(wordRegion)) match {
+      case Some(mappedRegion) => super.findHyperlinks(textEditor, icu, wordRegion, mappedRegion)
+      case None => Nil
+    }
   }
 
 }

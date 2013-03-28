@@ -1,12 +1,20 @@
 package org.scalaide.play2.templateeditor.compiler
 
+import java.io.File
+
+import scala.util.Failure
+import scala.util.Try
+
+import org.scalaide.play2.PlayProject
+
+import play.templates.GeneratedSourceVirtual
+
 import play.templates.ScalaTemplateCompiler
 import play.templates.ScalaTemplateCompiler._
-import java.io.File
-import play.templates.GeneratedSource
 import play.templates.TemplateCompilationError
 import scalax.file.Path
-import org.scalaide.play2.PlayProject
+
+
 /**
  * a helper for using template compiler
  */
@@ -29,16 +37,17 @@ import views.html._"""
    * invokes compile method of template compiler and returns generated source object or
    * in the case of error, returns appropriate exception
    */
-  def compileTemplateToScalaVirtual(content: String, source: File, playProject: PlayProject) = {
+  def compileTemplateToScalaVirtual(content: String, source: File, playProject: PlayProject): Try[GeneratedSourceVirtual] = {
     val sourcePath = playProject.sourceDir.getAbsolutePath()
     if (source.getAbsolutePath().indexOf(sourcePath) == -1)
       throw new Exception("Template files must locate in '" + sourcePath + "' or its subfolders!")
-    try {
+
+    Try {
       templateCompiler.compileVirtual(content, source, playProject.sourceDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", additionalImports)
-    } catch {
-      case e @ TemplateCompilationError(source: File, message: String, line: Int, column: Int) =>
+    } recoverWith {
+      case TemplateCompilationError(source, message, line, column) =>
         val offset = PositionHelper.convertLineColumnToOffset(content, line, column)
-        throw new TemplateToScalaCompilationError(source, message, offset, line, column)
+        Failure(TemplateToScalaCompilationError(source, message, offset, line, column))
     }
   }
 
@@ -46,6 +55,24 @@ import views.html._"""
 
 case class TemplateToScalaCompilationError(source: File, message: String, offset: Int, line: Int, column: Int) extends RuntimeException(message) {
   override def toString = source.getName + ": " + message + offset + " " + line + "." + column
+
+  import org.eclipse.jdt.core.compiler.IProblem
+  import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities
+  import org.eclipse.jdt.internal.compiler.problem.DefaultProblem
+
+  def toProblem: IProblem = {
+    val severityLevel = ProblemSeverities.Error
+    new DefaultProblem(
+      source.getAbsolutePath().toCharArray,
+      message,
+      0,
+      Array.empty[String],
+      severityLevel,
+      offset - 1,
+      offset - 1,
+      line,
+      column)
+  }
 }
 
 object PositionHelper {

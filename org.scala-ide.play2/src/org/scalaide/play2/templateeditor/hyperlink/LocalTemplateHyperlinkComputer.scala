@@ -37,27 +37,36 @@ class LocalTemplateHyperlinkComputer extends AbstractHyperlinkDetector {
         return Nil
 
       val wordRegion = ScalaWordFinder.findWord(doc.get, currentSelection.getOffset).asInstanceOf[IRegion]
-      val mappedRegion = icu.mapTemplateToScalaRegion(wordRegion)
-      icu.withSourceFile { (source, compiler) =>
-        import compiler._
-        def localSymbol(sym: compiler.Symbol): Boolean = (
-          (sym ne null) &&
-          (sym ne NoSymbol) &&
-          sym.pos.isDefined &&
-          sym.pos.source == source)
+      icu.mapTemplateToScalaRegion(wordRegion) match {
+        case Some(mappedRegion) =>
+          icu.withSourceFile { (source, compiler) =>
+            import compiler._
+            def localSymbol(sym: compiler.Symbol): Boolean = {
+              (sym ne null) &&
+              (sym ne NoSymbol) &&
+              sym.pos.isDefined &&
+              sym.pos.source == source
+            }
 
-        val pos = compiler.rangePos(source, mappedRegion.getOffset(), mappedRegion.getOffset(), mappedRegion.getOffset() + mappedRegion.getLength())
-        val response = new Response[Tree]
-        compiler.askTypeAt(pos, response)
-        response.get match {
-          case Left(tree: Tree) if localSymbol(tree.symbol) =>
-            val sym = tree.symbol
-            val offset = icu.templateOffset(sym.pos.startOrPoint)
-            val hyper = Hyperlink.withText(sym.name.toString)(icu, offset, sym.name.length, sym.kindString + sym.nameString, wordRegion)
-            List(hyper)
-          case _ => Nil
-        }
-      }(Nil)
+            val pos = compiler.rangePos(source, mappedRegion.getOffset(), mappedRegion.getOffset(), mappedRegion.getOffset() + mappedRegion.getLength())
+            val response = new Response[Tree]
+            compiler.askTypeAt(pos, response)
+            response.get match {
+              case Left(tree: Tree) if localSymbol(tree.symbol) =>
+                val sym = tree.symbol
+                icu.templateOffset(sym.pos.startOrPoint) match {
+                  case Some(offset) => 
+                    val hyper = Hyperlink.withText(sym.name.toString)(icu, offset, sym.name.length, sym.kindString + sym.nameString, wordRegion)
+                    List(hyper)
+                  case None => 
+                    Nil
+                }
+              case _ => Nil
+            }
+          }(Nil)
+
+        case None => Nil
+      }
     }
 
     if (textEditor == null) null // can be null if generated through ScalaPreviewerFactory
