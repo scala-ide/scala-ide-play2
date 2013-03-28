@@ -5,6 +5,7 @@ import org.eclipse.core.resources.IProject
 import org.eclipse.ui.plugin.AbstractUIPlugin
 import org.osgi.framework.BundleContext
 import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.core.runtime.Status
 
 object PlayPlugin {
   @volatile var plugin: PlayPlugin = _
@@ -17,6 +18,10 @@ object PlayPlugin {
 
   def getImageDescriptor(path: String) = {
     AbstractUIPlugin.imageDescriptorFromPlugin(PluginId, path);
+  }
+
+  def log(status: Int, msg: String, ex: Throwable = null) {
+    plugin.getLog.log(new Status(status, plugin.getBundle().getSymbolicName(), msg, ex))
   }
 }
 
@@ -45,5 +50,4 @@ class PlayPlugin extends AbstractUIPlugin {
       playProject <- asPlayProject(iProject)
     } playProject.initialize()
   }
-
 }

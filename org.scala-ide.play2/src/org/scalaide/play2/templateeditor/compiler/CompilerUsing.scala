@@ -1,24 +1,20 @@
 package org.scalaide.play2.templateeditor.compiler
 
 import java.io.File
-
 import scala.util.Failure
 import scala.util.Try
-
 import org.scalaide.play2.PlayProject
-
 import play.templates.GeneratedSourceVirtual
-
 import play.templates.ScalaTemplateCompiler
 import play.templates.ScalaTemplateCompiler._
 import play.templates.TemplateCompilationError
 import scalax.file.Path
-
+import scala.tools.eclipse.logging.HasLogger
 
 /**
  * a helper for using template compiler
  */
-object CompilerUsing {
+object CompilerUsing extends HasLogger {
   val templateCompiler = ScalaTemplateCompiler
   val additionalImports = """import play.templates._
 import play.templates.TemplateMagic._
@@ -40,7 +36,7 @@ import views.html._"""
   def compileTemplateToScalaVirtual(content: String, source: File, playProject: PlayProject): Try[GeneratedSourceVirtual] = {
     val sourcePath = playProject.sourceDir.getAbsolutePath()
     if (source.getAbsolutePath().indexOf(sourcePath) == -1)
-      throw new Exception("Template files must locate in '" + sourcePath + "' or its subfolders!")
+      logger.debug(s"Template file '${source.getAbsolutePath}' must be located in '$sourcePath' or one of its subfolders!")
 
     Try {
       templateCompiler.compileVirtual(content, source, playProject.sourceDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", additionalImports)
