@@ -182,8 +182,8 @@
 
   <!-- scm configuration is require to extract the github hash-->
   <scm>
-    <connection>scm:git://github.com/skyluc/plugin.git</connection>
-    <url>https://github.com/skyluc/plugin</url>
+    <connection>scm:git://github.com/scala-ide/scala-ide-play2.git</connection>
+    <url>https://github.com/scala-ide/scala-ide-play2</url>
   </scm>
 
   <dependencyManagement>
