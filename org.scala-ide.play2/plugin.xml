@@ -79,7 +79,7 @@
             file-extensions="html"
             file-names="*.scala.html"
             id="org.scalaide.play2.templateSource"
-            name="%templateSourceName"
+            name="Play Template File"
             priority="high">
       </content-type>
    </extension>
