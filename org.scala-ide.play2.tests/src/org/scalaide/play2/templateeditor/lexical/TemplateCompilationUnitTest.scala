@@ -65,6 +65,24 @@ class TemplateCompilationUnitTest {
     val tu = TemplateCompilationUnit(tFile)
     assertTrue(tu.generatedSource.isSuccess)
   }
+
+  @Test
+  def scala_nature_is_automatically_added_when_creating_template_unit() {
+    assertTrue(project.hasScalaNature)
+
+    // remove the Scala nature
+    import scala.tools.eclipse.actions.ToggleScalaNatureAction
+    val toggleScalaNature = new ToggleScalaNatureAction()
+    toggleScalaNature.performAction(project.underlying)
+    
+    assertFalse("The test project should not have the Scala nature at this point.", project.hasScalaNature)
+
+    val indexFile = file("app/views/index.scala.html")
+    val templateCU = TemplateCompilationUnit(indexFile)
+
+    assertTrue("Creating a `TemplateCompilationUnit` should force the underlying project to automatically add the Scala nature.", project.hasScalaNature)
+  }
+  
 }
 
 /**
