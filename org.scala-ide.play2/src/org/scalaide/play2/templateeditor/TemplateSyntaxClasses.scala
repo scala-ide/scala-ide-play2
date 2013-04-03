@@ -16,7 +16,9 @@ object TemplateSyntaxClasses {
     ScalaSyntaxClasses.DEFAULT,
     ScalaSyntaxClasses.OPERATOR,
     ScalaSyntaxClasses.BRACKET,
-    ScalaSyntaxClasses.RETURN))
+    ScalaSyntaxClasses.RETURN,
+    ScalaSyntaxClasses.SYMBOL,
+    ScalaSyntaxClasses.NUMBER_LITERAL))
 
   val htmlCategory = Category("HTML", List(ScalaSyntaxClasses.XML_COMMENT, 
     ScalaSyntaxClasses.XML_ATTRIBUTE_VALUE, 
