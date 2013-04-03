@@ -1,11 +1,14 @@
 package org.scalaide.play2
 
 import scala.tools.eclipse.ScalaPlugin
+
 import org.eclipse.core.resources.IProject
-import org.eclipse.ui.plugin.AbstractUIPlugin
-import org.osgi.framework.BundleContext
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.Status
+import org.eclipse.jface.preference.IPreferenceStore
+import org.eclipse.jface.resource.ImageDescriptor
+import org.eclipse.ui.plugin.AbstractUIPlugin
+import org.osgi.framework.BundleContext
 
 object PlayPlugin {
   @volatile var plugin: PlayPlugin = _
@@ -14,26 +17,25 @@ object PlayPlugin {
   final val RouteFormatterMarginId = PluginId + ".routeeditor.margin"
   final val TemplateExtension = "scala.html"
 
-  def prefStore = plugin.getPreferenceStore
+  def prefStore: IPreferenceStore = plugin.getPreferenceStore
 
-  def getImageDescriptor(path: String) = {
+  def getImageDescriptor(path: String): ImageDescriptor = {
     AbstractUIPlugin.imageDescriptorFromPlugin(PluginId, path);
   }
 
-  def log(status: Int, msg: String, ex: Throwable = null) {
+  def log(status: Int, msg: String, ex: Throwable = null): Unit = {
     plugin.getLog.log(new Status(status, plugin.getBundle().getSymbolicName(), msg, ex))
   }
 }
 
 class PlayPlugin extends AbstractUIPlugin {
-  import PlayPlugin._
-  override def start(context: BundleContext) = {
+  override def start(context: BundleContext): Unit = {
     super.start(context)
     PlayPlugin.plugin = this
     initializeProjects()
   }
 
-  override def stop(context: BundleContext) = {
+  override def stop(context: BundleContext): Unit = {
     PlayPlugin.plugin = null
     super.stop(context)
   }
@@ -43,7 +45,7 @@ class PlayPlugin extends AbstractUIPlugin {
     scalaProject map (PlayProject(_))
   }
   
-  def initializeProjects() = {
+  private def initializeProjects(): Unit = {
     for {
       iProject <- ResourcesPlugin.getWorkspace.getRoot.getProjects
       if iProject.isOpen

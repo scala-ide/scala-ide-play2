@@ -52,7 +52,7 @@
     <scala.version.short>2.10</scala.version.short>
     <ecosystem-scala-version>210</ecosystem-scala-version>
 
-    <!-- play version depend on Scala version. 2.9.x -> 2.0.x, 2.10.x -> 2.1.x !-->
+    <!-- play version depend on Scala version. 2.10.x -> 2.1.x !-->
     <play.artifactId>play_2.10</play.artifactId>
     <play.version>2.1.0</play.version>
     <templates.artifactId>templates_2.10</templates.artifactId>
