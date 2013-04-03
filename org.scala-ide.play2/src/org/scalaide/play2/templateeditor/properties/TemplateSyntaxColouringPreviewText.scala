@@ -8,12 +8,14 @@ object TemplateSyntaxColouringPreviewText {
 @{
     class A {
       val b = "some string"
+      val n = 12.3
+      println("sym" + 'sym)
     }
-    
+
     new A
 }
 @items.foreach { item =>
-    @item
+    @{return item}
 }
 </html>"""
 

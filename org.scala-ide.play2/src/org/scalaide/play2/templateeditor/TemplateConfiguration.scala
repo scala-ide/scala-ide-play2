@@ -34,6 +34,14 @@ import org.scalaide.play2.properties.PropertyChangeHandler
 import org.scalaide.play2.templateeditor.lexical.TemplateDefaultScanner
 import org.scalaide.play2.templateeditor.hyperlink.LocalTemplateHyperlinkComputer
 import org.eclipse.jface.text.ITextHover
+import org.eclipse.jface.text.IAutoEditStrategy
+import scala.tools.eclipse.lexical.ScalaPartitions
+import org.eclipse.jdt.ui.text.IJavaPartitions
+import scala.tools.eclipse.ui.StringAutoEditStrategy
+import scala.tools.eclipse.ui.BracketAutoEditStrategy
+import scala.tools.eclipse.ui.MultiLineStringAutoEditStrategy
+import scala.tools.eclipse.ui.LiteralAutoEditStrategy
+import org.eclipse.jdt.internal.ui.text.java.SmartSemicolonAutoEditStrategy
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration with PropertyChangeHandler {
 
@@ -45,7 +53,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
 
   private val plainScanner = new SingleTokenScanner(TemplateSyntaxClasses.PLAIN, colorManager, prefStore)
 
-  private val scalaScanner = new ScalaCodeScanner(colorManager, prefStore, ScalaVersions.DEFAULT)
+  private val scalaScanner = new ScalaCodeScanner(colorManager, prefStore, ScalaVersions.Scala_2_10)
 
   private val commentScanner = new SingleTokenScanner(TemplateSyntaxClasses.COMMENT, colorManager, prefStore)
 
@@ -125,6 +133,24 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
   override def getTextHover(sv: ISourceViewer, contentType: String) = {
     getTextHover(sv, contentType, ITextViewerExtension2.DEFAULT_HOVER_STATE_MASK);
   }
+
+  /** Add a few auto-edit strategies for Scala code.
+   *
+   *  @see scala.tools.eclipse.ScalaSourceViewerConfiguration
+   */
+  override def getAutoEditStrategies(sourceViewer: ISourceViewer, contentType: String): Array[IAutoEditStrategy] = {
+    val partitioning = getConfiguredDocumentPartitioning(sourceViewer)
+    contentType match {
+      case TemplatePartitions.TEMPLATE_SCALA | IDocument.DEFAULT_CONTENT_TYPE =>
+        Array(
+          new SmartSemicolonAutoEditStrategy(partitioning),
+          new BracketAutoEditStrategy(prefStore),
+          new LiteralAutoEditStrategy(prefStore))
+      case _ =>
+        Array()
+    }
+  }
+
 
   def handlePropertyChangeEvent(event: PropertyChangeEvent) {
     defaultScanner.adaptToPreferenceChange(event)
