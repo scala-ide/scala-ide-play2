@@ -54,7 +54,7 @@ class PlayProject private (val scalaProject: ScalaProject) {
 
 object PlayProject {
   private val projects = new AutoHashMap((scalaProject: ScalaProject) => new PlayProject(scalaProject))
-  def apply(scalaProject: ScalaProject) = {
+  def apply(scalaProject: ScalaProject): PlayProject = {
     projects(scalaProject)
   }
 }
