@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.scala-ide.play2.feature"
-      label="Play 2 support in Scala IDE"
+      label="Play2 support in Scala IDE"
       version="0.1.0.qualifier"
       provider-name="Scala IDE"
       plugin="org.scala-ide.play2">
 
-   <description url="http://github.com/scala-ide/scala-ide-play2/wiki/Documentation">
-      Play 2 support in Scala IDE
+   <description url="http://github.com/scala-ide/scala-ide-play2/wiki">
+      Play2 support in Scala IDE
    </description>
 
    <copyright>
@@ -219,7 +219,7 @@
    </license>
 
    <url>
-      <update label="Play 2 support in Scala IDE update site" url="http://example.org/update/site"/>
+      <update label="Play2 support in Scala IDE update site" url="http://example.org/update/site"/>
    </url>
 
    <requires>

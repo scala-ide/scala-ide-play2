@@ -1,5 +1,16 @@
 import scala.util.parsing.input.OffsetPosition
 
+/** 
+ *  This source was copied from Play20 codebase
+ *  (@see https://github.com/playframework/Play20/blob/master/framework/src/templates-compiler/src/main/scala/play/templates/ScalaTemplateCompiler.scala).
+ *   
+ *  While the current implementation is identical to the original source, this might change in the future. 
+ *  Please, have a look at the git history of this file to know the exact set of changes.
+ *  
+ *  @note Please, make sure to update the above notice the moment sensible changes are made to this source, as this is required by the section 
+ *        4.2.b of the Apache2 license (Play2 is licensed under Apache2). 
+ *        Specifically, 4.2.b in the Apache2 license states: '''You must cause any modified files to carry prominent notices stating that You changed the files'''.
+ */
 package play.templates {
 
   import scalax.file._
