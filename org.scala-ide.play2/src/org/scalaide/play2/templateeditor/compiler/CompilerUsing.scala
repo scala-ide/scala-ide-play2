@@ -60,8 +60,8 @@ case class TemplateToScalaCompilationError(source: File, message: String, offset
       0,
       Array.empty[String],
       severityLevel,
-      offset - 1,
-      offset - 1,
+      Math.max(offset - 1, 0),
+      Math.max(offset - 1, 0),
       line,
       column)
   }
