@@ -8,9 +8,17 @@ import org.eclipse.core.resources.IFile
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import org.scalaide.play2.templateeditor.compiler.TemplatePresentationCompiler
 import org.scalaide.play2.util.AutoHashMap
+import org.eclipse.ui.preferences.ScopedPreferenceStore
+import org.eclipse.core.resources.ProjectScope
+import org.scalaide.play2.util.SyncedScopedPreferenceStore
+import org.eclipse.jface.preference.IPreferenceStore
 
 class PlayProject private (val scalaProject: ScalaProject) {
   private val presentationCompiler = new TemplatePresentationCompiler(this)
+
+  val cachedPreferenceStore = new SyncedScopedPreferenceStore(scalaProject.underlying, PlayPlugin.PluginId)
+
+  def generateScopedPreferenceStore: IPreferenceStore = new ScopedPreferenceStore(new ProjectScope(scalaProject.underlying), PlayPlugin.PluginId)
 
   def withPresentationCompiler[T](op: TemplatePresentationCompiler => T): T = {
     op(presentationCompiler)

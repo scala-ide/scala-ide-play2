@@ -9,25 +9,21 @@ import play.templates.ScalaTemplateCompiler
 import play.templates.ScalaTemplateCompiler._
 import play.templates.TemplateCompilationError
 import scalax.file.Path
+import org.scalaide.play2.properties.PlayPreferences
 import scala.tools.eclipse.logging.HasLogger
-
 /**
  * a helper for using template compiler
  */
 object CompilerUsing extends HasLogger {
   val templateCompiler = ScalaTemplateCompiler
-  val additionalImports = """import play.templates._
-import play.templates.TemplateMagic._
-    
-    
-import play.api.templates._
-import play.api.templates.PlayMagic._
+  val additionalImports = """
 import models._
 import controllers._
 import play.api.i18n._
 import play.api.mvc._
 import play.api.data._
-import views.html._"""
+import views.html._
+"""
 
   /**
    * invokes compile method of template compiler and returns generated source object or
@@ -39,7 +35,7 @@ import views.html._"""
       logger.debug(s"Template file '${source.getAbsolutePath}' must be located in '$sourcePath' or one of its subfolders!")
 
     Try {
-      templateCompiler.compileVirtual(content, source, playProject.sourceDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", additionalImports)
+      templateCompiler.compileVirtual(content, source, playProject.sourceDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", additionalImports + playProject.cachedPreferenceStore.getString(PlayPreferences.TemplateImports))
     } recoverWith {
       case TemplateCompilationError(source, message, line, column) =>
         val offset = PositionHelper.convertLineColumnToOffset(content, line, column)
