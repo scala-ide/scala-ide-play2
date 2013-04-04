@@ -71,6 +71,9 @@
       <initializer
             class="org.scalaide.play2.templateeditor.properties.TemplateColourPreferenceInitializer">
       </initializer>
+      <initializer
+            class="org.scalaide.play2.properties.PreferenceInitializer">
+      </initializer>
    </extension>
    <extension
          point="org.eclipse.core.contenttype.contentTypes">
@@ -137,6 +140,46 @@
             id="org.scala-ide.play2.routeeditor.commands.format"
             name="Format">
       </command>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="org.scalaide.play2.util.Play2PropertyTester"
+            id="org.scala-ide.play2.isJavaPlayProject"
+            namespace="org.scala-ide.play2.properties"
+            properties="isPlay2Project"
+            type="org.eclipse.jdt.core.IJavaProject">
+      </propertyTester>
+      <propertyTester
+            class="org.scalaide.play2.util.Play2PropertyTester"
+            id="org.scala-ide.play2.isPlayProject"
+            namespace="org.scala-ide.play2.properties"
+            properties="isPlay2Project"
+            type="org.eclipse.core.resources.IProject">
+      </propertyTester>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="org.scalaide.play2.properties.ProjectPropertyPage"
+            id="org.scala-ide.play2.projectPropertyPage"
+            name="Play2">
+         <enabledWhen>
+            <and>
+               <or>
+	               <instanceof
+	                     value="org.eclipse.jdt.core.IJavaProject">
+	               </instanceof>
+	               <instanceof
+	                     value="org.eclipse.core.resources.IProject">
+	               </instanceof>
+               </or>
+               <test
+                     property="org.scala-ide.play2.properties.isPlay2Project">
+               </test>
+            </and>
+         </enabledWhen>
+      </page>
    </extension>
    <!--
    <extension
