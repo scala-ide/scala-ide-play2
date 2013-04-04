@@ -10,8 +10,15 @@ import org.eclipse.jdt.core.Signature
 import org.junit.Test
 import scala.Array.apply
 import scala.Array.canBuildFrom
+import org.junit.AfterClass
+import scala.tools.eclipse.testsetup.SDTTestUtils
 
-object MethodFinderTest extends TestProjectSetup("aProject", bundleName = "org.scala-ide.play2.tests")
+object MethodFinderTest extends TestProjectSetup("aProject", bundleName = "org.scala-ide.play2.tests") {
+  @AfterClass
+  def projectCleanUp() {
+    SDTTestUtils.deleteProjects(project)
+  }
+}
 
 class MethodFinderTest {
   MethodFinderTest
