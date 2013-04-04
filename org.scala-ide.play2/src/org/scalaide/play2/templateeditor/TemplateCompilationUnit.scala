@@ -5,6 +5,7 @@ import java.io.PrintStream
 import scala.tools.eclipse.InteractiveCompilationUnit
 import scala.tools.eclipse.ScalaPlugin
 import scala.tools.eclipse.ScalaPresentationCompiler
+import scala.tools.eclipse.ScalaProject
 import scala.tools.eclipse.logging.HasLogger
 import scala.tools.eclipse.util.EclipseResource
 import scala.tools.nsc.interactive.Response
@@ -15,12 +16,14 @@ import scala.tools.nsc.util.SourceFile
 import scala.util.Try
 
 import org.eclipse.core.resources.IFile
+import org.eclipse.core.resources.IProject
 import org.eclipse.jdt.core.compiler.IProblem
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.Region
 import org.eclipse.ui.IEditorInput
 import org.eclipse.ui.part.FileEditorInput
+import org.scalaide.play2.IssueTracker
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.PlayProject
 import org.scalaide.play2.templateeditor.compiler.CompilerUsing
@@ -45,7 +48,27 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     new VirtualFile(getTemplateFullPath)
   }
 
-  override lazy val scalaProject = ScalaPlugin.plugin.asScalaProject(workspaceFile.getProject).get
+  override val scalaProject: ScalaProject = {
+    def obtainScalaProject(project: IProject): ScalaProject = {
+      ScalaPlugin.plugin.asScalaProject(project) match {
+        case Some(scalaProject) => scalaProject
+        case None =>
+          def programmaticallyAddScalaNature(project: IProject): Unit = {
+            import scala.tools.eclipse.actions.ToggleScalaNatureAction
+            val toggleScalaNature = new ToggleScalaNatureAction()
+            toggleScalaNature.performAction(project)  
+          }
+          programmaticallyAddScalaNature(project)
+          ScalaPlugin.plugin.asScalaProject(project) getOrElse {
+            val message = s"Failed to create a ScalaProject instance for Play template ${workspaceFile.getFullPath().toOSString()}. ${IssueTracker.createATicketMessage}"
+            throw new IllegalStateException(message)
+          }
+      }
+    }
+
+    obtainScalaProject(workspaceFile.getProject)
+  }
+
   lazy val playProject = PlayProject(scalaProject)
 
   def getTemplateName = workspaceFile.getName()
@@ -83,9 +106,8 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     r
   }
 
-  def connect(doc: IDocument): this.type = {
+  def connect(doc: IDocument): Unit = {
     document = Option(doc)
-    this
   }
 
   override def currentProblems: List[IProblem] = {
@@ -177,6 +199,7 @@ object TemplateCompilationUnit {
     else {
       val unit = fromEditorInput(input)
       unit.connect(templateEditor.getDocumentProvider().getDocument(input))
+      unit
     }
   }
 
