@@ -63,6 +63,9 @@ class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer 
     setDefaultsForSyntaxClass(ScalaSyntaxClasses.OPERATOR, scalaDefaultColor)
     setDefaultsForSyntaxClass(ScalaSyntaxClasses.BRACKET, scalaDefaultColor)
     setDefaultsForSyntaxClass(ScalaSyntaxClasses.RETURN, new RGB(127, 0, 85), bold = true)
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.MULTI_LINE_STRING, new RGB(42, 0, 255))
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.SYMBOL, new RGB(173, 142, 0))
+    setDefaultsForSyntaxClass(ScalaSyntaxClasses.NUMBER_LITERAL, new RGB(196, 140, 255))
 
     // XML, see org.eclipse.wst.xml.ui.internal.preferences.XMLUIPreferenceInitializer
     setDefaultsForSyntaxClass(ScalaSyntaxClasses.XML_COMMENT, new RGB(63, 85, 191))
