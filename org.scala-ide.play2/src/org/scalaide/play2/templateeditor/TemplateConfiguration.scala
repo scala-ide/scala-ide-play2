@@ -40,8 +40,10 @@ import org.eclipse.jdt.ui.text.IJavaPartitions
 import scala.tools.eclipse.ui.BracketAutoEditStrategy
 import org.eclipse.jdt.internal.ui.text.java.SmartSemicolonAutoEditStrategy
 import org.eclipse.jface.text.source.Annotation
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants
+import org.eclipse.core.runtime.Platform
 
-class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration with PropertyChangeHandler {
+class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration(prefStore) with PropertyChangeHandler {
 
   val colorManager = new JavaColorManager()
   private val templateDoubleClickStrategy =
@@ -142,12 +144,20 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
       case TemplatePartitions.TEMPLATE_SCALA | IDocument.DEFAULT_CONTENT_TYPE =>
         Array(
           new SmartSemicolonAutoEditStrategy(partitioning),
-          new BracketAutoEditStrategy(prefStore))
+          new BracketAutoEditStrategy(prefStore),
+          new TemplateAutoIndentStrategy(getTabWidth(sourceViewer), useSpacesForTabs, defaultLineSeparator))
       case _ =>
-        Array()
+        Array(new TemplateAutoIndentStrategy(getTabWidth(sourceViewer), useSpacesForTabs, defaultLineSeparator))
     }
   }
 
+  private def useSpacesForTabs: Boolean = {
+    prefStore != null && prefStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS)
+  }
+
+  private def defaultLineSeparator: String = {
+    Option(prefStore).map(_.getString(Platform.PREF_LINE_SEPARATOR)).getOrElse(System.getProperty("line.separator"))
+  }
 
   def handlePropertyChangeEvent(event: PropertyChangeEvent) {
     defaultScanner.adaptToPreferenceChange(event)

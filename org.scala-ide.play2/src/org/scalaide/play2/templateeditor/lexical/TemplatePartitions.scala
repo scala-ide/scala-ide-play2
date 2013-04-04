@@ -12,7 +12,7 @@ object TemplatePartitions {
   val TEMPLATE_TAG = "__template_tag"
 
   def getTypes() = {
-    Array(TEMPLATE_DEFAULT, TEMPLATE_SCALA, TEMPLATE_COMMENT, TEMPLATE_TAG);
+    Array(TEMPLATE_DEFAULT, TEMPLATE_SCALA, TEMPLATE_COMMENT, TEMPLATE_TAG, TEMPLATE_PLAIN);
   }
 
 }
