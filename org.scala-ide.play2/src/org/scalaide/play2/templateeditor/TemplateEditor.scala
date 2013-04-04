@@ -20,11 +20,12 @@ import org.eclipse.ui.editors.text.TextEditor
 import org.eclipse.ui.texteditor.ChainedPreferenceStore
 import org.scalaide.play2.PlayPlugin
 
+
 class TemplateEditor extends TextEditor with ISourceViewerEditor with InteractiveCompilationUnitEditor {
   private lazy val preferenceStore = new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.prefStore))
   private val sourceViewConfiguration = new TemplateConfiguration(preferenceStore, this)
   private val documentProvider = new TemplateDocumentProvider()
-  
+
   setSourceViewerConfiguration(sourceViewConfiguration);
   setPreferenceStore(preferenceStore)
   setDocumentProvider(documentProvider);
@@ -70,4 +71,10 @@ class TemplateEditor extends TextEditor with ISourceViewerEditor with Interactiv
     annotationModel.replaceAnnotations(previousAnnotations.toArray, newAnnotations.toMap.asJava)
     previousAnnotations = newAnnotations.unzip._1 
   }
+}
+
+object TemplateEditor {
+  /** The annotation types shown when hovering on the left-side ruler (or in the status bar). */
+  val annotationsShownInHover = Set(
+    "org.eclipse.jdt.ui.error", "org.eclipse.jdt.ui.warning", "org.eclipse.jdt.ui.info")
 }

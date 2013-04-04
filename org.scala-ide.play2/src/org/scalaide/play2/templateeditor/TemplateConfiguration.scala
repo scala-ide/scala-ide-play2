@@ -39,6 +39,7 @@ import scala.tools.eclipse.lexical.ScalaPartitions
 import org.eclipse.jdt.ui.text.IJavaPartitions
 import scala.tools.eclipse.ui.BracketAutoEditStrategy
 import org.eclipse.jdt.internal.ui.text.java.SmartSemicolonAutoEditStrategy
+import org.eclipse.jface.text.source.Annotation
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration with PropertyChangeHandler {
 
@@ -62,12 +63,6 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
 
   override def getConfiguredContentTypes(sourceViewer: ISourceViewer) = {
     TemplatePartitions.getTypes()
-  }
-
-  /** Necessary for hover over annotations
-   */
-  override def getAnnotationHover(viewer: ISourceViewer): IAnnotationHover = {
-    new DefaultAnnotationHover(true)
   }
 
   /** Necessary for code completion
@@ -116,6 +111,12 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     }
 
     Array(detector, localDetector)
+  }
+
+  override def getAnnotationHover(viewer: ISourceViewer): IAnnotationHover = {
+    new DefaultAnnotationHover(true) {
+      override def isIncluded(a: Annotation): Boolean = TemplateEditor.annotationsShownInHover(a.getType)
+    }
   }
 
   override def getTextHover(sv: ISourceViewer, contentType: String, stateMask: Int): ITextHover = {
