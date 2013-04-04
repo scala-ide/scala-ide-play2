@@ -46,8 +46,10 @@ class PlayProject private (val scalaProject: ScalaProject) {
     presentationCompiler.destroy()
   }
 
-  /**
-   * It has the source directory of scala template files
+  /** FIXME: This method should probably not exist.
+   *         Template files can be anywhere
+   *
+   *  @return the absolute location of the `/app/views` directory, below the project root
    */
   lazy val sourceDir = new File(scalaProject.underlying.getLocation().toString() + "/app/views")
 }
