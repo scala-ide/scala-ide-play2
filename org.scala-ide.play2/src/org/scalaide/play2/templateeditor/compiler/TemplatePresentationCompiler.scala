@@ -85,7 +85,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
   
   private def unknownError(tcu: TemplateCompilationUnit, error: Throwable): IProblem = {
     val severityLevel = ProblemSeverities.Error
-    val message = error.getMessage()
+    val message = s"${error.getMessage()} - ${error.getClass()}"
     new DefaultProblem(
       tcu.getTemplateFullPath.toCharArray(),
       message,
