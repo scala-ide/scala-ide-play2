@@ -60,6 +60,15 @@ class TemplateCompilationUnitTest {
   }
   
   @Test
+  def error_on_position_zero_no_crash() {
+    val tFile = file("app/views/template_unclosed_comment.scala.html")
+    val tu = TemplateCompilationUnit(tFile)
+    val errors = tu.reconcile(tu.getTemplateContents.toString)
+    assertEquals("Unexpected errors", 1, errors.size)
+    assertTrue("Negative offset", errors.head.getSourceStart() >= 0)
+  }
+  
+  @Test
   def scala_source_is_generated_when_there_are_scala_compiler__errors() {
     val tFile = file("app/views/scala_compiler_error.scala.html")
     val tu = TemplateCompilationUnit(tFile)
