@@ -91,7 +91,13 @@ class TemplateCompilationUnitTest {
 
     assertTrue("Creating a `TemplateCompilationUnit` should force the underlying project to automatically add the Scala nature.", project.hasScalaNature)
   }
-  
+
+  @Test
+  def views_in_non_standard_folder_work() {
+    val tFile = file("moreviews/more.scala.html")
+    val tu = TemplateCompilationUnit(tFile)
+    assertTrue(s"No errors expected ${tu.currentProblems.map(_.getMessage())}", tu.generatedSource.isSuccess)
+  }
 }
 
 /**
