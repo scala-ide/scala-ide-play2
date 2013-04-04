@@ -51,7 +51,7 @@ class PlayProject private (val scalaProject: ScalaProject) {
    *
    *  @return the absolute location of the `/app/views` directory, below the project root
    */
-  lazy val sourceDir = new File(scalaProject.underlying.getLocation().toString() + "/app/views")
+  lazy val sourceDir = scalaProject.underlying.getLocation().toFile()
 }
 
 object PlayProject {
