@@ -37,10 +37,7 @@ import org.eclipse.jface.text.ITextHover
 import org.eclipse.jface.text.IAutoEditStrategy
 import scala.tools.eclipse.lexical.ScalaPartitions
 import org.eclipse.jdt.ui.text.IJavaPartitions
-import scala.tools.eclipse.ui.StringAutoEditStrategy
 import scala.tools.eclipse.ui.BracketAutoEditStrategy
-import scala.tools.eclipse.ui.MultiLineStringAutoEditStrategy
-import scala.tools.eclipse.ui.LiteralAutoEditStrategy
 import org.eclipse.jdt.internal.ui.text.java.SmartSemicolonAutoEditStrategy
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration with PropertyChangeHandler {
@@ -144,8 +141,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
       case TemplatePartitions.TEMPLATE_SCALA | IDocument.DEFAULT_CONTENT_TYPE =>
         Array(
           new SmartSemicolonAutoEditStrategy(partitioning),
-          new BracketAutoEditStrategy(prefStore),
-          new LiteralAutoEditStrategy(prefStore))
+          new BracketAutoEditStrategy(prefStore))
       case _ =>
         Array()
     }
