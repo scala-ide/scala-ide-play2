@@ -34,8 +34,11 @@ import views.html._
     if (source.getAbsolutePath().indexOf(sourcePath) == -1)
       logger.debug(s"Template file '${source.getAbsolutePath}' must be located in '$sourcePath' or one of its subfolders!")
 
+    val extension = source.getName.split('.').last
+
     Try {
-      templateCompiler.compileVirtual(content, source, playProject.sourceDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", additionalImports + playProject.cachedPreferenceStore.getString(PlayPreferences.TemplateImports))
+      val templateImports = additionalImports + playProject.cachedPreferenceStore.getString(PlayPreferences.TemplateImports).replace("%format%", extension);
+      templateCompiler.compileVirtual(content, source, playProject.sourceDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", templateImports);
     } recoverWith {
       case TemplateCompilationError(source, message, line, column) =>
         val offset = PositionHelper.convertLineColumnToOffset(content, line, column)
