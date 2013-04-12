@@ -134,9 +134,7 @@ case class TemplateCompilationUnit(_workspaceFile: IFile) extends CompilationUni
    */
   def mapTemplateToScalaOffset(offset: Int): Option[Int] = synchronized {
     for(genSource <- generatedSource().toOption) yield {
-      playProject.withPresentationCompiler { pc =>
-        PositionHelper.mapSourcePosition(genSource.matrix, offset)
-      }
+      PositionHelper.mapSourcePosition(genSource.matrix, offset)
     }
   }
 
