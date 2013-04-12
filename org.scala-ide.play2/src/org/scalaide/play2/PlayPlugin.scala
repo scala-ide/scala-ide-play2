@@ -11,13 +11,18 @@ import org.eclipse.ui.plugin.AbstractUIPlugin
 import org.osgi.framework.BundleContext
 
 object PlayPlugin {
-  @volatile var plugin: PlayPlugin = _
+  @volatile
+  private var plugin: PlayPlugin = _
 
   final val PluginId = "org.scala-ide.play2"
   final val RouteFormatterMarginId = PluginId + ".routeeditor.margin"
   final val TemplateExtension = "scala.html"
 
-  def prefStore: IPreferenceStore = plugin.getPreferenceStore
+  /** Return the current plugin instace */
+  def instance(): PlayPlugin = plugin
+
+  /** Return the plugin-wide preference store */
+  def preferenceStore: IPreferenceStore = plugin.getPreferenceStore
 
   def getImageDescriptor(path: String): ImageDescriptor = {
     AbstractUIPlugin.imageDescriptorFromPlugin(PluginId, path);
@@ -44,7 +49,7 @@ class PlayPlugin extends AbstractUIPlugin {
     val scalaProject = ScalaPlugin.plugin.asScalaProject(project)
     scalaProject map (PlayProject(_))
   }
-  
+
   private def initializeProjects(): Unit = {
     for {
       iProject <- ResourcesPlugin.getWorkspace.getRoot.getProjects

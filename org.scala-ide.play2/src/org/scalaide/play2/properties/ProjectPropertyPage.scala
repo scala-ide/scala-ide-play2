@@ -68,9 +68,9 @@ class ProjectPropertyPage extends FieldEditorPreferencePage(FieldEditorPreferenc
   override def setElement(element: IAdaptable) {
     prefStore = element match {
       case project: IProject =>
-        PlayPlugin.plugin.asPlayProject(project).get.generateScopedPreferenceStore
+        PlayPlugin.instance().asPlayProject(project).get.generateScopedPreferenceStore
       case project: IJavaProject =>
-        PlayPlugin.plugin.asPlayProject(project.getProject()).get.generateScopedPreferenceStore
+        PlayPlugin.instance().asPlayProject(project.getProject()).get.generateScopedPreferenceStore
     }
   }
 

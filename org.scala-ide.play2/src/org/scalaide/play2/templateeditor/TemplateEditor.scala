@@ -27,7 +27,7 @@ class TemplateEditor extends SourceCodeEditor {
 
   override val compilationUnitProvider: CompilationUnitProvider[UnderlyingCompilationUnit] = TemplateCompilationUnit
 
-  override protected lazy val preferenceStore: IPreferenceStore = new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.prefStore))
+  override protected lazy val preferenceStore: IPreferenceStore = new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.preferenceStore))
   private val sourceViewConfiguration = new TemplateConfiguration(preferenceStore, this)
   private val documentProvider = new TemplateDocumentProvider()
 
@@ -37,7 +37,7 @@ class TemplateEditor extends SourceCodeEditor {
 
   override def dispose() = {
     super.dispose()
-    PlayPlugin.prefStore.removePropertyChangeListener(preferenceListener)
+    PlayPlugin.preferenceStore.removePropertyChangeListener(preferenceListener)
   }
 
   private val preferenceListener: IPropertyChangeListener = handlePreferenceStoreChanged _
@@ -47,7 +47,7 @@ class TemplateEditor extends SourceCodeEditor {
     getSourceViewer().invalidateTextPresentation
   }
 
-  PlayPlugin.prefStore.addPropertyChangeListener(preferenceListener)
+  PlayPlugin.preferenceStore.addPropertyChangeListener(preferenceListener)
 
   override def editorSaved() = {
     super.editorSaved()

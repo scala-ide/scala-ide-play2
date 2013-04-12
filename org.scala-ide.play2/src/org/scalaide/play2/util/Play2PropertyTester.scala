@@ -22,9 +22,9 @@ class Play2PropertyTester() extends PropertyTester {
       case IsPlayProject =>
         receiver match {
           case project: IProject =>
-            PlayPlugin.plugin.asPlayProject(project).isDefined
+            PlayPlugin.instance().asPlayProject(project).isDefined
           case project: IJavaProject =>
-            PlayPlugin.plugin.asPlayProject(project.getProject()).isDefined
+            PlayPlugin.instance().asPlayProject(project.getProject()).isDefined
           case _ =>
             false
         }

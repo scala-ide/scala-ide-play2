@@ -56,7 +56,7 @@ class PlayPreferences extends PropertyPage with IWorkbenchPreferencePage with Ec
 
   /** Pulls the preference store associated with this plugin */
   override def doGetPreferenceStore(): IPreferenceStore = {
-    PlayPlugin.prefStore
+    PlayPlugin.preferenceStore
   }
 
   override def init(wb: IWorkbench) {}

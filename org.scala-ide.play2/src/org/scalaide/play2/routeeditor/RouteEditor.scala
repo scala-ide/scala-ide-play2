@@ -12,7 +12,7 @@ import org.eclipse.ui.texteditor.TextOperationAction
 import org.eclipse.jface.text.source.ISourceViewer
 
 class RouteEditor extends TextEditor {
-  lazy val preferenceStore = new ChainedPreferenceStore(Array(PlayPlugin.prefStore, EditorsUI.getPreferenceStore))
+  lazy val preferenceStore = new ChainedPreferenceStore(Array(PlayPlugin.preferenceStore, EditorsUI.getPreferenceStore))
   this.setPreferenceStore(preferenceStore)
   val sourceViewConfiguration = new RouteConfiguration(preferenceStore, this)
   setSourceViewerConfiguration(sourceViewConfiguration);
@@ -20,7 +20,7 @@ class RouteEditor extends TextEditor {
 
   override def dispose() = {
     super.dispose();
-    PlayPlugin.prefStore.removePropertyChangeListener(preferenceListener)
+    PlayPlugin.preferenceStore.removePropertyChangeListener(preferenceListener)
   }
   
   /**
@@ -50,5 +50,5 @@ class RouteEditor extends TextEditor {
   
   def getViewer: ISourceViewer = getSourceViewer
 
-  PlayPlugin.prefStore.addPropertyChangeListener(preferenceListener)
+  PlayPlugin.preferenceStore.addPropertyChangeListener(preferenceListener)
 }
