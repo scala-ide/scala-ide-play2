@@ -5,7 +5,6 @@ import scala.tools.eclipse.ISourceViewerEditor
 import scala.tools.eclipse.InteractiveCompilationUnit
 import scala.tools.eclipse.ui.InteractiveCompilationUnitEditor
 import scala.tools.eclipse.util.SWTUtils.fnToPropertyChangeListener
-
 import org.eclipse.jdt.core.compiler.IProblem
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitDocumentProvider.ProblemAnnotation
 import org.eclipse.jface.text.Position
@@ -16,13 +15,19 @@ import org.eclipse.jface.text.source.ISourceViewer
 import org.eclipse.jface.util.IPropertyChangeListener
 import org.eclipse.jface.util.PropertyChangeEvent
 import org.eclipse.ui.editors.text.EditorsUI
-import org.eclipse.ui.editors.text.TextEditor
 import org.eclipse.ui.texteditor.ChainedPreferenceStore
 import org.scalaide.play2.PlayPlugin
+import org.scalaide.editor.SourceCodeEditor
+import org.scalaide.editor.CompilationUnitProvider
+import org.eclipse.jface.preference.IPreferenceStore
 
 
-class TemplateEditor extends TextEditor with ISourceViewerEditor with InteractiveCompilationUnitEditor {
-  private lazy val preferenceStore = new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.prefStore))
+class TemplateEditor extends SourceCodeEditor {
+  override protected type UnderlyingCompilationUnit = TemplateCompilationUnit
+
+  override val compilationUnitProvider: CompilationUnitProvider[UnderlyingCompilationUnit] = TemplateCompilationUnit
+
+  override protected lazy val preferenceStore: IPreferenceStore = new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.prefStore))
   private val sourceViewConfiguration = new TemplateConfiguration(preferenceStore, this)
   private val documentProvider = new TemplateDocumentProvider()
 
@@ -47,29 +52,6 @@ class TemplateEditor extends TextEditor with ISourceViewerEditor with Interactiv
   override def editorSaved() = {
     super.editorSaved()
     sourceViewConfiguration.strategy.reconcile(null)
-  }
-  
-  override def getViewer: ISourceViewer = getSourceViewer
-  
-  override def getInteractiveCompilationUnit(): InteractiveCompilationUnit = TemplateCompilationUnit.fromEditor(this)
-
-  @volatile
-  private var previousAnnotations: List[ProblemAnnotation] = Nil
-  
-  private type IAnnotationModelExtended = IAnnotationModel with IAnnotationModelExtension with IAnnotationModelExtension2
-
-  /** Return the annotation model associated with the current document. */
-  private def annotationModel: IAnnotationModelExtended = getDocumentProvider.getAnnotationModel(getEditorInput).asInstanceOf[IAnnotationModelExtended]
-
-  def updateErrorAnnotations(errors: List[IProblem]) {
-    import scala.collection.JavaConverters._
-
-    def position(p: IProblem) = new Position(p.getSourceStart, p.getSourceEnd - p.getSourceStart + 1)
-
-    val newAnnotations = for (e <- errors) yield { (new ProblemAnnotation(e, null), position(e)) }
-
-    annotationModel.replaceAnnotations(previousAnnotations.toArray, newAnnotations.toMap.asJava)
-    previousAnnotations = newAnnotations.unzip._1 
   }
 }
 

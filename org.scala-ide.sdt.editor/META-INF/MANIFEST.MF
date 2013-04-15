@@ -1,42 +1,28 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Play 2 Support for Scala IDE
-Bundle-SymbolicName: org.scala-ide.play2;singleton:=true
-Bundle-Version: 0.2.0.qualifier
-Bundle-Vendor: scala-ide.org
+Bundle-Name:  %pluginName
+Bundle-SymbolicName: org.scala-ide.sdt.editor
+Bundle-Version: 0.1.0.qualifier
+Bundle-Vendor:  %providerName
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
 Require-Bundle: 
  org.eclipse.core.runtime,
- org.eclipse.debug.ui,
- org.eclipse.help,
  org.eclipse.jdt.core,
- org.eclipse.jdt.debug.ui,
- org.eclipse.jdt.junit,
- org.eclipse.jdt.launching,
  org.eclipse.jdt.ui,
  org.eclipse.jface.text,
  org.eclipse.ui,
- org.eclipse.ui.console,
  org.eclipse.ui.editors,
- org.eclipse.ui.forms,
  org.eclipse.ui.ide,
  org.scala-ide.scala.library,
  org.scala-ide.scala.compiler,
  org.scala-ide.sdt.core,
- org.scala-ide.sdt.editor,
  org.eclipse.core.resources,
- scalariform,
  org.eclipse.core.filesystem
 Import-Package: 
  com.ibm.icu.text;apply-aspects:=false;org.eclipse.swt.graphics;apply-aspects:=false,
  scala.tools.eclipse;apply-aspects:=false,
  scala.tools.eclipse.contribution.weaving.jdt.ui.javaeditor.formatter;apply-aspects:=false
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Activator: org.scalaide.play2.PlayPlugin
-Bundle-ClassPath: .,
- target/lib/play.jar,
- target/lib/scala-arm.jar,
- target/lib/scala-io-core.jar,
- target/lib/scala-io-file.jar,
- target/lib/templates.jar
+Export-Package: 
+ org.scalaide.editor
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
