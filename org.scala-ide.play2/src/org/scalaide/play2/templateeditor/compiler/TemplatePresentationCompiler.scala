@@ -3,7 +3,6 @@ package org.scalaide.play2.templateeditor.compiler
 import org.eclipse.jdt.core.compiler.IProblem
 import org.scalaide.play2.PlayProject
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
-import org.scalaide.play2.util.AutoHashMap
 import scala.tools.eclipse.javaelements.ScalaSourceFile
 import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblem
@@ -24,6 +23,9 @@ import scala.tools.eclipse.logging.HasLogger
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
+
+import scala.collection.mutable
+
 /**
  * presentation compiler for template files
  */
@@ -31,7 +33,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
   /**
    * A map between compilation units and associated batch source files
    */
-  private val sourceFiles = new AutoHashMap((tcu: TemplateCompilationUnit) => tcu.sourceFile())
+  private val sourceFiles = new mutable.HashMap() withDefault ((tcu: TemplateCompilationUnit) => tcu.sourceFile())
   
   /**
    * Returns scala batch source file (which is a virtual file) associated to
@@ -135,7 +137,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
 }
 
 object ScalaFileManager {
-  val scalaFile = new AutoHashMap[String, AbstractFile](fileName => {
+  val scalaFile = new mutable.HashMap[String, AbstractFile] withDefault (fileName => {
     new VirtualFile(fileName)
   })
 }

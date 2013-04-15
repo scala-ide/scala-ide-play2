@@ -7,12 +7,13 @@ import scala.tools.nsc.util.SourceFile
 import org.eclipse.core.resources.IFile
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import org.scalaide.play2.templateeditor.compiler.TemplatePresentationCompiler
-import org.scalaide.play2.util.AutoHashMap
 import org.eclipse.ui.preferences.ScopedPreferenceStore
 import org.eclipse.core.resources.ProjectScope
 import org.scalaide.play2.util.SyncedScopedPreferenceStore
 import org.eclipse.jface.preference.IPreferenceStore
 import org.scalaide.play2.properties.PlayPreferences
+
+import scala.collection.mutable
 
 class PlayProject private (val scalaProject: ScalaProject) {
   private val presentationCompiler = new TemplatePresentationCompiler(this)
@@ -47,12 +48,8 @@ class PlayProject private (val scalaProject: ScalaProject) {
       r <- scalaProject.underlying.members() if r.isInstanceOf[IFile] && r.getFullPath().toString().endsWith("." + PlayPlugin.TemplateExtension)
     ) yield TemplateCompilationUnit(r.asInstanceOf[IFile])
     templateCompilationUnits foreach (_.askReload())
-    templateCompilationUnits.reverse foreach (_.askReload())
-    // FIXME not works!!!
-  }
-
-  def dispose() {
-    presentationCompiler.destroy()
+    // TODO: Why was there a second round of ask reload here?
+    // templateCompilationUnits.reverse foreach (_.askReload())
   }
 
   /** FIXME: This method should probably not exist.
@@ -64,7 +61,7 @@ class PlayProject private (val scalaProject: ScalaProject) {
 }
 
 object PlayProject {
-  private val projects = new AutoHashMap((scalaProject: ScalaProject) => new PlayProject(scalaProject))
+  private val projects = (new mutable.HashMap) withDefault {(scalaProject: ScalaProject) => new PlayProject(scalaProject)}
   def apply(scalaProject: ScalaProject): PlayProject = {
     projects(scalaProject)
   }
