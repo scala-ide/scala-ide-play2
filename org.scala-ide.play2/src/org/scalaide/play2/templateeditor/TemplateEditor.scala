@@ -4,7 +4,6 @@ import scala.collection.JavaConverters
 import scala.tools.eclipse.ISourceViewerEditor
 import scala.tools.eclipse.InteractiveCompilationUnit
 import scala.tools.eclipse.ui.InteractiveCompilationUnitEditor
-import scala.tools.eclipse.util.SWTUtils.fnToPropertyChangeListener
 import org.eclipse.jdt.core.compiler.IProblem
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitDocumentProvider.ProblemAnnotation
 import org.eclipse.jface.text.Position
@@ -12,7 +11,6 @@ import org.eclipse.jface.text.source.IAnnotationModel
 import org.eclipse.jface.text.source.IAnnotationModelExtension
 import org.eclipse.jface.text.source.IAnnotationModelExtension2
 import org.eclipse.jface.text.source.ISourceViewer
-import org.eclipse.jface.util.IPropertyChangeListener
 import org.eclipse.jface.util.PropertyChangeEvent
 import org.eclipse.ui.editors.text.EditorsUI
 import org.eclipse.ui.texteditor.ChainedPreferenceStore
@@ -35,19 +33,15 @@ class TemplateEditor extends SourceCodeEditor {
   setPreferenceStore(preferenceStore)
   setDocumentProvider(documentProvider);
 
-  override def dispose() = {
-    super.dispose()
-    PlayPlugin.preferenceStore.removePropertyChangeListener(preferenceListener)
-  }
-
-  private val preferenceListener: IPropertyChangeListener = handlePreferenceStoreChanged _
-
   override def handlePreferenceStoreChanged(event: PropertyChangeEvent) = {
     sourceViewConfiguration.handlePropertyChangeEvent(event)
-    getSourceViewer().invalidateTextPresentation
+    super.handlePreferenceStoreChanged(event)
   }
 
-  PlayPlugin.preferenceStore.addPropertyChangeListener(preferenceListener)
+  override def affectsTextPresentation(event: PropertyChangeEvent): Boolean = {
+    // TODO: more precise filtering
+    true
+  }
 
   override def editorSaved() = {
     super.editorSaved()
