@@ -1,7 +1,6 @@
 package org.scalaide.play2.templateeditor
 
 import java.io.PrintStream
-
 import scala.tools.eclipse.InteractiveCompilationUnit
 import scala.tools.eclipse.ScalaPlugin
 import scala.tools.eclipse.ScalaPresentationCompiler
@@ -14,7 +13,6 @@ import scala.tools.nsc.io.VirtualFile
 import scala.tools.nsc.util.BatchSourceFile
 import scala.tools.nsc.util.SourceFile
 import scala.util.Try
-
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IProject
 import org.eclipse.jdt.core.compiler.IProblem
@@ -28,18 +26,15 @@ import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.PlayProject
 import org.scalaide.play2.templateeditor.compiler.CompilerUsing
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
-
 import play.templates.GeneratedSourceVirtual
+import org.scalaide.editor.CompilationUnit
+import org.scalaide.editor.CompilationUnitProvider
 
 /** A Template compilation unit connects the presentation compiler
  *  view of a tmeplate with the Eclipse IDE view of the underlying
  *  resource.
  */
-case class TemplateCompilationUnit(val workspaceFile: IFile) extends InteractiveCompilationUnit with HasLogger {
-
-  private var document: Option[IDocument] = None
-
-  override val file: AbstractFile = EclipseResource(workspaceFile)
+case class TemplateCompilationUnit(_workspaceFile: IFile) extends CompilationUnit(_workspaceFile) with HasLogger {
 
   /** A virtual file which is in synch with content of the document
    *  in order not to use a temporary real file
@@ -85,8 +80,6 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
     new BatchSourceFile(templateSourceFile, contents)
   }
 
-  override def exists(): Boolean = true
-
   /** Return contents of generated scala file
    */
   override def getContents: Array[Char] = {
@@ -98,17 +91,6 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
   /** Return contents of template file
    */
   def getTemplateContents: String = document.map(_.get).getOrElse(scalax.file.Path(file.file).string())
-
-  /** no-op */
-  override def scheduleReconcile(): Response[Unit] = {
-    val r = new Response[Unit]
-    r.set()
-    r
-  }
-
-  def connect(doc: IDocument): Unit = {
-    document = Option(doc)
-  }
 
   override def currentProblems: List[IProblem] = {
     playProject.withPresentationCompiler { pc =>
@@ -189,24 +171,7 @@ case class TemplateCompilationUnit(val workspaceFile: IFile) extends Interactive
 
 }
 
-object TemplateCompilationUnit {
-  private def fromEditorInput(editorInput: IEditorInput): TemplateCompilationUnit = TemplateCompilationUnit(getFile(editorInput))
-
-  def fromEditor(templateEditor: TemplateEditor): TemplateCompilationUnit = {
-    val input = templateEditor.getEditorInput
-    if(input == null) 
-      throw new NullPointerException("No editor input for the passed `templateEditor`. Hint: Maybe the editor isn't yet fully initialized?")
-    else {
-      val unit = fromEditorInput(input)
-      unit.connect(templateEditor.getDocumentProvider().getDocument(input))
-      unit
-    }
-  }
-
-  private def getFile(editorInput: IEditorInput): IFile = 
-    editorInput match {
-      case fileEditorInput: FileEditorInput if fileEditorInput.getName.endsWith(PlayPlugin.TemplateExtension) =>
-        fileEditorInput.getFile
-      case _ => throw new IllegalArgumentException("Expected to open file with extension %s, found %s.".format(PlayPlugin.TemplateExtension, editorInput.getName))
-    }
+object TemplateCompilationUnit extends CompilationUnitProvider[TemplateCompilationUnit] {
+  override protected def mkCompilationUnit(file: IFile): TemplateCompilationUnit = TemplateCompilationUnit(file)
+  override protected def fileExtension: String = PlayPlugin.TemplateExtension
 }

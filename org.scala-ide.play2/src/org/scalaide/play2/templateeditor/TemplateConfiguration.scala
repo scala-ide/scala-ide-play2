@@ -96,7 +96,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
     reconciler
   }
 
-  lazy val strategy = new TemplateReconcilingStrategy(templateEditor)
+  lazy val strategy = TemplateReconcilingStrategy(templateEditor)
 
   override def getReconciler(sourceViewer: ISourceViewer): IReconciler = {
     val reconciler = new MonoReconciler(strategy, /*isIncremental = */ false)
