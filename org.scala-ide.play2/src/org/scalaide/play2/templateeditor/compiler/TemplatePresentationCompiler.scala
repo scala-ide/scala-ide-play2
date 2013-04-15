@@ -31,11 +31,6 @@ import scala.collection.mutable
  */
 class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
   /**
-   * A map between compilation units and associated batch source files
-   */
-  private val sourceFiles = new mutable.HashMap() withDefault ((tcu: TemplateCompilationUnit) => tcu.sourceFile())
-  
-  /**
    * Returns scala batch source file (which is a virtual file) associated to
    * the given generated source.
    */
@@ -99,22 +94,14 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
       1,
       1)
   }
-  
 
+  /**
+   * Reload the template compilation unit
+   *
+   * FIXME: `content` seems to be ignored
+   */
   def askReload(tcu: TemplateCompilationUnit, content: Array[Char]) {
-    sourceFiles.get(tcu) match {
-      case Some(f) =>
-        val newF = tcu.batchSourceFile(content)
-        synchronized {
-          sourceFiles(tcu) = newF
-        }
-
-      case None =>
-        synchronized {
-          sourceFiles.put(tcu, tcu.batchSourceFile(content))
-        }
-    }
-    for(generatedSource <- tcu.generatedSource()) {
+    for (generatedSource <- tcu.generatedSource()) {
       val src = scalaFileFromGen(generatedSource)
       val sourceList = List(src)
       scalaProject.withPresentationCompiler(pc => {
