@@ -19,8 +19,7 @@ object TemplateCompilationUnitTest extends TestProjectSetup("aProject", bundleNa
 class TemplateCompilationUnitTest {
   import TemplateCompilationUnitTest._
 
-  /**
-   * Test the following sequence:
+  /** Test the following sequence:
    *   - content1 -> generated1
    *   - content2 -> generated2
    *   - content1 -> generated1 (used to return generated2, see ticket #30)
@@ -41,15 +40,23 @@ class TemplateCompilationUnitTest {
     document.set(content2)
 
     val generated2 = templateCU.generatedSource.get.content
-
     assertFalse("generated1 and generated2 should be different", generated1 == generated2)
 
     document.set(content1)
-
     val generated1_2 = templateCU.generatedSource.get.content
+    assertEquals("Same content should return the same generated code", stripGeneratedNote(generated1), stripGeneratedNote(generated1_2))
+  }
 
-    assertEquals("Same content should return the same generated code", generated1, generated1_2)
-
+  /** Remove everything after {{{-- GENERATED --}}}. The template compiler
+   *  adds a timestamp that is different if there's more than 1 second between
+   *  the first and the second generated source.
+   */
+  private def stripGeneratedNote(generatedSrc: String): String = {
+    val GeneratedMarker = "-- GENERATED --"
+    val endIndex = generatedSrc.indexOf(GeneratedMarker)
+    if (endIndex > 0)
+      generatedSrc.substring(0, endIndex)
+    else generatedSrc
   }
 
   @Test
@@ -58,7 +65,7 @@ class TemplateCompilationUnitTest {
     val tu = TemplateCompilationUnit(tFile)
     assertTrue(tu.generatedSource.isFailure)
   }
-  
+
   @Test
   def error_on_position_zero_no_crash() {
     val tFile = file("app/views/template_unclosed_comment.scala.html")
@@ -67,7 +74,7 @@ class TemplateCompilationUnitTest {
     assertEquals("Unexpected errors", 1, errors.size)
     assertTrue("Negative offset", errors.head.getSourceStart() >= 0)
   }
-  
+
   @Test
   def scala_source_is_generated_when_there_are_scala_compiler__errors() {
     val tFile = file("app/views/scala_compiler_error.scala.html")
@@ -83,7 +90,7 @@ class TemplateCompilationUnitTest {
     import scala.tools.eclipse.actions.ToggleScalaNatureAction
     val toggleScalaNature = new ToggleScalaNatureAction()
     toggleScalaNature.performAction(project.underlying)
-    
+
     assertFalse("The test project should not have the Scala nature at this point.", project.hasScalaNature)
 
     val indexFile = file("app/views/index.scala.html")
@@ -100,15 +107,14 @@ class TemplateCompilationUnitTest {
   }
 }
 
-/**
- * Minimal Document supporting getting and setting content
+/** Minimal Document supporting getting and setting content
  */
 class TestDocument(var content: String) extends SimpleDocument("") {
-  
+
   override def get(): String = content
-  
+
   override def set(c: String) {
-    content= c
+    content = c
   }
-  
+
 }
