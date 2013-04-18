@@ -38,6 +38,8 @@ case class TemplateCompilationUnit(_workspaceFile: IFile) extends CompilationUni
 
   /** A virtual file which is in synch with content of the document
    *  in order not to use a temporary real file
+   *
+   *  FIXME: This does not go through the `ScalaFileManager`
    */
   private lazy val templateSourceFile = {
     new VirtualFile(getTemplateFullPath)
@@ -134,9 +136,7 @@ case class TemplateCompilationUnit(_workspaceFile: IFile) extends CompilationUni
    */
   def mapTemplateToScalaOffset(offset: Int): Option[Int] = synchronized {
     for(genSource <- generatedSource().toOption) yield {
-      playProject.withPresentationCompiler { pc =>
-        PositionHelper.mapSourcePosition(genSource.matrix, offset)
-      }
+      PositionHelper.mapSourcePosition(genSource.matrix, offset)
     }
   }
 

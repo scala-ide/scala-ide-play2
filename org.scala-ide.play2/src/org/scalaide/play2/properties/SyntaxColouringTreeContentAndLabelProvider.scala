@@ -10,6 +10,9 @@ import org.eclipse.jface.viewers.Viewer
  * list of categories and associated syntax classes to each one.
  * Each category would be parent in the tree and associated syntax classes
  * are children.
+ * 
+ * TODO: This class is a copy of the sdt.core object SyntaxColoringContentAndLabelProvider, except
+ * that it abstracts over `categories`. Needs to be moved over.
  */
 abstract class SyntaxColouringTreeContentAndLabelProvider(categories: List[Category]) extends LabelProvider with ITreeContentProvider {
 

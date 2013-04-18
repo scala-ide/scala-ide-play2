@@ -10,7 +10,7 @@ import org.scalaide.play2.PlayPlugin
 abstract class AbstractRouteScannerTest(constructor: (IPreferenceStore, IColorManager) => AbstractRouteScanner) {
 //  protected val colorManager = new JavaColorManager()
   protected val colorManager = null
-  protected val prefStore = PlayPlugin.prefStore
+  protected val prefStore = PlayPlugin.preferenceStore
   protected val scanner = constructor(prefStore, colorManager);
   protected val defaultToken = scanner.getDefaultReturnToken
   protected val wsToken = Token.WHITESPACE
