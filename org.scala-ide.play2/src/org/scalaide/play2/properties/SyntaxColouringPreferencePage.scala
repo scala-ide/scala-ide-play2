@@ -55,8 +55,8 @@ import org.eclipse.jface.viewers.LabelProvider
  * @param previewerFactory creates the preview part
  */
 class SyntaxColouringPreferencePage(allSyntaxClasses: List[ScalaSyntaxClass], defaultCategory: Category, labelContentProvider: PlayTypes.LabelContentProvider, initialText: String, previewerFactory: PreviewerFactory ) extends PreferencePage with IWorkbenchPreferencePage {
-  lazy val preferenceStore = new ChainedPreferenceStore(Array(PlayPlugin.prefStore, EditorsUI.getPreferenceStore))
-  setPreferenceStore(PlayPlugin.prefStore)
+  lazy val preferenceStore = new ChainedPreferenceStore(Array(PlayPlugin.preferenceStore, EditorsUI.getPreferenceStore))
+  setPreferenceStore(PlayPlugin.preferenceStore)
   protected val overlayStore = makeOverlayPreferenceStore
 
   private var foregroundColorEditorLabel: Label = _

@@ -3,7 +3,6 @@ package org.scalaide.play2.templateeditor.compiler
 import org.eclipse.jdt.core.compiler.IProblem
 import org.scalaide.play2.PlayProject
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
-import org.scalaide.play2.util.AutoHashMap
 import scala.tools.eclipse.javaelements.ScalaSourceFile
 import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblem
@@ -24,15 +23,13 @@ import scala.tools.eclipse.logging.HasLogger
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
+
+import scala.collection.mutable
+
 /**
  * presentation compiler for template files
  */
 class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
-  /**
-   * A map between compilation units and associated batch source files
-   */
-  private val sourceFiles = new AutoHashMap((tcu: TemplateCompilationUnit) => tcu.sourceFile())
-  
   /**
    * Returns scala batch source file (which is a virtual file) associated to
    * the given generated source.
@@ -97,22 +94,14 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
       1,
       1)
   }
-  
 
+  /**
+   * Reload the template compilation unit
+   *
+   * FIXME: `content` seems to be ignored
+   */
   def askReload(tcu: TemplateCompilationUnit, content: Array[Char]) {
-    sourceFiles.get(tcu) match {
-      case Some(f) =>
-        val newF = tcu.batchSourceFile(content)
-        synchronized {
-          sourceFiles(tcu) = newF
-        }
-
-      case None =>
-        synchronized {
-          sourceFiles.put(tcu, tcu.batchSourceFile(content))
-        }
-    }
-    for(generatedSource <- tcu.generatedSource()) {
+    for (generatedSource <- tcu.generatedSource()) {
       val src = scalaFileFromGen(generatedSource)
       val sourceList = List(src)
       scalaProject.withPresentationCompiler(pc => {
@@ -135,7 +124,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
 }
 
 object ScalaFileManager {
-  val scalaFile = new AutoHashMap[String, AbstractFile](fileName => {
+  val scalaFile = new mutable.HashMap[String, AbstractFile] withDefault (fileName => {
     new VirtualFile(fileName)
   })
 }

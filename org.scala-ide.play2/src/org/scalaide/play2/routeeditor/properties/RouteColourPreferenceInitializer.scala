@@ -14,7 +14,7 @@ class RouteColourPreferenceInitializer extends AbstractPreferenceInitializer {
   }
 
   private def doInitializeDefaultPreferences() {
-    val prefStore = PlayPlugin.prefStore
+    val prefStore = PlayPlugin.preferenceStore
     setDefaultsForSyntaxClasses(prefStore)
     prefStore.setDefault(PlayPlugin.RouteFormatterMarginId, 3) // for formatter
   }

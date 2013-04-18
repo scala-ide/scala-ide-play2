@@ -16,7 +16,7 @@ import scala.tools.eclipse.logging.HasLogger
  */
 object CompilerUsing extends HasLogger {
   val templateCompiler = ScalaTemplateCompiler
-  val additionalImports = """
+  val defaultTemplateImports = """
 import models._
 import controllers._
 import play.api.i18n._
@@ -37,8 +37,7 @@ import views.html._
     val extension = source.getName.split('.').last
 
     Try {
-      val templateImports = additionalImports + playProject.cachedPreferenceStore.getString(PlayPreferences.TemplateImports).replace("%format%", extension);
-      templateCompiler.compileVirtual(content, source, playProject.sourceDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", templateImports);
+      templateCompiler.compileVirtual(content, source, playProject.sourceDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", defaultTemplateImports + playProject.additionalTemplateImports(extension))
     } recoverWith {
       case TemplateCompilationError(source, message, line, column) =>
         val offset = PositionHelper.convertLineColumnToOffset(content, line, column)

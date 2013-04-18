@@ -8,7 +8,7 @@ import org.scalaide.play2.PlayPlugin
 
 class RouteFormatterPreferencePage extends FieldEditorPreferencePage with IWorkbenchPreferencePage {
 
-  setPreferenceStore(PlayPlugin.plugin.getPreferenceStore)
+  setPreferenceStore(PlayPlugin.preferenceStore)
   
   override def createFieldEditors() {
     val marginField = new IntegerFieldEditor(PlayPlugin.RouteFormatterMarginId, "Number of spaces between columns", getFieldEditorParent)

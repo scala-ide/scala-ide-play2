@@ -20,7 +20,7 @@ class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer 
   }
 
   private def doInitializeDefaultPreferences() {
-    setDefaultsForSyntaxClasses(PlayPlugin.prefStore)
+    setDefaultsForSyntaxClasses(PlayPlugin.preferenceStore)
   }
 
   private def setDefaultsForSyntaxClass(
