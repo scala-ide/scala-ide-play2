@@ -6,6 +6,7 @@ import org.eclipse.jdt.core.search.IJavaSearchScope
 import org.eclipse.jdt.core.search.SearchPattern
 import org.eclipse.jdt.internal.core.search.BasicSearchEngine
 import scala.Array.apply
+import org.eclipse.core.runtime.NullProgressMonitor
 
 object MethodFinder {
   /**
@@ -17,8 +18,7 @@ object MethodFinder {
    * @return array of method element which matches the search
    */
   def searchMethod(methodName: String, parameterTypes: Array[String]): Array[IJavaElement] = {
-    val paramsString = getParametersString(parameterTypes)
-    val stringPattern = methodName + paramsString
+    val stringPattern = methodName + getParametersString(parameterTypes)
     val methodPattern = SearchPattern.createPattern(stringPattern, IJavaSearchConstants.METHOD, IJavaSearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH)
     searchMethod(methodPattern)
   }
@@ -32,19 +32,12 @@ object MethodFinder {
     val participants = Array(BasicSearchEngine.getDefaultSearchParticipant)
     val scope = createJavaSearchScope()
     val requestor = new MethodSearchRequestor
-    val monitor = null
-    new BasicSearchEngine().search(pattern, participants, scope, requestor, monitor)
+    new BasicSearchEngine().search(pattern, participants, scope, requestor, new NullProgressMonitor)
     requestor
   }
 
   private[hyperlink] def getParametersString(parameterTypes: Array[String]) = {
-    if (parameterTypes == null || parameterTypes.length == 0)
-      "()"
-    else {
-      val tmp = parameterTypes.foldLeft("")((prev, s) => prev + s + ",")
-      val tmp2 = "(" + tmp.substring(0, tmp.length - 1) + ")"
-      tmp2
-    }
+    parameterTypes.mkString("(", ",", ")")
   }
 
   private def createJavaSearchScope(): IJavaSearchScope = {
