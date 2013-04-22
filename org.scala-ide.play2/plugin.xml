@@ -8,8 +8,8 @@
             class="org.scalaide.play2.routeeditor.RouteEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
-            filenames="routes"
-            icon="icons/play.png"
+            filenames="routes,*.routes"
+            icon="icons/routes.png"
             id="org.scalaide.play2.routeeditor.RouteEditor"
             name="Route Editor">
       </editor>
@@ -180,6 +180,14 @@
             </and>
          </enabledWhen>
       </page>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.ui.quickAssistProcessors">
+      <quickAssistProcessor
+            class="org.scalaide.play2.quickassist.AddRouteEntryScala"
+            id="org.scala-ide.play2.scalaAddRouteEntry"
+            name="Add Entry to Route file">
+      </quickAssistProcessor>
    </extension>
    <!--
    <extension
