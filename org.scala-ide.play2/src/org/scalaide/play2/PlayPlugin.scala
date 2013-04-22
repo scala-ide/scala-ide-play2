@@ -1,7 +1,6 @@
 package org.scalaide.play2
 
 import scala.tools.eclipse.ScalaPlugin
-
 import org.eclipse.core.resources.IProject
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.Status
@@ -9,6 +8,8 @@ import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.resource.ImageDescriptor
 import org.eclipse.ui.plugin.AbstractUIPlugin
 import org.osgi.framework.BundleContext
+import org.eclipse.jface.resource.ImageRegistry
+import org.scalaide.play2.util.Images
 
 object PlayPlugin {
   @volatile
@@ -56,5 +57,9 @@ class PlayPlugin extends AbstractUIPlugin {
       if iProject.isOpen
       playProject <- asPlayProject(iProject)
     } playProject.initialize()
+  }
+
+  override def initializeImageRegistry(reg: ImageRegistry) {
+    reg.put(Images.ROUTES_ICON, Images.ROUTES_ICON_DESCRIPTOR)
   }
 }
