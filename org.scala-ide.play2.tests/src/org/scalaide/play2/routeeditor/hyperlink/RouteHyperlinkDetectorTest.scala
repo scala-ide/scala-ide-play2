@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.IType
 import org.eclipse.core.resources.IncrementalProjectBuilder
 import org.junit.Before
 import org.eclipse.core.runtime.NullProgressMonitor
+import org.scalaide.play2.routeeditor.RouteActionTest
 
 object RouteHyperlinkDetectorTest extends TestProjectSetup("routeHyperlink", srcRoot = "/%s/app/", bundleName = "org.scala-ide.play2.tests") {
   @AfterClass
@@ -187,7 +188,7 @@ class RouteHyperlinkDetectorTest {
     hyperlinkOffset: Int,
     expectedLabel: String) {
 
-    val partitionOffset = actionPartitionOffset(content)
+    val partitionOffset = RouteActionTest.actionPartitionOffset(content)
     val partitionLength = content.length() - partitionOffset
     val document = new TestDocumentWithRoutePartition(content, new TypedRegion(partitionOffset, partitionLength, RoutePartitions.ROUTE_ACTION))
 
@@ -206,7 +207,7 @@ class RouteHyperlinkDetectorTest {
     content: String,
     hyperlinkOffset: Int) {
 
-    val partitionOffset = actionPartitionOffset(content)
+    val partitionOffset = RouteActionTest.actionPartitionOffset(content)
     val partitionLength = content.length() - partitionOffset
     val document = new TestDocumentWithRoutePartition(content, new TypedRegion(partitionOffset, partitionLength, RoutePartitions.ROUTE_ACTION))
 
@@ -221,19 +222,6 @@ class RouteHyperlinkDetectorTest {
 
   }
   
-  private def actionPartitionOffset(content: String): Int = {
-    val regex = """\S*\s*/\S*\s*""".r
-
-    regex.findFirstMatchIn(content) match {
-      case Some(prefix) =>
-        prefix.end
-      case None =>
-        fail("Unable to partition the test content")
-        0
-    }
-    
-  }
-
   /** An implementation to create fake Java Hyperlinks.
    *  Creating 'real' ones would require the Eclipse UI.
    */

@@ -17,6 +17,7 @@ object RouteHyperlinkComputer {
   def detectHyperlinks(scalaProject: ScalaProject, document: IDocument, region: IRegion, createJavaHyperlink: (RouteAction, IJavaElement) => IHyperlink): Option[IHyperlink] = {
     RouteAction.routeActionAt(document, region.getOffset()).flatMap {
       routeAction =>
+        val routeActionParamTypes= routeAction.params.map(_._2)
         scalaProject.withPresentationCompiler { compiler =>
           import compiler._
           askOption { () =>
@@ -30,10 +31,10 @@ object RouteHyperlinkComputer {
             def parametersMatch(method: Symbol): Boolean = {
               method.paramss match {
                 case Nil =>
-                  routeAction.parameterTypes == Nil
+                  routeAction.params == Nil
                 case firstSet :: Nil =>
                   val a = firstSet.map(_.tpe.toLongString)
-                  a == routeAction.parameterTypes
+                  a == routeActionParamTypes
                 case _ =>
                   false // doesn't support multiple parameter list in the route file
               }
@@ -58,7 +59,7 @@ object RouteHyperlinkComputer {
               val res = filteredMethod.flatMap {
                 method =>
                   if (method.isJavaDefined) {
-                    val elems = MethodFinder.searchMethod(routeAction.fullMethodName, routeAction.parameterTypes.toArray)
+                    val elems = MethodFinder.searchMethod(routeAction.fullName, routeAction.params.map(_._2).toArray)
                     elems.headOption.map {
                       createJavaHyperlink(routeAction, _)
                     }
