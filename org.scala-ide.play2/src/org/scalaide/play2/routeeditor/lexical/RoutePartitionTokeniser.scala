@@ -11,14 +11,15 @@ import RoutePartitions.ROUTE_DEFAULT
 import RoutePartitions.ROUTE_HTTP
 import RoutePartitions.ROUTE_URI
 
-object RoutePartitionTokeniser extends PlayPartitionTokeniser {
-
+class RoutePartitionTokeniser extends PlayPartitionTokeniser {
+  import RoutePartitionTokeniser.EOF
+  
   def tokeniseEachLine(chars: Array[Char], line: ScalaPartitionRegion): List[ScalaPartitionRegion] = {
     val tokens = new ArrayBuffer[ScalaPartitionRegion]
     val ScalaPartitionRegion(_, start, end) = line
     var offset = start
 
-    def ch(index: Int) = if (index <= end) chars(index) else RouteDocumentPartitioner.EOF
+    def ch(index: Int) = if (index <= end) chars(index) else EOF
 
     @inline def checkBound = offset <= end
 
@@ -43,7 +44,7 @@ object RoutePartitionTokeniser extends PlayPartitionTokeniser {
       if (offset > startIndex) {
         val word = chars.subSequence(startIndex, offset).toString()
         val contentType =
-          if (HTTPKeywords.words.exists(_ equals word)) {
+          if (HTTPKeywords.Methods.exists(_ equals word)) {
             ROUTE_HTTP
           } else { ROUTE_DEFAULT }
         tokens += ScalaPartitionRegion(contentType, startIndex, offset - 1)
@@ -108,4 +109,8 @@ object RoutePartitionTokeniser extends PlayPartitionTokeniser {
     lines.flatMap(tokeniseEachLine(text.toCharArray, _))
   }
 
+}
+
+object RoutePartitionTokeniser {
+  final val EOF = '\u001A' 
 }

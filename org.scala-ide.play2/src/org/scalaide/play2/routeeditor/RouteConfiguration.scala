@@ -44,7 +44,8 @@ class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) 
   }
 
   override def getConfiguredContentTypes(sourceViewer: ISourceViewer) = {
-    RoutePartitions.getTypes()
+    RoutePartitions.getTypes
+  }
   }
 
   override def getHyperlinkDetectors(sourceViewer: ISourceViewer) = {
