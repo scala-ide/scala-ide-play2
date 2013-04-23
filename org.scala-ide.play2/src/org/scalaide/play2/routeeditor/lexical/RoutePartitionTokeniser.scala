@@ -23,7 +23,7 @@ class RoutePartitionTokeniser extends PlayPartitionTokeniser {
 
     @inline def checkBound = offset <= end
 
-    def proceedComment = { // this line is a comment line
+    def proceedComment() = { // this line is a comment line
       if (ch(offset) == '#') {
         tokens += ScalaPartitionRegion(ROUTE_COMMENT, start, end)
         true
@@ -32,50 +32,46 @@ class RoutePartitionTokeniser extends PlayPartitionTokeniser {
       }
     }
 
-    def proceedAction {
+    def proceedAction() {
       if (end > offset) {
         tokens += ScalaPartitionRegion(ROUTE_ACTION, offset, end)
       }
     }
 
-    def proceedHTTPVerb = {
+    def proceedHTTPVerb() = {
       val startIndex = offset
       while (checkBound && !Character.isWhitespace(ch(offset))) offset += 1
       if (offset > startIndex) {
         val word = chars.subSequence(startIndex, offset).toString()
-        val contentType =
-          if (HTTPKeywords.Methods.exists(_ equals word)) {
-            ROUTE_HTTP
-          } else { ROUTE_DEFAULT }
-        tokens += ScalaPartitionRegion(contentType, startIndex, offset - 1)
+        tokens += ScalaPartitionRegion(ROUTE_HTTP, startIndex, offset)
         true
       } else {
         false
       }
     }
 
-    def proceedURI = {
+    def proceedURI() = {
       val startIndex = offset
       while (checkBound && !Character.isWhitespace(ch(offset))) offset += 1
       if (offset > startIndex) {
-        tokens += ScalaPartitionRegion(ROUTE_URI, startIndex, offset - 1)
+        tokens += ScalaPartitionRegion(ROUTE_URI, startIndex, offset)
         true
       } else {
         false
       }
     }
 
-    def proceedWhitespace = {
+    def proceedWhitespace() = {
       while (checkBound && Character.isWhitespace(ch(offset))) offset += 1
     }
 
-    if (!proceedComment) { // this line is not comment line
+    if (!proceedComment()) { // this line is not comment line
       var startIndex = start
-      if (proceedHTTPVerb) {
-        proceedWhitespace
-        if (proceedURI) {
-          proceedWhitespace
-          proceedAction
+      if (proceedHTTPVerb()) {
+        proceedWhitespace()
+        if (proceedURI()) {
+          proceedWhitespace()
+          proceedAction()
         }
       }
     }
@@ -105,8 +101,15 @@ class RoutePartitionTokeniser extends PlayPartitionTokeniser {
   }
 
   def tokenise(text: String): List[ScalaPartitionRegion] = {
-    val lines = convertToSeperateLines(text)
-    lines.flatMap(tokeniseEachLine(text.toCharArray, _))
+    val lines = convertToSeperateLines(text) 
+    val tokens = lines.flatMap(tokeniseEachLine(text.toCharArray, _))
+    if(tokens.nonEmpty) tokens
+    else {
+      // Empty route file return a partition of type `ROUTE_HTTP` so that completion is triggered.
+      // If we don't do this, asking completion in an emoty route files that contains only some 
+      // whitespace would **not** work.
+      List(ScalaPartitionRegion(ROUTE_HTTP, 0, text.length))
+    }
   }
 
 }

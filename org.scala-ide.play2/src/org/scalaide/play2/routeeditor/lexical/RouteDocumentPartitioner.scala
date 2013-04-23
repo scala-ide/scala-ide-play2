@@ -11,5 +11,5 @@ class RouteDocumentPartitioner(conservative: Boolean = false) extends PlayDocume
 
   import RouteDocumentPartitioner._
 
-  override def getLegalContentTypes = Array(ROUTE_DEFAULT, ROUTE_URI, ROUTE_ACTION, ROUTE_COMMENT) //RoutePartitions.getTypes
+  override def getLegalContentTypes: Array[String] = RoutePartitions.getTypes
 }

@@ -1,20 +1,19 @@
 package org.scalaide.play2.routeeditor.completion
 
+import org.eclipse.jface.text.Document
+import org.eclipse.jface.text.ITextViewer
+import org.eclipse.jface.text.contentassist.ICompletionProposal
+import org.junit.Assert
+
 import org.junit.Test
-import org.eclipse.jface.text.contentassist.IContentAssistProcessor
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.when
-import org.eclipse.ui.texteditor.ITextEditor
-import org.eclipse.jface.text.ITextViewer
-import org.eclipse.jface.text.Document
-import org.junit.Assert
 import org.scalaide.play2.routeeditor.lexical.HTTPKeywords
-import org.eclipse.jface.text.contentassist.ICompletionProposal
 
 class HttpMethodCompletionComputerTest {
 
   private class RouteFile(text: String) {
-    private def cleanedText: String = text.filterNot(_ == '*').mkString
+    private val cleanedText: String = text.filterNot(_ == '*').mkString
 
     private val document = new Document(cleanedText)
 
@@ -30,7 +29,7 @@ class HttpMethodCompletionComputerTest {
       val textualCompletions = completions.map(_.getDisplayString())
       Assert.assertEquals("Expected HTTP method completions don't match.", method.toList, textualCompletions.toList)
 
-      if(textualCompletions.size == 1) checkCompletionIsCorrectlyAppliedToDocument(completions(0))
+      if (textualCompletions.size == 1) checkCompletionIsCorrectlyAppliedToDocument(completions(0))
     }
 
     private def checkCompletionIsCorrectlyAppliedToDocument(proposal: ICompletionProposal): Unit = {
@@ -39,7 +38,7 @@ class HttpMethodCompletionComputerTest {
       Assert.assertTrue(document.get().contains(proposal.getDisplayString()))
     }
 
-    private def caretOffset: Int = {
+    private val caretOffset: Int = {
       val offset = text.indexOf('*')
       if (offset == -1) Assert.fail("Could not locate caret position marker '*' in test.")
       offset
@@ -51,67 +50,87 @@ class HttpMethodCompletionComputerTest {
 
   @Test
   def HttpGET_completion() {
-    val route = RouteFile {
-      """
-      |G*
-      """
-    }
+    val route = RouteFile { "G*" }
 
     route expectedMethodCompletions "GET"
   }
 
   @Test
   def HttpGET_completion_is_case_insensitive() {
-    val route = RouteFile {
-      """
-      |g*
-      """
-    }
+    val route = RouteFile { "g*" }
 
     route expectedMethodCompletions "GET"
   }
 
   @Test
   def HTTP_PUT_POST_completion() {
-    val route = RouteFile {
-      """
-      |P*
-      """
-    }
+    val route = RouteFile { "P*" }
 
     route expectedMethodCompletions ("POST", "PUT")
   }
 
   @Test
   def HTTP_HEAD_completion() {
-    val route = RouteFile {
-      """
-      |HeA*
-      """
-    }
+    val route = RouteFile { "HeA*" }
 
     route expectedMethodCompletions "HEAD"
   }
 
   @Test
   def HTTP_DELETE_completion() {
-    val route = RouteFile {
-      """
-      |de*
-      """
-    }
+    val route = RouteFile { "de*" }
 
     route expectedMethodCompletions "DELETE"
   }
 
   @Test
-  def show_all_HTTP_methods_word_doesnt_match() {
+  def show_all_HTTP_methods_when_word_doesnt_match() {
+    val route = RouteFile { "DET*" }
+
+    route expectedMethodCompletions (HTTPKeywords.Methods: _*)
+  }
+
+  @Test
+  def all_Http_Method_completion_at_beginning_of_empty_line() {
+    val route = RouteFile { "*" }
+
+    route expectedMethodCompletions (HTTPKeywords.Methods: _*)
+  }
+
+  @Test
+  def all_Http_Method_completion_at_end_of_empty_line() {
     val route = RouteFile {
-      """
-      |DET*
-      """
+      // whitespaces before the '*' are relevant for this test!
+      "   *"
     }
 
     route expectedMethodCompletions (HTTPKeywords.Methods: _*)
+  }
+
+  @Test
+  def all_Http_Method_completion_in_middle_of_empty_line() {
+    val route = RouteFile {
+      // whitespaces after the '*' are relevant for this test!
+      "  *   "
+    }
+
+    route expectedMethodCompletions (HTTPKeywords.Methods: _*)
+  }
+
+  @Test
+  def all_Http_Method_completion_when_cursor_is_on_already_valid_Http_method() {
+    val route = RouteFile { "G*ET" }
+
+    route expectedMethodCompletions (HTTPKeywords.Methods: _*)
+  }
+
+  @Test
+  def GET_Http_Method_completion_returned() {
+    val route = RouteFile {
+      // whitespaces after the '*' is relevant for this test!
+      "G*  "
+    }
+
+    route expectedMethodCompletions "GET"
   }
 }
