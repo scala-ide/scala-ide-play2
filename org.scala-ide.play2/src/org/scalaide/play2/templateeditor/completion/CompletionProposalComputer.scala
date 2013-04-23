@@ -16,15 +16,15 @@ import org.eclipse.jface.text.Region
 import scala.tools.eclipse.completion.CompletionProposal
 
 class CompletionProposalComputer(textEditor: ITextEditor) extends ScalaCompletions with IContentAssistProcessor {
-  def getCompletionProposalAutoActivationCharacters() = Array('.')
+  override def getCompletionProposalAutoActivationCharacters() = Array('.')
 
-  def getContextInformationAutoActivationCharacters() = Array[Char]()
+  override def getContextInformationAutoActivationCharacters() = Array[Char]()
 
-  def getErrorMessage = "No error"
+  override def getErrorMessage = "No error"
 
-  def getContextInformationValidator = null
+  override def getContextInformationValidator = null
 
-  def computeCompletionProposals(viewer: ITextViewer, offset: Int): Array[ICompletionProposal] = {
+  override def computeCompletionProposals(viewer: ITextViewer, offset: Int): Array[ICompletionProposal] = {
     EditorUtils.getEditorCompilationUnit(textEditor) match {
       case Some(tcu: TemplateCompilationUnit) =>
         tcu.askReload()
@@ -52,7 +52,7 @@ class CompletionProposalComputer(textEditor: ITextEditor) extends ScalaCompletio
     completions getOrElse Nil
   }
 
-  def computeContextInformation(viewer: ITextViewer, offset: Int): Array[IContextInformation] = {
+  override def computeContextInformation(viewer: ITextViewer, offset: Int): Array[IContextInformation] = {
     null
   }
 }
