@@ -25,13 +25,14 @@ import org.scalaide.editor.Editor
 import org.scalaide.editor.EditorUI
 
 class AddRouteEntryScala extends IQuickAssistProcessor {
-  val resolver = new ScalaControllerMethodResolver
+  private lazy val scalaResolver = new ScalaControllerMethodResolver
+  private lazy val javaResolver = new JavaControllerMethodResolver
 
   override def hasAssists(context: IInvocationContext): Boolean = {
     context.getCompilationUnit() match {
       case scu: ScalaCompilationUnit =>
-        resolver.getControllerMethod(scu, context.getSelectionOffset()).isDefined
-      case _ => false
+        scalaResolver.getControllerMethod(scu, context.getSelectionOffset()).isDefined
+      case cu => javaResolver.getControllerMethod(cu, context.getSelectionOffset()).isDefined
     }
   }
 
@@ -40,14 +41,14 @@ class AddRouteEntryScala extends IQuickAssistProcessor {
    *  TODO: Check that a similar entry does not already exist.
    */
   override def getAssists(context: IInvocationContext, locations: Array[IProblemLocation]): Array[IJavaCompletionProposal] = {
-    context.getCompilationUnit() match {
-      case scu: ScalaCompilationUnit =>
-        (for (cmeth <- resolver.getControllerMethod(scu, context.getSelectionOffset())) yield {
-          createAssistProposals(scu.scalaProject.underlying, cmeth)
-        }) getOrElse Array()
-
-      case _ => Array()
+    val unit = context.getCompilationUnit()
+    val (resolver, prj) = unit match {
+      case scu: ScalaCompilationUnit => (scalaResolver, scu.scalaProject.underlying)
+      case _                         => (javaResolver, unit.getJavaProject().getProject())
     }
+    (for (cmeth <- resolver.getControllerMethod(unit, context.getSelectionOffset())) yield {
+      createAssistProposals(prj, cmeth)
+    }) getOrElse Array()
   }
 
   /** Create assist proposals to add the given controller method to all route files in the project.
