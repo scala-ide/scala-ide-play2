@@ -3,8 +3,11 @@ package org.scalaide.play2.quickassist
 /** A controller method definition, with helper methods to generate the route-file
  *  syntax.
  */
-case class ControllerMethod(fullName: String, params: List[(String, String)]) {
+case class ControllerMethod(typeName: String, methodName: String, params: List[(String, String)]) {
   import ControllerMethod._
+
+  def fullName: String =
+    "%s.%s".format(typeName, methodName)
 
   /** Return the route-call syntax, simplifying types if possible.
    *
@@ -49,4 +52,16 @@ object ControllerMethod {
     "long" -> Some("Long"),
     "float" -> Some("Float"),
     "double" -> Some("Double")) withDefault (Some.apply)
+
+  private val FullNameRegex = """(.+)\.([^.]+)""".r
+
+  /** Create a new instance by extracting the type and the method name.
+   */
+  def apply(fullName: String, params: List[(String, String)]): ControllerMethod =
+    fullName match {
+      case FullNameRegex(typeName, methodName) =>
+        new ControllerMethod(typeName, methodName, params)
+      case _ =>
+        throw new IllegalArgumentException(s"'$fullName' cannot be parsed as a full method name")
+    }
 }
