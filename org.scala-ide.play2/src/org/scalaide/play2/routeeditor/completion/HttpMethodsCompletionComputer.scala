@@ -1,23 +1,21 @@
 package org.scalaide.play2.routeeditor.completion
 
-import scala.tools.eclipse.jface.text.EmptyRegion
-
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.ITextViewer
-import org.eclipse.jface.text.Region
 import org.eclipse.jface.text.contentassist.ICompletionProposal
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor
 import org.eclipse.jface.text.contentassist.IContextInformation
 import org.eclipse.swt.graphics.Image
 import org.eclipse.swt.graphics.Point
+import org.scalaide.editor.WordFinder
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.routeeditor.lexical.HTTPKeywords
 import org.scalaide.play2.util.Images
 
 class HttpMethodCompletionComputer extends IContentAssistProcessor {
 
-  private val wordFinder = new HttpMethodCompletionComputer.WordFinder
+  private val wordFinder = new WordFinder
 
   override def getCompletionProposalAutoActivationCharacters(): Array[Char] = null
 
@@ -57,24 +55,5 @@ class HttpMethodCompletionComputer extends IContentAssistProcessor {
     override def getDisplayString: String = displayString
     override def getImage: Image = PlayPlugin.instance.getImageRegistry().get(Images.HTTP_METHODS_ICON)
     override def getContextInformation: IContextInformation = null
-  }
-}
-
-object HttpMethodCompletionComputer {
-  private class WordFinder {
-    def findWord(document: IDocument, offset: Int): IRegion = {
-      val docLenght = document.getLength()
-      var end = offset
-      while(end < docLenght && !Character.isWhitespace(document.getChar(end))) end += 1
-      
-      var start = offset
-      while(start > 0 && !Character.isWhitespace(document.getChar(start - 1))) start -= 1
-
-      start = Math.max(0, start)
-      end = Math.min(docLenght, end)
-
-      if(end <= start) EmptyRegion
-      else new Region(start, end)
-    }
   }
 }
