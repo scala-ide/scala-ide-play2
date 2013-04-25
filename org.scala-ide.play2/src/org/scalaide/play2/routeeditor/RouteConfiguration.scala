@@ -19,6 +19,9 @@ import org.eclipse.jface.text.formatter.MultiPassContentFormatter
 import org.scalaide.play2.routeeditor.formatter.RouteFormattingStrategy
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions
 import org.scalaide.play2.routeeditor.hyperlink.RouteHyperlinkDetector
+import org.eclipse.jface.text.contentassist.IContentAssistant
+import org.eclipse.jface.text.contentassist.ContentAssistant
+import org.scalaide.play2.routeeditor.completion.HttpMethodCompletionComputer
 
 class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) extends SourceViewerConfiguration  with PropertyChangeHandler{
   val reconciler = new PresentationReconciler();
@@ -46,6 +49,12 @@ class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) 
   override def getConfiguredContentTypes(sourceViewer: ISourceViewer) = {
     RoutePartitions.getTypes
   }
+
+  override def getContentAssistant(sourceViewer: ISourceViewer): IContentAssistant = {
+    val assistant = new ContentAssistant
+    assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer))
+    assistant.setContentAssistProcessor(new HttpMethodCompletionComputer, RoutePartitions.ROUTE_HTTP)
+    assistant
   }
 
   override def getHyperlinkDetectors(sourceViewer: ISourceViewer) = {
@@ -54,8 +63,8 @@ class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) 
 
   def handlePartition(scan: ITokenScanner, token: String) = {
     val dr = new DefaultDamagerRepairer(scan);
-    reconciler.setDamager(dr, token);
-    reconciler.setRepairer(dr, token);
+    reconciler.setDamager(dr, token)
+    reconciler.setRepairer(dr, token)
   }
 
   override def getPresentationReconciler(

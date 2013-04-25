@@ -7,6 +7,8 @@ import org.junit.runners.Suite.SuiteClasses
 import org.scalaide.play2.routeeditor.hyperlink.RouteHyperlinkDetectorTest
 import org.scalaide.play2.routeeditor.hyperlink.MethodFinderTest
 import org.scalaide.play2.routeeditor.RouteActionTest
+import org.scalaide.play2.routeeditor.completion.HttpMethodCompletionComputerTest
+import org.scalaide.play2.routeeditor.lexical.RoutePartitionTokeniserTest
 
 @RunWith(value=classOf[org.junit.runners.Suite])
 @SuiteClasses(value=Array(
@@ -16,7 +18,9 @@ import org.scalaide.play2.routeeditor.RouteActionTest
 //    classOf[RouteURIScannerTest],
 //    classOf[RouteScannerTest],
     classOf[MethodFinderTest],
-    classOf[RouteActionTest]))
+    classOf[RouteActionTest],
+    classOf[HttpMethodCompletionComputerTest],
+    classOf[RoutePartitionTokeniserTest]))
 class RouteTestSuite {
 	
 }
