@@ -20,6 +20,7 @@
 
   <modules>
     <module>org.scala-ide.sdt.editor</module>
+    <module>org.scala-ide.sdt.editor.tests</module>
     <module>org.scala-ide.play2</module>
     <module>org.scala-ide.play2.tests</module>
     <module>org.scala-ide.play2.feature</module>
