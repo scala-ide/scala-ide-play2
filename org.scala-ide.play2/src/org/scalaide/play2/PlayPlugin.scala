@@ -61,5 +61,6 @@ class PlayPlugin extends AbstractUIPlugin {
 
   override def initializeImageRegistry(reg: ImageRegistry) {
     reg.put(Images.ROUTES_ICON, Images.ROUTES_ICON_DESCRIPTOR)
+    reg.put(Images.HTTP_METHODS_ICON, Images.HTTP_METHODS_ICON_DESCRIPTOR)
   }
 }

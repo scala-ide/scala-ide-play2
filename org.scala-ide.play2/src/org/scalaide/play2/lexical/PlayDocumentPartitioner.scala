@@ -9,7 +9,7 @@ import org.eclipse.jface.text._
 /**
  * Partitions the document according to given tokeniser
  */
-abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, defaultPartition: String, conservative: Boolean = false) extends IDocumentPartitioner with IDocumentPartitionerExtension with IDocumentPartitionerExtension2 {
+abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, protected val defaultPartition: String, conservative: Boolean = false) extends IDocumentPartitioner with IDocumentPartitionerExtension with IDocumentPartitionerExtension2 {
 
   private var partitionRegions: List[ScalaPartitionRegion] = Nil
 
@@ -44,7 +44,7 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, defau
       // Scan outside-in from both the beginning and the end of the document to match up undisturbed partitions:
       val unchangedLeadingRegionCount = commonPrefixLength(oldPartitions, newPartitions)
       val adjustedOldPartitions =
-        for (region <- oldPartitions if region.start > offset + length - 1)
+        for (region <- oldPartitions if region.start > offset + length)
           yield region.shift(text.length - length)
       val unchangedTrailingRegionCount = commonPrefixLength(adjustedOldPartitions.reverse, newPartitions.reverse)
       val dirtyOldPartitionCount = oldPartitions.size - unchangedTrailingRegionCount - unchangedLeadingRegionCount
@@ -106,15 +106,7 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, defau
   def getContentType(offset: Int, preferOpenPartitions: Boolean) = getPartition(offset, preferOpenPartitions).getType
 
   def getPartition(offset: Int, preferOpenPartitions: Boolean): ITypedRegion = {
-    val region = getPartition(offset)
-    if (preferOpenPartitions)
-      if (region.getOffset == offset && region.getType != defaultPartition)
-        if (offset > 0) {
-          val previousRegion = getPartition(offset - 1)
-          if (previousRegion.getType == defaultPartition)
-            return previousRegion
-        }
-    region
+    getPartition(offset)
   }
 
   def computePartitioning(offset: Int, length: Int, includeZeroLengthPartitions: Boolean) = computePartitioning(offset, length)
