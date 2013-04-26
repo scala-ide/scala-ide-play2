@@ -21,7 +21,8 @@ import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.routeeditor.RouteEditor
 import org.scalaide.play2.util.Images
 import scala.tools.eclipse.javaelements.ScalaCompilationUnit
-import org.scalaide.editor.Util
+import org.scalaide.editor.Editor
+import org.scalaide.editor.EditorUI
 
 class AddRouteEntryScala extends IQuickAssistProcessor {
   val resolver = new ScalaControllerMethodResolver
@@ -84,7 +85,7 @@ class AddRouteEntryScala extends IQuickAssistProcessor {
       part <- Option(IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), routeFile))
     } part match {
       case routeEditor: RouteEditor =>
-        Util.getEditorDocument(routeEditor) foreach { routeDoc =>
+        Editor.getEditorDocument(routeEditor) foreach { routeDoc =>
           ensureNewLine(routeDoc)
           val template = newTemplateProposal(routeDoc, /* image = */ null, routeCall)
           template.apply(routeEditor.getViewer, ' ', 0, routeDoc.getLength())
@@ -98,7 +99,7 @@ class AddRouteEntryScala extends IQuickAssistProcessor {
 
   /** Ensure a fresh new line at the end of the document. */
   private def ensureNewLine(doc: IDocument) {
-    val lineSep = Option(doc.getLineDelimiter(0)).getOrElse(Util.defaultLineSeparator)
+    val lineSep = Option(doc.getLineDelimiter(0)).getOrElse(EditorUI.defaultLineSeparator)
     val lastLineRegion = doc.getLineInformationOfOffset(doc.getLength())
     val lastLine = doc.get(lastLineRegion.getOffset(), lastLineRegion.getLength())
     if (lastLine.trim != "")

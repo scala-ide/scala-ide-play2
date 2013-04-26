@@ -4,7 +4,8 @@ import org.junit.Test
 import org.junit.Before
 import org.junit.Assert
 import scala.tools.eclipse.lexical.ScalaPartitionRegion
-import org.scalaide.editor.Util
+import org.eclipse.jface.text.IDocument
+import org.eclipse.jface.text.Document
 
 class RoutePartitionTokeniserTest {
 
@@ -17,6 +18,8 @@ class RoutePartitionTokeniserTest {
     tokenizer = new RoutePartitionTokeniser
   }
 
+  implicit def string2document(text: String): IDocument = new Document(text) 
+  
   @Test
   def empty_route_file_should_return_HTTP_partition() {
     val text = ""
@@ -54,14 +57,14 @@ class RoutePartitionTokeniserTest {
 
   @Test
   def empty_lines_tokenized_as_HTPP_partitions() {
-    val text = s" ${Util.defaultLineSeparator}"
+    val text = s" \n"
     val tokens = tokenizer.tokenise(text)
     Assert.assertEquals(List(ScalaPartitionRegion(ROUTE_HTTP, 0, 1), ScalaPartitionRegion(ROUTE_HTTP, 2, 2)), tokens)
   }
 
   @Test
   def GET_followed_by_newline_are_both_partitioned_as_HTTP_partitions() {
-    val text = s"GET ${Util.defaultLineSeparator}"
+    val text = s"GET \n"
     val tokens = tokenizer.tokenise(text)
     Assert.assertEquals(List(ScalaPartitionRegion(ROUTE_HTTP, 0, 3), ScalaPartitionRegion(ROUTE_HTTP, 5, 5)), tokens)
   }

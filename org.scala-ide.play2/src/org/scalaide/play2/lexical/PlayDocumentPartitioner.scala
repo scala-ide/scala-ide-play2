@@ -14,7 +14,7 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, prote
   private var partitionRegions: List[ScalaPartitionRegion] = Nil
 
   def connect(document: IDocument) {
-    partitionRegions = tokensiser.tokenise(document.get)
+    partitionRegions = tokensiser.tokenise(document)
   }
 
   def disconnect() {
@@ -27,7 +27,7 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, prote
 
   def documentChanged2(event: DocumentEvent): IRegion = {
     val oldPartitions = partitionRegions
-    val newPartitions = tokensiser.tokenise(event.getDocument.get)
+    val newPartitions = tokensiser.tokenise(event.getDocument)
     partitionRegions = newPartitions
     if (conservative)
       new Region(0, event.getDocument.getLength)

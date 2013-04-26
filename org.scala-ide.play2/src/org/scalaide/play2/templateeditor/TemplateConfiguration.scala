@@ -41,7 +41,7 @@ import scala.tools.eclipse.ui.BracketAutoEditStrategy
 import org.eclipse.jdt.internal.ui.text.java.SmartSemicolonAutoEditStrategy
 import org.eclipse.jface.text.source.Annotation
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants
-import org.scalaide.editor.Util
+import org.scalaide.editor.EditorUI
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration(prefStore) with PropertyChangeHandler {
 
@@ -145,9 +145,9 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Templat
         Array(
           new SmartSemicolonAutoEditStrategy(partitioning),
           new BracketAutoEditStrategy(prefStore),
-          new TemplateAutoIndentStrategy(getTabWidth(sourceViewer), useSpacesForTabs, Util.defaultLineSeparator))
+          new TemplateAutoIndentStrategy(getTabWidth(sourceViewer), useSpacesForTabs, EditorUI.defaultLineSeparator))
       case _ =>
-        Array(new TemplateAutoIndentStrategy(getTabWidth(sourceViewer), useSpacesForTabs, Util.defaultLineSeparator))
+        Array(new TemplateAutoIndentStrategy(getTabWidth(sourceViewer), useSpacesForTabs, EditorUI.defaultLineSeparator))
     }
   }
 
