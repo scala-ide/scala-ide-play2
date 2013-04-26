@@ -10,11 +10,8 @@ object RoutePartitions {
   val ROUTE_HTTP = "__route_http"
   val ROUTE_DEFAULT = IDocument.DEFAULT_CONTENT_TYPE
 
-  def getTypes() = {
+  val getTypes: Array[String] =
     Array(ROUTE_URI, ROUTE_ACTION, ROUTE_COMMENT, ROUTE_HTTP, ROUTE_DEFAULT);
-  }
 
-  def isRouteAction(typeString: String) = {
-    typeString == ROUTE_ACTION;
-  }
+  def isRouteAction(typeString: String): Boolean = typeString == ROUTE_ACTION
 }
