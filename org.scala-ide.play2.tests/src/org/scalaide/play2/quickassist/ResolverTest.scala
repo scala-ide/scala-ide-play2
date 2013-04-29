@@ -27,7 +27,7 @@ class ResolverTest {
     for (pos <- positions) {
       val cm = resolver.getControllerMethod(scu, pos)
       assertTrue(s"Could not resolve controller method at position $pos", cm.isDefined)
-      assertTrue(s"${cm.get} is not in $resolvedMethods", resolvedMethods.contains(cm.get))
+      assertTrue(s"${cm.get} is not in $scalaResolvedMethods", scalaResolvedMethods.contains(cm.get))
     }
   }
 
@@ -44,8 +44,40 @@ class ResolverTest {
     }
   }
 
-  private val resolvedMethods = Set(
+  @Test
+  def testJavaResolverPos() {
+    val resolver = new JavaControllerMethodResolver
+    val cu = compilationUnit("controllers/JavaApplication.java")
+    val positions = SDTTestUtils.positionsOf(cu.getBuffer().getCharacters(), "/*!*/")
+
+    for (pos <- positions) {
+      val cm = resolver.getControllerMethod(cu, pos)
+      assertTrue(s"Could not resolve controller method at position $pos", cm.isDefined)
+      assertTrue(s"${cm.get} is not in $javaResolvedMethods", javaResolvedMethods.contains(cm.get))
+    }
+  }
+
+  @Test
+  def testJavaResolverNeg() {
+    val resolver = new ScalaControllerMethodResolver
+
+    val scu = compilationUnit("controllers/JavaNonController.java")
+    val positions = SDTTestUtils.positionsOf(scu.getBuffer().getCharacters(), "/*!*/")
+
+    for (pos <- positions) {
+      val cm = resolver.getControllerMethod(scu, pos)
+      assertTrue(s"Wrong controller method (${cm}) at position $pos", cm.isEmpty)
+    }
+  }
+
+  private val scalaResolvedMethods = Set(
     ControllerMethod("controllers.Application.index", List()),
     ControllerMethod("controllers.Application.post", List(("id", "Long"))),
     ControllerMethod("controllers.Application.postText", List(("text", "String"), ("id", "Int"))))
+
+  private val javaResolvedMethods = Set(
+    ControllerMethod("controllers.JavaApplication.index", List()),
+    ControllerMethod("controllers.JavaApplication.index2", List(("lng", "long"))),
+    ControllerMethod("controllers.JavaApplication.index3", List(("str", "java.lang.String"), ("id", "int"))),
+    ControllerMethod("controllers.JavaApplication.index4", List(("f", "java.io.File"), ("id", "int"))))
 }
