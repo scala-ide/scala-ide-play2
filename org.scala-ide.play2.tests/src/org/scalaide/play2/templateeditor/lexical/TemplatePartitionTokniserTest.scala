@@ -11,12 +11,16 @@ import scala.tools.eclipse.lexical.ScalaPartitionRegion
 import scala.tools.eclipse.lexical.ScalaPartitionRegion
 import org.junit.AfterClass
 import scala.tools.eclipse.testsetup.SDTTestUtils
+import org.eclipse.jface.text.IDocument
+import org.eclipse.jface.text.Document
 
 object TemplatePartitionTokeniserTest extends TestProjectSetup("aProject", bundleName = "org.scala-ide.play2.tests") {
   @AfterClass
   def projectCleanUp() {
     SDTTestUtils.deleteProjects(project)
   }
+
+  implicit def string2document(text: String): IDocument = new Document(text)
 }
 
 class TemplatePartitionTokeniserTest {

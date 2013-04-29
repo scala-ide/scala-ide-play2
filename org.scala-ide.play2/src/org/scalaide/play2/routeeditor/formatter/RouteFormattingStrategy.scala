@@ -127,7 +127,7 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
 
   def format() {
     val tokeniser = new RoutePartitionTokeniser()
-    val regions = tokeniser.tokenise(document.get)
+    val regions = tokeniser.tokenise(document)
     val lines = getRoutes(regions)
     val margin = PlayPlugin.preferenceStore.getInt(PlayPlugin.RouteFormatterMarginId)
     val maxHttpVerbLength = (lines map (_.httpVerb.get.length)).max + margin
