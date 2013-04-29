@@ -25,18 +25,14 @@ class RoutePartitionTokeniser extends PlayPartitionTokeniser {
       if (checkBound && charAt(offset) == '#') {
         tokens += ScalaPartitionRegion(ROUTE_COMMENT, start, end)
         true
-      } else {
-        false
-      }
+      } 
+      else false
     }
 
-    def proceedAction() {
-      if (end > offset) {
-        tokens += ScalaPartitionRegion(ROUTE_ACTION, offset, end)
-      }
-    }
+    def proceed(partitionType: String): Boolean = {
+      // Increment offset to split partitions. The increment is not needed for the first column (i.e., ROUTE_HTTP), of course.
+      if(partitionType == ROUTE_URI || partitionType == ROUTE_ACTION) offset += 1
 
-    def proceedHTTPVerb() = {
       var startIndex = offset
       // skip any leading whitespaces
       proceedWhitespace()
@@ -48,34 +44,20 @@ class RoutePartitionTokeniser extends PlayPartitionTokeniser {
       if (offset >= startIndex) {
         val length = offset - startIndex
         val word = document.get(startIndex, length)
-        tokens += ScalaPartitionRegion(ROUTE_HTTP, startIndex, offset)
+        tokens += ScalaPartitionRegion(partitionType, startIndex, offset)
         true
-      } else {
-        false
       }
-    }
-
-    def proceedURI() = {
-      val startIndex = offset
-      while (checkBound && !Character.isWhitespace(charAt(offset))) offset += 1
-      if (offset > startIndex) {
-        tokens += ScalaPartitionRegion(ROUTE_URI, startIndex, offset)
-        true
-      } else {
-        false
-      }
+      else false
     }
 
     def proceedWhitespace() = {
       while (checkBound && Character.isWhitespace(charAt(offset))) offset += 1
     }
-    
+
     if (!proceedComment()) { // this line is not comment line
-      if (proceedHTTPVerb()) {
-        proceedWhitespace()
-        if (proceedURI()) {
-          proceedWhitespace()
-          proceedAction()
+      if (proceed(ROUTE_HTTP)) {
+        if (checkBound && proceed(ROUTE_URI)) {
+          if(checkBound) proceed(ROUTE_ACTION)
         }
       }
     }
