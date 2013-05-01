@@ -5,7 +5,7 @@ import org.eclipse.ui.editors.text.FileDocumentProvider
 import org.scalaide.play2.routeeditor.lexical.RouteDocumentPartitioner
 
 class RouteDocumentProvider extends FileDocumentProvider {
-  protected override def createDocument(element: Object): IDocument = {
+  override protected def createDocument(element: Object): IDocument = {
     val document = super.createDocument(element);
     if (document != null) {
       val partitioner = new RouteDocumentPartitioner()

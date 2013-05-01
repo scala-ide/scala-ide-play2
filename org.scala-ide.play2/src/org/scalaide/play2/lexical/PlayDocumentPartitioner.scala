@@ -11,7 +11,7 @@ import org.eclipse.jface.text._
  */
 abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, protected val defaultPartition: String, conservative: Boolean = false) extends IDocumentPartitioner with IDocumentPartitionerExtension with IDocumentPartitionerExtension2 {
 
-  private var partitionRegions: List[ScalaPartitionRegion] = Nil
+  protected var partitionRegions: List[ScalaPartitionRegion] = Nil
 
   def connect(document: IDocument) {
     partitionRegions = tokensiser.tokenise(document)
@@ -66,8 +66,6 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, prote
     }
 
   private def commonPrefixLength[X](xs: List[X], ys: List[X]) = xs.zip(ys).takeWhile(p => p._1 == p._2).size
-
-  def getLegalContentTypes: Array[String]
 
   def getContentType(offset: Int) = getToken(offset) map { _.contentType } getOrElse defaultPartition
 
