@@ -1,21 +1,31 @@
 package org.scalaide.play2
 
 trait PlayClassNames {
-  def controllerClassFullName: String
-  def actionClassFullName: String
+  protected def controllerClassFullName: String
+  protected def actionClassFullName: String
+}
+
+object ScalaPlayClassNames {
+  final val ControllerClassFullName = "play.api.mvc.Controller"
+  final val ActionClassFullName = "play.api.mvc.Action"
 }
 
 trait ScalaPlayClassNames extends PlayClassNames {
-  override def controllerClassFullName: String = "play.api.mvc.Controller"
-  override def actionClassFullName: String = "play.api.mvc.Action"
+  override protected def controllerClassFullName: String = ScalaPlayClassNames.ControllerClassFullName
+  override protected def actionClassFullName: String = ScalaPlayClassNames.ActionClassFullName
+}
+
+object JavaPlayClassNames {
+  final val ControllerClassFullName = "play.mvc.Controller"
+  final val ActionClassFullName = "play.mvc.Result"
 }
 
 trait JavaPlayClassNames extends PlayClassNames {
-  override def controllerClassFullName: String = "play.mvc.Controller"
-  override def actionClassFullName: String = "play.mvc.Result"
+  override protected def controllerClassFullName: String = JavaPlayClassNames.ControllerClassFullName
+  override protected def actionClassFullName: String = JavaPlayClassNames.ActionClassFullName
 
   private final def unresolvedActionClassName: String = "QResult;"
   private final def resolvedBinaryFullActionClassName: String = "Lplay/mvc/Result;"
 
-  final def allActionClassNameCandidates: Set[String] = Set(unresolvedActionClassName, resolvedBinaryFullActionClassName)
+  final protected def allActionClassNameCandidates: Set[String] = Set(unresolvedActionClassName, resolvedBinaryFullActionClassName)
 }

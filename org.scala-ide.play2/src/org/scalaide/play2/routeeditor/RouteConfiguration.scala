@@ -11,6 +11,7 @@ import org.eclipse.jface.text.source.ISourceViewer
 import org.eclipse.jface.text.source.SourceViewerConfiguration
 import org.eclipse.jface.util.PropertyChangeEvent
 import org.scalaide.play2.properties.PropertyChangeHandler
+import org.scalaide.play2.routeeditor.completion.ActionContentAssistProcessor
 import org.scalaide.play2.routeeditor.completion.HttpMethodCompletionComputer
 import org.scalaide.play2.routeeditor.completion.UriCompletionComputer
 import org.scalaide.play2.routeeditor.formatter.RouteFormattingStrategy
@@ -35,6 +36,7 @@ class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) 
     assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer))
     assistant.setContentAssistProcessor(new HttpMethodCompletionComputer, RoutePartitions.ROUTE_HTTP)
     assistant.setContentAssistProcessor(new UriCompletionComputer, RoutePartitions.ROUTE_URI)
+    assistant.setContentAssistProcessor(new ActionContentAssistProcessor(routeEditor), RoutePartitions.ROUTE_ACTION)
     assistant
   }
 

@@ -10,14 +10,18 @@ import org.eclipse.jface.text.ITextViewer
 import org.scalaide.play2.routeeditor.lexical.RouteDocumentPartitioner
 import org.eclipse.jface.text.IDocument
 
-trait CompletionComputerTest {
-  
+trait CompletionComputerTest[I, S <: CompletionComputerTest.ExpectedProposal] {
+
   protected def createComletionComputer: IContentAssistProcessor
+  
+  protected val factory: CompletionComputerTest.ExpectedProposalFactory[I, S]
+
+  protected val TestMarker: Char = '@' 
   
   protected class RouteFile(rawText: String) {
     private val text = rawText.stripMargin.trim
 
-    private val cleanedText: String = text.filterNot(_ == '@').mkString
+    private val cleanedText: String = text.filterNot(_ == TestMarker).mkString
 
     private val document: IDocument = {
       val doc = new Document(cleanedText)
@@ -26,7 +30,6 @@ trait CompletionComputerTest {
       doc.setDocumentPartitioner(partitioner)
       doc
     }
-    
 
     private lazy val computeCompletionProposals: Array[ICompletionProposal] = {
       val contentAssist = createComletionComputer
@@ -35,21 +38,47 @@ trait CompletionComputerTest {
       contentAssist.computeCompletionProposals(viewer, caretOffset)
     }
 
-    def expectedCompletions(oracle: String): Unit = expectedCompletions(Seq(oracle))
+    def expectedCompletions(oracle: I): Unit = expectedCompletions(Seq(oracle))
 
-    def expectedCompletions(oracle: Seq[String]): Unit = {
+    def expectedCompletions(oracle: Seq[I]): Unit = {
+      val mappedOracle = oracle.map(factory.apply)
       val completions = computeCompletionProposals
-      val textualCompletions = completions.map(_.getDisplayString())
-      Assert.assertEquals("Expected completions don't match.", oracle.toList, textualCompletions.toList)
+      val textualCompletions = completions.map(factory.apply)
+      Assert.assertEquals("Expected completions don't match.", mappedOracle.toList, textualCompletions.toList)
     }
 
     private val caretOffset: Int = {
-      val offset = text.indexOf('@')
-      if (offset == -1) Assert.fail("Could not locate caret position marker '@' in test.")
+      val offset = text.indexOf(TestMarker)
+      if (offset == -1) Assert.fail(s"Could not locate caret position marker '${TestMarker}' in test.")
       offset
     }
   }
   protected object RouteFile {
     def apply(text: String): RouteFile = new RouteFile(text.stripMargin)
+  }
+
+}
+
+object CompletionComputerTest {
+  trait ExpectedProposal
+  trait ExpectedProposalFactory[I, T <: ExpectedProposal] {
+    def apply(proposal: ICompletionProposal): T
+    def apply(input: I): ExpectedProposal
+  }
+  
+  class DisplayStringProposal(private val displayString: String) extends ExpectedProposal {
+    override def equals(that: Any): Boolean = that match {
+      case completion: DisplayStringProposal =>
+        completion.displayString == displayString
+      case _ => false
+    }
+  }
+
+  object DisplayStringProposal extends ExpectedProposalFactory[String, DisplayStringProposal] {
+    override def apply(proposal: ICompletionProposal): DisplayStringProposal = {
+      new DisplayStringProposal(proposal.getDisplayString)
+    }
+    
+    override def apply(displayString: String): DisplayStringProposal = new DisplayStringProposal(displayString)
   }
 }
