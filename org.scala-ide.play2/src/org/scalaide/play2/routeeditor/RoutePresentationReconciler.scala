@@ -46,6 +46,7 @@ class RoutePresentationReconciler(prefStore: IPreferenceStore) extends Presentat
   
   override def handlePropertyChangeEvent(event: PropertyChangeEvent) {
     scanner.adaptToPreferenceChange(event)
+    httpScanner.adaptToPreferenceChange(event)
     uriScanner.adaptToPreferenceChange(event)
     actionScanner.adaptToPreferenceChange(event)
     commentScanner.adaptToPreferenceChange(event)
