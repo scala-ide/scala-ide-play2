@@ -1,6 +1,6 @@
 package org.scalaide.play2.routeeditor.lexical
 
-import scala.tools.eclipse.lexical.ScalaPartitionRegion
+import org.eclipse.jface.text.TypedRegion
 
 import org.scalaide.play2.lexical.PlayDocumentPartitioner
 
@@ -13,5 +13,5 @@ class RouteDocumentPartitioner(conservative: Boolean = false) extends PlayDocume
 
   override def getLegalContentTypes: Array[String] = RoutePartitions.getTypes
   
-  def uriPartitions: List[ScalaPartitionRegion] = partitionRegions.filter(_.getType == ROUTE_URI) 
+  def uriPartitions: List[TypedRegion] = partitionRegions.filter(_.getType == ROUTE_URI) 
 }

@@ -66,7 +66,7 @@ class UriCompletionComputer extends IContentAssistProcessor {
     (for {
       partitioner <- document.getDocumentPartitioner().asInstanceOfOpt[RouteDocumentPartitioner].toList
       partition <- partitioner.uriPartitions
-      length = Math.max(0, partition.getLength - 1)
+      length = Math.max(0, partition.getLength)
       if length > 0
       rawUri = document.get(partition.getOffset, length)
     } yield RouteUri(rawUri))(collection.breakOut)
