@@ -85,7 +85,7 @@ class UriCompletionComputer extends IContentAssistProcessor {
       new Point(region.getOffset() + getDisplayString.length, 0) // always put caret *after* the inserted completion
     override def getAdditionalProposalInfo: String = null
     override def getDisplayString: String = uri.toString
-    override def getImage: Image = PlayPlugin.instance.getImageRegistry().get(Images.HTTP_METHODS_ICON)
+    override def getImage: Image = PlayPlugin.instance.getImageRegistry().get(Images.URL_ICON)
     override def getContextInformation: IContextInformation = null
   }
 }
