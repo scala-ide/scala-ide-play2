@@ -46,10 +46,10 @@ class RouteColourPreferenceInitializer extends AbstractPreferenceInitializer {
     setDefaultsForSyntaxClass(URI_DYNAMIC, 		new RGB(128, 128, 255))
     setDefaultsForSyntaxClass(ACTION, 			new RGB(128, 0, 0))
     setDefaultsForSyntaxClass(ACTION_PACKAGE, 	new RGB(196, 196, 196))
-    setDefaultsForSyntaxClass(ACTION_CLASS, 	new RGB(128, 255, 128))
-    setDefaultsForSyntaxClass(ACTION_METHOD, 	new RGB(255, 0, 0))
+    setDefaultsForSyntaxClass(ACTION_CLASS, 	new RGB(63, 46, 255))
+    setDefaultsForSyntaxClass(ACTION_METHOD, 	new RGB(0, 0, 0), italic = true)
     setDefaultsForSyntaxClass(DEFAULT, 			new RGB(0, 0, 0))
-    setDefaultsForSyntaxClass(HTTP_KEYWORD, 	new RGB(196, 0, 128))
+    setDefaultsForSyntaxClass(HTTP_KEYWORD, 	new RGB(139, 10, 80), bold = true)
   }
 
 }
