@@ -30,6 +30,8 @@ class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) 
 
   override def getContentAssistant(sourceViewer: ISourceViewer): IContentAssistant = {
     val assistant = new ContentAssistant
+    assistant.setAutoActivationDelay(50)
+    assistant.enableAutoActivation(true)
     assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer))
     assistant.setContentAssistProcessor(new HttpMethodCompletionComputer, RoutePartitions.ROUTE_HTTP)
     assistant.setContentAssistProcessor(new UriCompletionComputer, RoutePartitions.ROUTE_URI)

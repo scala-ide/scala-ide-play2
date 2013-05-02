@@ -20,7 +20,8 @@ class UriCompletionComputer extends IContentAssistProcessor {
 
   private val wordFinder = new WordFinder
 
-  override def getCompletionProposalAutoActivationCharacters(): Array[Char] = null
+  override def getCompletionProposalAutoActivationCharacters(): Array[Char] =
+    Array('/')
 
   override def getContextInformationAutoActivationCharacters(): Array[Char] = null
 
