@@ -6,6 +6,8 @@ import org.eclipse.jface.resource.ImageDescriptor
 object Images {
   final val ROUTES_ICON = "routes.icon"
   final val HTTP_METHODS_ICON = "web.icon"
+  final val URL_ICON = "url.icon"
   val ROUTES_ICON_DESCRIPTOR: ImageDescriptor = PlayPlugin.getImageDescriptor("icons/routes.png")
   val HTTP_METHODS_ICON_DESCRIPTOR: ImageDescriptor = PlayPlugin.getImageDescriptor("icons/web.png")
+  val URL_ICON_DESCRIPTOR: ImageDescriptor = PlayPlugin.getImageDescriptor("icons/pin.png")
 }
