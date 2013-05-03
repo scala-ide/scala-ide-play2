@@ -33,7 +33,8 @@ class UriCompletionComputer extends IContentAssistProcessor {
     val document = viewer.getDocument()
 
     val word = wordFinder.findWord(document, offset)
-    val rawUri = document.get(word.getOffset, word.getLength)
+    // only consider the prefix (word to the left of caret)
+    val rawUri = document.get(word.getOffset, (offset - word.getOffset()))
     val uri = RouteUri(rawUri)
 
     val existingUris = existingUrisInDocument(document) - uri
@@ -55,9 +56,7 @@ class UriCompletionComputer extends IContentAssistProcessor {
  
     val allUrisProposals = defaultUriProposal ++ staticUrisProposals ++ dynamicUrisProposals
 
-    // If `offset` is in the middle of a URI part, it is possible that the set of `allUrisProposals` is empty. If that happens, returns the set of `existingUris`
-    val finalProposals = if (allUrisProposals.isEmpty) existingUris else allUrisProposals
-    val sortedProposals = finalProposals.toList.sorted(RouteUri.AlphabeticOrder)
+    val sortedProposals = allUrisProposals.toList.sorted(RouteUri.AlphabeticOrder)
     
     sortedProposals.map(new UriCompletionProposal(word, _)).toArray
   }
