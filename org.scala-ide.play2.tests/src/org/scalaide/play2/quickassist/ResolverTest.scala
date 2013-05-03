@@ -73,7 +73,9 @@ class ResolverTest {
   private val scalaResolvedMethods = Set(
     ControllerMethod("controllers.Application.index", List()),
     ControllerMethod("controllers.Application.post", List(("id", "Long"))),
-    ControllerMethod("controllers.Application.postText", List(("text", "String"), ("id", "Int"))))
+    ControllerMethod("controllers.Application.postText", List(("text", "String"), ("id", "Int"))),
+    ControllerMethod("controllers.Application.internalPostText1", List(("text", "String"), ("id", "Char"))),
+    ControllerMethod("controllers.Application.internalPostText2", List(("text", "String"), ("id", "Short"))))
 
   private val javaResolvedMethods = Set(
     ControllerMethod("controllers.JavaApplication.index", List()),

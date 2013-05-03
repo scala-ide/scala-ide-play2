@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.Signature
 import org.eclipse.jdt.core.Flags
 import java.util.Arrays
 import org.eclipse.jdt.core.JavaModelException
+import org.scalaide.editor.PresentationCompilerExtensions
 
 /** Resolves a compilation unit and offset to an instance of `ControllerMethod`,
  *  if possible.
@@ -44,6 +45,8 @@ class ScalaControllerMethodResolver extends ControllerMethodResolver {
       scu.withSourceFile { (src, comp) =>
         import comp._
 
+        val extensions = new PresentationCompilerExtensions { val compiler: comp.type = comp }
+
         /** Should only be called inside an `askOption`. */
         def actionClass = {
           comp.rootMirror.getClassIfDefined(ScalaControllerMethodResolver.ActionClassFullName)
@@ -56,8 +59,11 @@ class ScalaControllerMethodResolver extends ControllerMethodResolver {
           (sym.isMethod && sym.owner.isModuleOrModuleClass && returnsAction)
         } getOrElse false)
 
+        val enclMeth = extensions.getEnclosingMethd(src, offset)
+        val pos = if (enclMeth == EmptyTree) rangePos(src, offset, offset, offset) else enclMeth.pos
+
         val response = new Response[Tree]
-        comp.askTypeAt(rangePos(src, offset, offset, offset), response)
+        comp.askTypeAt(pos, response)
         for {
           tree <- response.get.left.toOption
           sym = tree.symbol
