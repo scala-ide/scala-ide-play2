@@ -136,17 +136,30 @@ class UriCompletionComputerTest extends CompletionComputerTest {
 
     route expectedCompletions Seq("/foo", "/foo/bar")
   }
-  
+
   @Test
-  def completion_should_suggest_all_alternative_uri_if_no_specific_match_can_be_found() {
+  def completion_should_suggest_only_prefix_matching_completions() {
     val route = RouteFile {
       """
         |GET /foo
+        |GET /published
         |GET /pub@lic
         |GET /buz
       """
     }
 
-    route expectedCompletions Seq("/buz", "/foo")
+    route expectedCompletions Seq("/public", "/published")
+  }
+
+  @Test
+  def completion_should_suggest_nothing_if_nothing_matches() {
+    val route = RouteFile {
+      """
+        |GET /foo
+        |GET /buz/:id@
+      """
+    }
+
+    route expectedCompletions Seq()
   }
 }
