@@ -3,15 +3,15 @@ package org.scalaide.play2.lexical
 import scala.collection.mutable.ListBuffer
 import scala.math.max
 import scala.math.min
-import scala.tools.eclipse.lexical.ScalaPartitionRegion
 import org.eclipse.jface.text._
+import org.scalaide.editor.util.RegionHelper._
 
 /**
  * Partitions the document according to given tokeniser
  */
 abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, protected val defaultPartition: String, conservative: Boolean = false) extends IDocumentPartitioner with IDocumentPartitionerExtension with IDocumentPartitionerExtension2 {
 
-  protected var partitionRegions: List[ScalaPartitionRegion] = Nil
+  protected var partitionRegions: List[TypedRegion] = Nil
 
   def connect(document: IDocument) {
     partitionRegions = tokensiser.tokenise(document)
@@ -35,7 +35,7 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, prote
       calculateDirtyRegion(oldPartitions, newPartitions, event.getOffset, event.getLength, event.getText)
   }
 
-  private def calculateDirtyRegion(oldPartitions: List[ScalaPartitionRegion], newPartitions: List[ScalaPartitionRegion], offset: Int, length: Int, text: String): IRegion =
+  private def calculateDirtyRegion(oldPartitions: List[TypedRegion], newPartitions: List[TypedRegion], offset: Int, length: Int, text: String): IRegion =
     if (newPartitions.isEmpty)
       new Region(0, 0)
     else if (oldPartitions == newPartitions)
@@ -44,7 +44,7 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, prote
       // Scan outside-in from both the beginning and the end of the document to match up undisturbed partitions:
       val unchangedLeadingRegionCount = commonPrefixLength(oldPartitions, newPartitions)
       val adjustedOldPartitions =
-        for (region <- oldPartitions if region.start > offset + length)
+        for (region <- oldPartitions if region.getOffset() > offset + length)
           yield region.shift(text.length - length)
       val unchangedTrailingRegionCount = commonPrefixLength(adjustedOldPartitions.reverse, newPartitions.reverse)
       val dirtyOldPartitionCount = oldPartitions.size - unchangedTrailingRegionCount - unchangedLeadingRegionCount
@@ -52,7 +52,7 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, prote
 
       // A very common case is changing the size of a single partition, which we want to optimise:
       val singleDirtyPartitionWithUnchangedContentType = dirtyOldPartitionCount == 1 && dirtyNewPartitionCount == 1 &&
-        oldPartitions(unchangedLeadingRegionCount).contentType == newPartitions(unchangedLeadingRegionCount).contentType
+        oldPartitions(unchangedLeadingRegionCount).getType() == newPartitions(unchangedLeadingRegionCount).getType()
       if (singleDirtyPartitionWithUnchangedContentType)
         null
       else if (dirtyNewPartitionCount == 0) // i.e. a deletion of partitions
@@ -61,13 +61,13 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, prote
         // Otherwise just the dirty region:
         val firstDirtyPartition = newPartitions(unchangedLeadingRegionCount)
         val lastDirtyPartition = newPartitions(unchangedLeadingRegionCount + dirtyNewPartitionCount - 1)
-        new Region(firstDirtyPartition.start, lastDirtyPartition.end - firstDirtyPartition.start + 1)
+        new Region(firstDirtyPartition.getOffset(), lastDirtyPartition.getOffset() + lastDirtyPartition.getLength() - firstDirtyPartition.getOffset())
       }
     }
 
   private def commonPrefixLength[X](xs: List[X], ys: List[X]) = xs.zip(ys).takeWhile(p => p._1 == p._2).size
 
-  def getContentType(offset: Int) = getToken(offset) map { _.contentType } getOrElse defaultPartition
+  def getContentType(offset: Int) = getToken(offset) map { _.getType() } getOrElse defaultPartition
 
   private def getToken(offset: Int) = partitionRegions.find(_.containsPosition(offset))
 
@@ -81,7 +81,7 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, prote
           regions += cropRegion(partitionRegion, offset, length)
         }
       } else {
-        if (partitionRegion.start > offset + length - 1)
+        if (partitionRegion.getOffset() > offset + length - 1)
           return regions.toArray
         else
           regions += cropRegion(partitionRegion, offset, length)
@@ -89,12 +89,12 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, prote
     regions.toArray
   }
 
-  private def cropRegion(region: ScalaPartitionRegion, offset: Int, length: Int): ScalaPartitionRegion = {
-    val ScalaPartitionRegion(_, start, end) = region
-    if (start > offset + length - 1 || end < offset)
-      region
-    else
-      region.copy(start = max(start, offset), end = min(end, offset + length - 1))
+  private def cropRegion(region: TypedRegion, offset: Int, length: Int): TypedRegion = {
+    
+    val newOffset = max(region.getOffset(), offset)
+    val newLength = min(region.getOffset() + region.getLength(), offset + length) - newOffset
+    
+    new TypedRegion(newOffset, newLength, region.getType())
   }
 
   def getPartition(offset: Int): ITypedRegion = getToken(offset) getOrElse new TypedRegion(offset, 1, defaultPartition)

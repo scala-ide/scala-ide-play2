@@ -1,7 +1,7 @@
 package org.scalaide.play2.routeeditor.formatter
 
 import scala.collection.mutable.ArrayBuffer
-import scala.tools.eclipse.lexical.ScalaPartitionRegion
+import org.eclipse.jface.text.TypedRegion
 import scala.tools.eclipse.util.EclipseUtils.adaptableToPimpedAdaptable
 
 import org.eclipse.core.resources.IResource
@@ -42,7 +42,7 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
   /**
    * a helper class for each line of code
    */
-  case class Route(httpVerb: Option[ScalaPartitionRegion], uri: Option[ScalaPartitionRegion], action: Option[ScalaPartitionRegion])
+  case class Route(httpVerb: Option[TypedRegion], uri: Option[TypedRegion], action: Option[TypedRegion])
 
   /**
    * Returns lines of code which should be formatted.
@@ -50,16 +50,16 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
    * have all 3 parts.
    * @param regions     all of regions of route file
    */
-  def getRoutes(regions: List[ScalaPartitionRegion]): List[Route] = {
+  def getRoutes(regions: List[TypedRegion]): List[Route] = {
     val routes = new ArrayBuffer[Route]
     sealed trait State
     case object Http extends State
     case object Uri extends State
     case object Action extends State
     var state: State = Http
-    var httpVerb: Option[ScalaPartitionRegion] = None
-    var uri: Option[ScalaPartitionRegion] = None
-    var action: Option[ScalaPartitionRegion] = None
+    var httpVerb: Option[TypedRegion] = None
+    var uri: Option[TypedRegion] = None
+    var action: Option[TypedRegion] = None
 
     def reset = {
       state = Http
@@ -69,7 +69,7 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
     }
 
     for (region <- regions) {
-      region.contentType match {
+      region.getType() match {
         case ROUTE_HTTP => {
           state match {
             case Http => 
@@ -113,7 +113,7 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
   }
 
   def getMaxHttpVerbLength(lines: List[Route]): Int = {
-    val lengthList = lines map (_.httpVerb.get.length)
+    val lengthList = lines map (_.httpVerb.get.getLength())
     lengthList.max
   }
 
@@ -130,15 +130,15 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
     val regions = tokeniser.tokenise(document)
     val lines = getRoutes(regions)
     val margin = PlayPlugin.preferenceStore.getInt(PlayPlugin.RouteFormatterMarginId)
-    val maxHttpVerbLength = (lines map (_.httpVerb.get.length)).max + margin
-    val maxUriLength = (lines map (_.uri.get.length)).max + margin
+    val maxHttpVerbLength = (lines map (_.httpVerb.get.getLength())).max + margin
+    val maxUriLength = (lines map (_.uri.get.getLength())).max + margin
     val eclipseEdits = lines flatMap { route =>
-      val httpEnd = route.httpVerb.get.end + 1
-      val httpSpaceLength = route.uri.get.start - httpEnd
-      val httpNeededLength = maxHttpVerbLength - route.httpVerb.get.length
-      val uriEnd = route.uri.get.end + 1
-      val uriSpaceLength = route.action.get.start - uriEnd
-      val uriNeededLength = maxUriLength - route.uri.get.length
+      val httpEnd = route.httpVerb.get.getOffset() + route.httpVerb.get.getLength()
+      val httpSpaceLength = route.uri.get.getOffset() - httpEnd
+      val httpNeededLength = maxHttpVerbLength - route.httpVerb.get.getLength()
+      val uriEnd = route.uri.get.getOffset() + route.uri.get.getLength()
+      val uriSpaceLength = route.action.get.getOffset() - uriEnd
+      val uriNeededLength = maxUriLength - route.uri.get.getLength()
       List(new ReplaceEdit(httpEnd, httpSpaceLength, spaces(httpNeededLength)), 
           new ReplaceEdit(uriEnd, uriSpaceLength, spaces(uriNeededLength)))
     }

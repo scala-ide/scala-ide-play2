@@ -24,5 +24,6 @@ Import-Package:
  scala.tools.eclipse;apply-aspects:=false,
  scala.tools.eclipse.contribution.weaving.jdt.ui.javaeditor.formatter;apply-aspects:=false
 Export-Package: 
- org.scalaide.editor
+ org.scalaide.editor,
+ org.scalaide.editor.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
