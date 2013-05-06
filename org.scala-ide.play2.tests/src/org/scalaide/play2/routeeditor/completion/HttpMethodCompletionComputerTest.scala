@@ -26,7 +26,7 @@ class HttpMethodCompletionComputerTest extends CompletionComputerTest {
   def HTTP_PUT_POST_completion() {
     val route = RouteFile { "P@" }
 
-    route expectedCompletions Seq("POST", "PUT")
+    route expectedCompletions Seq("PATCH", "POST", "PUT")
   }
 
   @Test
