@@ -23,7 +23,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
 
   @Test
   def simple_completion_with_prefix_matching() {
-    val route = RouteFile {
+    val route = RouteCompletionFile {
       """
         |GET /public
         |GET /p@
@@ -35,7 +35,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
 
   @Test
   def completion_on_incorrect_uri_returns_proposals_with_matching_prefix() {
-    val route = RouteFile {
+    val route = RouteCompletionFile {
       """
         |GET /public
         |GET p@
@@ -47,7 +47,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
 
   @Test
   def completions_do_not_contain_duplicates() {
-    val route = RouteFile {
+    val route = RouteCompletionFile {
       """
         |GET /public
         |GET /public
@@ -60,7 +60,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
 
   @Test
   def completion_are_sorted_alphabetically() {
-    val route = RouteFile {
+    val route = RouteCompletionFile {
       """
         |GET /ab
         |GET /aa
@@ -73,7 +73,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
 
   @Test
   def show_dynamic_parts_after_trailing_slash_when_no_completion_match_is_found() {
-    val route = RouteFile {
+    val route = RouteCompletionFile {
       "GET /public/@"
     }
 
@@ -82,7 +82,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
 
   @Test
   def show_dynamic_parts_when_no_prefix_match_after_trailing_slash_for_empty_uri() {
-    val route = RouteFile {
+    val route = RouteCompletionFile {
       "GET /@"
     }
 
@@ -91,7 +91,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
 
   @Test
   def show_dynamic_parts_when_no_prefix_match_for_empty_uri_with_missing_leading_slash() {
-    val route = RouteFile {
+    val route = RouteCompletionFile {
       "GET @"
     }
 
@@ -100,7 +100,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
 
   @Test
   def completion_should_show_all_interesting_permutations() {
-    val route = RouteFile {
+    val route = RouteCompletionFile {
       """
         |GET /foo/public
         |GET /foo/bar/buz
@@ -114,7 +114,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
 
   @Test
   def completion_should_suggest_all_permutations_that_matches_input() {
-    val route = RouteFile {
+    val route = RouteCompletionFile {
       """
         |GET /foo/bar
         |GET /foo@
@@ -126,7 +126,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
 
   @Test
   def completion_should_suggest_all_permutations_and_dynamic_parts_when_input_has_trailing_slash() {
-    val route = RouteFile {
+    val route = RouteCompletionFile {
       """
         |GET /foo/bar
         |GET /foo/@
@@ -138,7 +138,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
 
   @Test
   def completion_should_suggest_all_permutation_that_matches_input_if_URI_syntax_is_invalid() {
-    val route = RouteFile {
+    val route = RouteCompletionFile {
       """
         |GET /foo/bar
         |GET foo@
@@ -150,7 +150,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
 
   @Test
   def completion_should_suggest_only_prefix_matching_completions() {
-    val route = RouteFile {
+    val route = RouteCompletionFile {
       """
         |GET /foo
         |GET /published
@@ -164,7 +164,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
 
   @Test
   def completion_should_suggest_nothing_if_nothing_matches() {
-    val route = RouteFile {
+    val route = RouteCompletionFile {
       """
         |GET /foo
         |GET /buz/:id@
