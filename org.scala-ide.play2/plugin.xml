@@ -127,6 +127,12 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+F">
       </key>
+      <key
+            commandId="org.scala-ide.play2.routeeditor.commands.rename"
+            contextId="org.scala-ide.play2.routeeditor.editorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M2+M3+R">
+      </key>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -139,6 +145,12 @@
             defaultHandler="org.scalaide.play2.routeeditor.handlers.Format"
             id="org.scala-ide.play2.routeeditor.commands.format"
             name="Format">
+      </command>
+      <command
+            categoryId="org.scala-ide.play2.routeeditor.commands.category"
+            description="Rename part of an URI pattern"
+            id="org.scala-ide.play2.routeeditor.commands.rename"
+            name="Rename">
       </command>
    </extension>
    <extension
@@ -188,6 +200,34 @@
             id="org.scala-ide.play2.scalaAddRouteEntry"
             name="Add Entry to Route file">
       </quickAssistProcessor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.scalaide.play2.routeeditor.RouteEditor.EditorContext?before=additions">
+         <command
+               commandId="org.scala-ide.play2.routeeditor.commands.format"
+               id="org.scala-ide.play2.menus.rename"
+               mnemonic="F">
+         </command>
+         <menu
+               id="org.scala-ide.play2.menus.refactoring"
+               label="Refactoring"
+               mnemonic="R">
+            <command
+                  commandId="org.scala-ide.play2.routeeditor.commands.rename"
+                  id="org.scala-ide.play2.menus.rename"
+                  mnemonic="R">
+            </command>
+         </menu>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.scalaide.play2.routeeditor.handlers.LocalRename"
+            commandId="org.scala-ide.play2.routeeditor.commands.rename">
+      </handler>
    </extension>
    <!--
    <extension
