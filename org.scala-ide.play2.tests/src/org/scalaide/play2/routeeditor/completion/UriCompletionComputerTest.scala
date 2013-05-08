@@ -4,6 +4,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal
 
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor
 import org.junit.Test
+import org.scalaide.play2.routeeditor.RouteUri
 
 class UriCompletionComputerTest extends CompletionComputerTest {
 
@@ -16,8 +17,8 @@ class UriCompletionComputerTest extends CompletionComputerTest {
   override def createCompletionComputer: IContentAssistProcessor = new UriCompletionComputer
 
   private def dynamicUrisFor(uri: String): Seq[Proposal] = {
-    val dynamicUris = UriCompletionComputer.RouteUri(uri).dynamicUris
-    val sorted = dynamicUris.sorted(UriCompletionComputer.RouteUri.AlphabeticOrder)
+    val dynamicUris = RouteUri(uri).dynamicUris
+    val sorted = dynamicUris.sorted(RouteUri.AlphabeticOrder)
     sorted.map(uri => Proposal(uri.toString))
   }
 

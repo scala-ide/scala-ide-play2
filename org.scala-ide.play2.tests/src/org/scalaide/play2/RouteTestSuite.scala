@@ -10,6 +10,8 @@ import org.scalaide.play2.routeeditor.RouteActionTest
 import org.scalaide.play2.routeeditor.completion.HttpMethodCompletionComputerTest
 import org.scalaide.play2.routeeditor.lexical.RoutePartitionTokeniserTest
 import org.scalaide.play2.routeeditor.completion.UriCompletionComputerTest
+import org.scalaide.play2.routeeditor.handlers.LocalRenameTest
+import org.scalaide.play2.routeeditor.RouteUriTest
 
 @RunWith(value=classOf[org.junit.runners.Suite])
 @SuiteClasses(value=Array(
@@ -22,7 +24,9 @@ import org.scalaide.play2.routeeditor.completion.UriCompletionComputerTest
     classOf[RouteActionTest],
     classOf[HttpMethodCompletionComputerTest],
     classOf[UriCompletionComputerTest],
-    classOf[RoutePartitionTokeniserTest]))
+    classOf[RoutePartitionTokeniserTest],
+    classOf[LocalRenameTest],
+    classOf[RouteUriTest]))
 class RouteTestSuite {
 	
 }

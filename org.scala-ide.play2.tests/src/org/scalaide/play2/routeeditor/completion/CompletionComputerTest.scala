@@ -29,13 +29,15 @@ trait CompletionComputerTest extends RouteTest {
   
   protected val TestMarker: Char = '@'
     
-  protected class RouteCompletionFile(rawText: String) extends RouteFile(rawText, TestMarker) {
+  protected class RouteCompletionFile(rawText: String) extends RouteFile(rawText, List(TestMarker)) {
     private lazy val computeCompletionProposals: Array[ICompletionProposal] = {
       val contentAssist = createCompletionComputer
       val viewer = mock(classOf[ITextViewer])
       when(viewer.getDocument()).thenReturn(document)
       contentAssist.computeCompletionProposals(viewer, caretOffset)
     }
+    
+    def caretOffset: Int = caretOffset(TestMarker)
 
     def expectedCompletions[T <: ExpectedProposal](oracle: T*)(implicit converter: AsExpectedProposal[T]): Unit = {
       val completions = computeCompletionProposals.map(converter)

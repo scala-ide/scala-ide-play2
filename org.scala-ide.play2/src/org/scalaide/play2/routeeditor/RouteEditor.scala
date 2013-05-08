@@ -3,9 +3,7 @@ package org.scalaide.play2.routeeditor
 import scala.tools.eclipse.ScalaPlugin
 import scala.tools.eclipse.ScalaProject
 import scala.tools.eclipse.logging.HasLogger
-
 import org.eclipse.jface.text.source.ISourceViewer
-
 import org.eclipse.jface.util.PropertyChangeEvent
 import org.eclipse.ui.editors.text.EditorsUI
 import org.eclipse.ui.editors.text.TextEditor
@@ -13,8 +11,9 @@ import org.eclipse.ui.part.FileEditorInput
 import org.eclipse.ui.texteditor.ChainedPreferenceStore
 import org.eclipse.ui.texteditor.TextOperationAction
 import org.scalaide.play2.PlayPlugin
+import scala.tools.eclipse.ISourceViewerEditor
 
-class RouteEditor extends TextEditor with HasLogger with HasScalaProject {
+class RouteEditor extends TextEditor with ISourceViewerEditor with HasLogger with HasScalaProject {
   private lazy val preferenceStore = new ChainedPreferenceStore(Array(PlayPlugin.preferenceStore, EditorsUI.getPreferenceStore))
   private val config = new RouteConfiguration(preferenceStore, this)
 
@@ -47,7 +46,7 @@ class RouteEditor extends TextEditor with HasLogger with HasScalaProject {
     true
   }
 
-  def getViewer: ISourceViewer = getSourceViewer
+  override def getViewer: ISourceViewer = getSourceViewer
   
   /** Returns project containing the edited file, if it exists. */
   override def getScalaProject: Option[ScalaProject] ={

@@ -77,7 +77,7 @@ class RouteActionTest extends CompletionComputerTest {
     expectedMethodName: String,
     expectedParams: List[(String, String)]) {
 
-    val file = new RouteFile(documentContent)
+    val file = new RouteCompletionFile(documentContent)
 
     val expected = new RouteAction(expectedTypeName, expectedMethodName, expectedParams, file.document.getPartition(file.caretOffset))
 

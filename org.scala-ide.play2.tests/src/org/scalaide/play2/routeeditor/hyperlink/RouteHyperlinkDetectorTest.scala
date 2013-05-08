@@ -188,12 +188,12 @@ class RouteHyperlinkDetectorTest extends RouteTest {
 
     val file = RouteFile(content)
 
-    val actual = RouteHyperlinkComputer.detectHyperlinks(project, file.document, new Region(file.caretOffset, 0), createJavaHyperlink)
+    val actual = RouteHyperlinkComputer.detectHyperlinks(project, file.document, new Region(file.caretOffset('@'), 0), createJavaHyperlink)
 
     actual match {
       case Some(hyperlink) =>
         assertEquals("Wrong label", expectedLabel, hyperlink.getTypeLabel())
-        assertEquals("Wrong region", file.document.getPartition(file.caretOffset), hyperlink.getHyperlinkRegion())
+        assertEquals("Wrong region", file.document.getPartition(file.caretOffset('@')), hyperlink.getHyperlinkRegion())
       case _ =>
         fail("Wrong detectHyperlink result. Expected: Some(hyperlink), was: %s".format(actual))
     }
@@ -203,7 +203,7 @@ class RouteHyperlinkDetectorTest extends RouteTest {
 
     val file = RouteFile(content)
 
-    val actual = RouteHyperlinkComputer.detectHyperlinks(project, file.document, new Region(file.caretOffset, 0), createJavaHyperlink)
+    val actual = RouteHyperlinkComputer.detectHyperlinks(project, file.document, new Region(file.caretOffset('@'), 0), createJavaHyperlink)
 
     actual match {
       case None =>
