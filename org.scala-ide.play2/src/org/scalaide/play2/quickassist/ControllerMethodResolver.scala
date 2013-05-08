@@ -11,6 +11,9 @@ import org.eclipse.jdt.core.Flags
 import java.util.Arrays
 import org.eclipse.jdt.core.JavaModelException
 import org.scalaide.editor.PresentationCompilerExtensions
+import org.scalaide.play2.ScalaPlayClassNames
+import org.scalaide.play2.PlayClassNames
+import org.scalaide.play2.JavaPlayClassNames
 
 /** Resolves a compilation unit and offset to an instance of `ControllerMethod`,
  *  if possible.
@@ -19,7 +22,7 @@ import org.scalaide.editor.PresentationCompilerExtensions
  *
  *  @note Implementers of this trait should be decoupled from the UI.
  */
-trait ControllerMethodResolver {
+trait ControllerMethodResolver extends PlayClassNames {
 
   /** Return an instance of `ControllerMethod`, if the offset points to a Play controller method.
    *  A Play controller method is any method that returns an instance of `Action`
@@ -30,12 +33,8 @@ trait ControllerMethodResolver {
   def getControllerMethod(cu: ICompilationUnit, offset: Int): Option[ControllerMethod]
 }
 
-object ScalaControllerMethodResolver {
-  final val ActionClassFullName = "play.api.mvc.Action"
-}
-
 /** A Scala implementation for controller method resolution. */
-class ScalaControllerMethodResolver extends ControllerMethodResolver {
+class ScalaControllerMethodResolver extends ControllerMethodResolver with ScalaPlayClassNames {
   /** Extract a controller method from the Scala unit at the given offset.
    *
    *  A controller method is any method that returns an `Action`.
@@ -49,7 +48,7 @@ class ScalaControllerMethodResolver extends ControllerMethodResolver {
 
         /** Should only be called inside an `askOption`. */
         def actionClass = {
-          comp.rootMirror.getClassIfDefined(ScalaControllerMethodResolver.ActionClassFullName)
+          comp.rootMirror.getClassIfDefined(actionClassFullName)
         }
 
         /* Is the symbol a method returning `play.api.mvc.Action`. */
@@ -83,12 +82,11 @@ class ScalaControllerMethodResolver extends ControllerMethodResolver {
  *  @note This resolver does not force type resolution, so the return type
  *        might not exactly be `play.mvc.Result`, but another type `Result`.
  */
-class JavaControllerMethodResolver extends ControllerMethodResolver {
-  import JavaControllerMethodResolver._
+class JavaControllerMethodResolver extends ControllerMethodResolver with JavaPlayClassNames {
 
   private def possibleControllerMethod(meth: IMethod): Boolean = {
     val flags = meth.getFlags
-    (playMvcResults.contains(meth.getReturnType())
+    (allActionClassNameCandidates.contains(meth.getReturnType())
       && Flags.isPublic(flags)
       && Flags.isStatic(flags))
   }
@@ -121,11 +119,4 @@ class JavaControllerMethodResolver extends ControllerMethodResolver {
         }
       case _ => None
     }
-}
-
-object JavaControllerMethodResolver {
-  final val UnresolvedResult = "QResult;"
-  final val ResolvedResult = "Lplay/mvc/Result;"
-
-  final val playMvcResults = Set(UnresolvedResult, ResolvedResult)
 }

@@ -4,9 +4,11 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor
 import org.junit.Test
 import org.scalaide.play2.routeeditor.lexical.HTTPKeywords
 
-class HttpMethodCompletionComputerTest extends CompletionComputerTest {
+class HttpMethodCompletionComputerTest extends CompletionComputerTest[String, CompletionComputerTest.DisplayStringProposal] {
 
   override def createComletionComputer: IContentAssistProcessor = new HttpMethodCompletionComputer
+
+  implicit val factory = CompletionComputerTest.DisplayStringProposal
 
   @Test
   def HttpGET_completion() {
