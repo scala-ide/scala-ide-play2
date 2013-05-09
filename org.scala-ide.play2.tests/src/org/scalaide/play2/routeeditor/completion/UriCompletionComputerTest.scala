@@ -1,14 +1,24 @@
 package org.scalaide.play2.routeeditor.completion
 
+import org.eclipse.jface.text.contentassist.ICompletionProposal
+
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor
 import org.junit.Test
 
 class UriCompletionComputerTest extends CompletionComputerTest {
 
-  override def createComletionComputer: IContentAssistProcessor = new UriCompletionComputer
+  case class Proposal(uri: String) extends ExpectedProposal
 
-  private def dynamicUrisFor(uri: String): Seq[String] = {
-    UriCompletionComputer.RouteUri(uri).dynamicUris.sorted(UriCompletionComputer.RouteUri.AlphabeticOrder).map(_.toString)
+  implicit object Converter extends AsExpectedProposal[Proposal] {
+    def apply(proposal: ICompletionProposal) = Proposal(proposal.getDisplayString)
+  }
+
+  override def createCompletionComputer: IContentAssistProcessor = new UriCompletionComputer
+
+  private def dynamicUrisFor(uri: String): Seq[Proposal] = {
+    val dynamicUris = UriCompletionComputer.RouteUri(uri).dynamicUris
+    val sorted = dynamicUris.sorted(UriCompletionComputer.RouteUri.AlphabeticOrder)
+    sorted.map(uri => Proposal(uri.toString))
   }
 
   @Test
@@ -20,7 +30,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
       """
     }
 
-    route expectedCompletions "/public"
+    route expectedCompletions Proposal("/public")
   }
 
   @Test
@@ -32,7 +42,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
       """
     }
 
-    route expectedCompletions "/public"
+    route expectedCompletions Proposal("/public")
   }
 
   @Test
@@ -45,7 +55,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
       """
     }
 
-    route expectedCompletions "/public"
+    route expectedCompletions Proposal("/public")
   }
 
   @Test
@@ -58,7 +68,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
       """
     }
 
-    route expectedCompletions Seq("/aa", "/ab")
+    route expectedCompletions (Proposal("/aa"), Proposal("/ab"))
   }
 
   @Test
@@ -67,7 +77,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
       "GET /public/@"
     }
 
-    route expectedCompletions dynamicUrisFor("/public/")
+    route expectedCompletions (dynamicUrisFor("/public/"): _*)
   }
 
   @Test
@@ -76,7 +86,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
       "GET /@"
     }
 
-    route expectedCompletions dynamicUrisFor("/")
+    route expectedCompletions (dynamicUrisFor("/"): _*)
   }
 
   @Test
@@ -85,7 +95,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
       "GET @"
     }
 
-    route expectedCompletions ("/" +: dynamicUrisFor("/"))
+    route expectedCompletions ((Proposal("/") +: dynamicUrisFor("/")): _*)
   }
 
   @Test
@@ -98,7 +108,8 @@ class UriCompletionComputerTest extends CompletionComputerTest {
       """
     }
 
-    route expectedCompletions Seq("/foo", "/foo/bar", "/foo/bar/buz", "/foo/public")
+    route expectedCompletions (Proposal("/foo"), Proposal("/foo/bar"),
+      Proposal("/foo/bar/buz"), Proposal("/foo/public"))
   }
 
   @Test
@@ -110,7 +121,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
       """
     }
 
-    route expectedCompletions Seq("/foo", "/foo/bar")
+    route expectedCompletions (Proposal("/foo"), Proposal("/foo/bar"))
   }
 
   @Test
@@ -122,7 +133,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
       """
     }
 
-    route expectedCompletions ("/foo" +: dynamicUrisFor("/foo") :+ "/foo/bar")
+    route expectedCompletions ((Proposal("/foo") +: dynamicUrisFor("/foo") :+ Proposal("/foo/bar")): _*)
   }
 
   @Test
@@ -134,7 +145,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
       """
     }
 
-    route expectedCompletions Seq("/foo", "/foo/bar")
+    route expectedCompletions (Proposal("/foo"), Proposal("/foo/bar"))
   }
 
   @Test
@@ -148,7 +159,7 @@ class UriCompletionComputerTest extends CompletionComputerTest {
       """
     }
 
-    route expectedCompletions Seq("/public", "/published")
+    route expectedCompletions (Proposal("/public"), Proposal("/published"))
   }
 
   @Test
@@ -160,6 +171,6 @@ class UriCompletionComputerTest extends CompletionComputerTest {
       """
     }
 
-    route expectedCompletions Seq()
+    route expectedCompletions ()
   }
 }
