@@ -14,7 +14,7 @@ import org.eclipse.ui.texteditor.ChainedPreferenceStore
 import org.eclipse.ui.texteditor.TextOperationAction
 import org.scalaide.play2.PlayPlugin
 
-class RouteEditor extends TextEditor with HasLogger {
+class RouteEditor extends TextEditor with HasLogger with HasScalaProject {
   private lazy val preferenceStore = new ChainedPreferenceStore(Array(PlayPlugin.preferenceStore, EditorsUI.getPreferenceStore))
   private val config = new RouteConfiguration(preferenceStore, this)
 
@@ -50,7 +50,7 @@ class RouteEditor extends TextEditor with HasLogger {
   def getViewer: ISourceViewer = getSourceViewer
   
   /** Returns project containing the edited file, if it exists. */
-  def getScalaProject: Option[ScalaProject] ={
+  override def getScalaProject: Option[ScalaProject] ={
     getEditorInput() match {
       case fileEditorInput: FileEditorInput =>
         ScalaPlugin.plugin.asScalaProject(fileEditorInput.getFile().getProject())
