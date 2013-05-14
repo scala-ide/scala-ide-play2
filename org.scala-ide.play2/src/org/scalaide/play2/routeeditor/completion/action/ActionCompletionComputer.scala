@@ -11,10 +11,8 @@ import org.scalaide.play2.quickassist.ControllerMethod
 
 class ActionCompletionComputer(compiler: ScalaPresentationCompiler) {
 
-  private val wordFinder = new WordFinder
-
   def computeCompletionProposals(document: IDocument, offset: Int): List[ActionCompletionProposal] = {
-    val inputRegion = wordFinder.findWord(document, offset)
+    val inputRegion = WordFinder.findWord(document, offset)
     val rawInput = document.get(inputRegion.getOffset, (offset - inputRegion.getOffset()))
     lazy val replaceRegion = computeCompletionOverwriteReplaceRegion(inputRegion, rawInput)
 

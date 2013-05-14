@@ -19,5 +19,17 @@ class RegionUtilsTest {
     assertEquals("Wrong result", expected, actual)
     
   }
+  
+  @Test
+  def substractEmtpies {
+    val a = List(new TypedRegion(0, 0, "A"))
+    val b = List(new TypedRegion(0, 0, "B"))
+    
+    val expected= Nil
+    
+    val actual= RegionHelper.subtract(a, b)
+    
+    assertEquals("Wrong result", expected, actual)
+  }
 
 }

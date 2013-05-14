@@ -10,6 +10,7 @@ import RoutePartitions.ROUTE_HTTP
 import RoutePartitions.ROUTE_URI
 import org.eclipse.jface.text.IDocument
 import scala.annotation.tailrec
+import org.scalaide.play2.templateeditor.lexical.TemplatePartitions
 
 class RoutePartitionTokeniser extends PlayPartitionTokeniser {
 
@@ -102,7 +103,12 @@ class RoutePartitionTokeniser extends PlayPartitionTokeniser {
   }
 
   override def tokenise(document: IDocument): List[TypedRegion] = {
+    import org.scalaide.editor.util.RegionHelper._
+    
     val lines = convertToSeperateLines(document)
-    lines.flatMap(tokeniseEachLine(document, _))
+    val allRegions = lines.flatMap(tokeniseEachLine(document, _))
+    
+    val defaultRegions = List(new TypedRegion(0, document.getLength(), ROUTE_DEFAULT)) \ allRegions
+    defaultRegions U allRegions
   }
 }

@@ -55,8 +55,8 @@ object TemplatePartitionTokeniser extends PlayPartitionTokeniser {
    * @param templateCode				template code which we'd like to tokenise
    */
   def calculateAllRegions(xmlTagPlainRegions: List[TypedRegion], scalaCommentRegions: List[TypedRegion], plainWithoutXmlTagRegions: List[TypedRegion], templateCode: String): List[TypedRegion] = {
-    def defaultRegion(start: Int, length: Int) =
-      new TypedRegion(start, length, TemplatePartitions.TEMPLATE_DEFAULT)
+    def defaultRegion(start: Int, offset: Int) =
+      new TypedRegion(start, offset, TemplatePartitions.TEMPLATE_DEFAULT)
     val allRegions = (xmlTagPlainRegions U scalaCommentRegions) U plainWithoutXmlTagRegions
     val globalRegion = defaultRegion(0, templateCode.length())
     val defaultRegions = List(globalRegion) \ allRegions

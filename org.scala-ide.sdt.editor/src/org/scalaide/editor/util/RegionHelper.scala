@@ -57,7 +57,9 @@ object RegionHelper {
         val xEnd = xStart + x.getLength() - 1
         val yStart = y.getOffset()
         val yEnd = yStart + y.getLength() - 1
-        if (xEnd < yStart)
+        if (x.getLength() == 0){
+          subtract(xs, b)
+        } else if (xEnd < yStart)
           //x: ___
           //y:      +++
           x :: subtract(xs, b)
