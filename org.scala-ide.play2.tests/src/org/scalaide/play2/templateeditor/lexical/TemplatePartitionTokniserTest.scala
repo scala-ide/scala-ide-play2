@@ -14,6 +14,7 @@ import scala.tools.eclipse.testsetup.SDTTestUtils
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.Document
 import org.scalaide.editor.util.RegionHelper._
+import scala.annotation.tailrec
 
 class TemplatePartitionTokeniserTest {
 
@@ -69,17 +70,14 @@ val x = "x string"
 
   private def testForTokenise(expected: List[TypedRegion], program: String) = {
     val actual = tokenise(new Document(program))
-    def noOverlap: Boolean = {
-      def testOverlap(prev: TypedRegion, list: List[TypedRegion]): Boolean = {
-        list match {
-          case hd :: tail => !hd.containsPosition(prev.getOffset()) && !hd.containsPosition(prev.getOffset() + prev.getLength() - 1) && testOverlap(hd, tail)
-          case _ => true
-        }
-      }
-      if (actual.length < 2)
-        true
-      else {
-        testOverlap(actual.head, actual.tail)
+
+    @tailrec
+    def noOverlap(list: List[TypedRegion]): Boolean = {
+      list match {
+        case head :: second :: tail =>
+          !head.overlapsWith(second) && noOverlap(list.tail)
+        case _ =>
+          true
       }
     }
 
@@ -93,7 +91,7 @@ val x = "x string"
       testComplete(0, actual)
     }
 
-    assertTrue("list has overlap", noOverlap)
+    assertTrue("list has overlap", noOverlap(actual))
     assertTrue("list is not complete", complete)
     assertEquals("list doesn't match", expected, actual)
   }
