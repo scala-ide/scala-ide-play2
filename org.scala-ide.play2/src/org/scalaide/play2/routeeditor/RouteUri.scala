@@ -18,7 +18,7 @@ case class RouteUri protected (parts: List[String]) {
     parts.startsWith(prefix)
   }
 
-  def permutationForPrefix(prefix: String): List[RouteUri] = {
+  def subUrisStartingWith(prefix: String): List[RouteUri] = {
     if (startsWith(prefix)) {
       val splitPoint = Math.max(0, RouteUri(prefix).parts.length - 1)
       val (common, additional) = parts.splitAt(splitPoint)

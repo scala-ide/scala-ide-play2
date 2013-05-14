@@ -8,6 +8,8 @@ import org.eclipse.jface.text.Document
 import scala.annotation.tailrec
 import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.Region
+import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.StringBuilder
 
 trait RouteTest {
 
@@ -48,9 +50,9 @@ trait RouteTest {
     
     /** Return the regions marked by pairs of markers
      */
-    def selectedRegions(marker: Char): List[IRegion] = {
+    def selectedRegions(marker: Char): Seq[IRegion] = {
       @tailrec
-      def selectedRegions(positions: List[Int], acc: List[IRegion]): List[IRegion] = {
+      def selectedRegions(positions: List[Int], acc: Vector[IRegion]): Vector[IRegion] = {
         positions match {
           case Nil =>
           acc
@@ -62,7 +64,7 @@ trait RouteTest {
         }
       }
       
-      selectedRegions(allMarkedPositions(marker), Nil)
+      selectedRegions(allMarkedPositions(marker), Vector())
     }
     
     /** Remove the markers from the raw text, and return a Map with the positions of the
@@ -75,18 +77,18 @@ trait RouteTest {
       }
       
       @tailrec
-      def extractPositions(chars: List[Char], currentIndex: Int, cleaned: List[Char], positions: Map[Char, List[Int]]): (String, Map[Char, List[Int]]) = {
+      def extractPositions(chars: List[Char], currentIndex: Int, cleaned: StringBuilder, positions: Map[Char, List[Int]]): (String, Map[Char, List[Int]]) = {
         chars match {
           case Nil =>
             (cleaned.mkString, positions)
           case c :: tail if markers.contains(c)=>
             extractPositions(tail, currentIndex, cleaned, addToMap(positions, c, currentIndex))
           case c :: tail =>
-            extractPositions(tail, currentIndex + 1, cleaned :+ c, positions)
+            extractPositions(tail, currentIndex + 1, cleaned.append(c), positions)
         }
       }
       
-      extractPositions(text.toList, 0, Nil, markers.map(c => (c, Nil)).toMap)
+      extractPositions(text.toList, 0, new StringBuilder(), markers.map(c => (c, Nil)).toMap)
     }
   }
   

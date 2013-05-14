@@ -41,9 +41,9 @@ class UriCompletionComputer extends IContentAssistProcessor {
     val defaultUriProposal = if (rawUri.isEmpty) Set(uri) else Set.empty 
     
     val staticUrisProposals = {
-      if (RouteUri.isValid(rawUri)) existingUris.flatMap(_.permutationForPrefix(rawUri))
+      if (RouteUri.isValid(rawUri)) existingUris.flatMap(_.subUrisStartingWith(rawUri))
       // If the `rawUri` isn't valid, then proposals will contain all possible valid permutations of existing URIs
-      else existingUris.flatMap(_.permutationForPrefix(""))
+      else existingUris.flatMap(_.subUrisStartingWith(""))
     }
 
     val dynamicUrisProposals = {
