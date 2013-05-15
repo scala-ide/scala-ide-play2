@@ -69,14 +69,14 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, prote
 
   def getContentType(offset: Int) = getToken(offset) map { _.getType() } getOrElse defaultPartition
 
-  private def getToken(offset: Int) = partitionRegions.find(_.containsPosition(offset))
+  private def getToken(offset: Int) = partitionRegions.find(_.containsPositionInclusive(offset))
 
   def computePartitioning(offset: Int, length: Int): Array[ITypedRegion] = {
     val regions = new ListBuffer[ITypedRegion]
     var searchingForStart = true
     for (partitionRegion <- partitionRegions)
       if (searchingForStart) {
-        if (partitionRegion containsPosition offset) {
+        if (partitionRegion containsPositionInclusive offset) {
           searchingForStart = false
           regions += cropRegion(partitionRegion, offset, length)
         }

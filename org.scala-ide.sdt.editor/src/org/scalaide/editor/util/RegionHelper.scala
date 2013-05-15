@@ -11,10 +11,10 @@ object RegionHelper {
         new TypedRegion(region.getOffset() + n, region.getLength(), region.getType())
     
     /** Checks if the given position is contained in this region.
-     *  The check is inclusive. If this region has offset 5, and length 3, it will return
+     *  This check is inclusive. If this region has offset 5, and length 3, it will return
      *  true for 5, 6, 7 and 8. 
      */
-    def containsPosition(offset: Int): Boolean = {
+    def containsPositionInclusive(offset: Int): Boolean = {
       if (region.getLength() == 0) {
         region.getOffset() == offset
       } else {
@@ -22,10 +22,22 @@ object RegionHelper {
       }
     }
     
+    /** Checks if the given position is contained in this region.
+     *  This check is exclusive. If this region has offset 5, and length 3, it will return
+     *  true for 5, 6 and 7.
+     */
+    def containsPositionExclusive(offset: Int) : Boolean = {
+        region.getOffset() <= offset &&  offset < (region.getOffset() + region.getLength())
+    }
+
+    def overlapsWith(otherRegion: IRegion): Boolean = {
+      region.getOffset() < otherRegion.getOffset + otherRegion.getLength && otherRegion.getOffset < region.getOffset() + region.getLength
+    }
+
     /** Check if the given region is contained in this region.
      */
     def containsRegion(innerRegion: IRegion): Boolean = {
-      containsPosition(innerRegion.getOffset()) && containsPosition(innerRegion.getOffset() + innerRegion.getLength())
+      containsPositionInclusive(innerRegion.getOffset()) && containsPositionInclusive(innerRegion.getOffset() + innerRegion.getLength())
     }
   }
   
@@ -93,12 +105,12 @@ object RegionHelper {
           //x:    -----
           //y:   +++++++
           subtract(xs, b)
-        } else if (x.containsPosition(yEnd)) {
+        } else if (x.containsPositionExclusive(yEnd)) {
           //x:  -------
           //y: ++++
           val producedElem = new TypedRegion(yEnd + 1, xEnd - yEnd, x.getType())
           subtract(producedElem :: xs, ys)
-        } else if (x.containsPosition(yStart)) {
+        } else if (x.containsPositionExclusive(yStart)) {
           //x:  -------
           //y:      ++++++
           val newElem = new TypedRegion(xStart, yStart - xStart, x.getType())
