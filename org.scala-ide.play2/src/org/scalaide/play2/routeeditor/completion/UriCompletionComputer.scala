@@ -1,7 +1,6 @@
 package org.scalaide.play2.routeeditor.completion
 
 import scala.tools.eclipse.util.Utils.any2optionable
-
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.ITextViewer
@@ -14,11 +13,10 @@ import org.scalaide.editor.WordFinder
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.routeeditor.lexical.RouteDocumentPartitioner
 import org.scalaide.play2.util.Images
+import org.scalaide.play2.routeeditor.RouteUri
+import org.scalaide.play2.routeeditor.RouteUriWithRegion
 
 class UriCompletionComputer extends IContentAssistProcessor {
-  import UriCompletionComputer.RouteUri
-
-  private val wordFinder = new WordFinder
 
   override def getCompletionProposalAutoActivationCharacters(): Array[Char] =
     Array('/')
@@ -32,20 +30,20 @@ class UriCompletionComputer extends IContentAssistProcessor {
   override def computeCompletionProposals(viewer: ITextViewer, offset: Int): Array[ICompletionProposal] = {
     val document = viewer.getDocument()
 
-    val word = wordFinder.findWord(document, offset)
+    val word = WordFinder.findWord(document, offset)
     // only consider the prefix (word to the left of caret)
     val rawUri = document.get(word.getOffset, (offset - word.getOffset()))
     val uri = RouteUri(rawUri)
 
-    val existingUris = existingUrisInDocument(document) - uri
+    val existingUris = RouteUriWithRegion.existingUrisInDocument(document).filter(_ != uri)
 
     // If the `rawUri` is empty then add '/' to the returned set of proposals 
     val defaultUriProposal = if (rawUri.isEmpty) Set(uri) else Set.empty 
     
     val staticUrisProposals = {
-      if (RouteUri.isValid(rawUri)) existingUris.flatMap(_.permutationForPrefix(rawUri))
+      if (RouteUri.isValid(rawUri)) existingUris.flatMap(_.subUrisStartingWith(rawUri))
       // If the `rawUri` isn't valid, then proposals will contain all possible valid permutations of existing URIs
-      else existingUris.flatMap(_.permutationForPrefix(""))
+      else existingUris.flatMap(_.subUrisStartingWith(""))
     }
 
     val dynamicUrisProposals = {
@@ -59,17 +57,6 @@ class UriCompletionComputer extends IContentAssistProcessor {
     val sortedProposals = allUrisProposals.toList.sorted(RouteUri.AlphabeticOrder)
     
     sortedProposals.map(new UriCompletionProposal(word, _)).toArray
-  }
-
-  /** Return all the existing URIs for the passed `document`. */
-  private def existingUrisInDocument(document: IDocument): Set[RouteUri] = {
-    (for {
-      partitioner <- document.getDocumentPartitioner().asInstanceOfOpt[RouteDocumentPartitioner].toList
-      partition <- partitioner.uriPartitions
-      length = Math.max(0, partition.getLength)
-      if length > 0
-      rawUri = document.get(partition.getOffset, length)
-    } yield RouteUri(rawUri))(collection.breakOut)
   }
 
   override def computeContextInformation(viewer: ITextViewer, offset: Int): Array[IContextInformation] = {
@@ -90,43 +77,3 @@ class UriCompletionComputer extends IContentAssistProcessor {
   }
 }
 
-object UriCompletionComputer {
-  case class RouteUri private (parts: List[String]) {
-    def startsWith(prefix: String): Boolean = {
-      val uriPrefix = RouteUri(prefix)
-      toString().startsWith(uriPrefix.toString)
-    }
-
-    def permutationForPrefix(prefix: String): List[RouteUri] = {
-      if (startsWith(prefix)) {
-        val splitPoint = Math.max(0, RouteUri(prefix).parts.length - 1)
-        val (common, additional) = parts.splitAt(splitPoint)
-        (for (i <- 1 to additional.size) 
-          yield RouteUri(common ::: additional.slice(0, i))
-        )(collection.breakOut)
-      }
-      else Nil
-    }
-    def append(part: String): RouteUri = RouteUri(parts :+ part)
-
-    def dynamicUris: List[RouteUri] = List(":", "*", "$") map (append(_))
-
-    override def toString(): String = parts.mkString("/", "/", "")
-  }
-
-  object RouteUri {
-    def apply(uri: String): RouteUri = RouteUri(split(uri))
-
-    def isValid(rawUri: String): Boolean = rawUri.startsWith("/")
-
-    private def split(uri: String): List[String] = {
-      val parts = uri.split("/").toList
-      parts.filterNot(_.trim.isEmpty)
-    }
-
-    implicit object AlphabeticOrder extends Ordering[RouteUri] {
-      override def compare(x: RouteUri, y: RouteUri): Int =
-        x.toString.compare(y.toString)
-    }
-  }
-}

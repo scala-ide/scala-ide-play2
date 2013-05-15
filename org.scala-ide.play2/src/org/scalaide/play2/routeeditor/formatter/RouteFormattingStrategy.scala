@@ -81,9 +81,7 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
         case ROUTE_COMMENT => {
           reset
         }
-        case ROUTE_DEFAULT => {
-          reset
-        }
+        case ROUTE_DEFAULT =>
         case ROUTE_URI => {
           state match {
             case Uri => {

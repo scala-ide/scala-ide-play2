@@ -15,8 +15,6 @@ import org.scalaide.play2.util.Images
 
 class HttpMethodCompletionComputer extends IContentAssistProcessor {
 
-  private val wordFinder = new WordFinder
-
   override def getCompletionProposalAutoActivationCharacters(): Array[Char] = null
 
   override def getContextInformationAutoActivationCharacters(): Array[Char] = null
@@ -26,7 +24,7 @@ class HttpMethodCompletionComputer extends IContentAssistProcessor {
   override def getContextInformationValidator = null
 
   override def computeCompletionProposals(viewer: ITextViewer, offset: Int): Array[ICompletionProposal] = {
-    val region = wordFinder.findWord(viewer.getDocument(), offset)
+    val region = WordFinder.findWord(viewer.getDocument(), offset)
     val input = viewer.getDocument().get(region.getOffset(), region.getLength()).toUpperCase
 
     val filteredCompletions = HTTPKeywords.Methods.filter(_.take(region.getLength) == input)

@@ -9,8 +9,6 @@ class WordFinderTest {
 
   private final val CaretMarker = '|'
 
-  private val finder = new WordFinder
-
   private def document(text: String) = new {
     def shouldFind(expectedWord: String): Unit = {
       val caret: Int = {
@@ -20,7 +18,7 @@ class WordFinderTest {
       }
       val cleanedText = text.filterNot(_ == CaretMarker).mkString
       val doc = new Document(cleanedText)
-      val region = finder.findWord(doc, caret)
+      val region = WordFinder.findWord(doc, caret)
       val actualWord = doc.get(region.getOffset(), region.getLength())
       Assert.assertEquals("The word at the caret position.", expectedWord, actualWord)
     }

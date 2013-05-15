@@ -1,12 +1,10 @@
 package org.scalaide.editor
 
-import scala.tools.eclipse.jface.text.EmptyRegion
-
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.Region
 
-class WordFinder {
+object WordFinder {
   /**
     * Computed the region of the word enclosed by the passed `offset` in the `document`.
     * If the `offset` is surrounded by whitespaces, an empty region is returned.
