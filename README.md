@@ -16,19 +16,22 @@ The project is composed of 5 Eclipse plugins:
 
 The projects can be imported inside Scala IDE. And they are fully configured to be compiled with maven and tycho.
 
-## Building
+## Build
 
-The maven build is configured using a combination of 2 profiles:
+Simply run the ``./build.sh`` script.
 
-* An Eclipse platform profile:
-  * `eclipse-indigo`
-  * `eclipse-juno`
+The build is based on
+[plugin-profiles](https://github.com/scala-ide/plugin-profiles) and
+can be built against several versions of the IDE and Eclipse.
 
-* A Scala IDE version profile:
-  * `scala-ide-stable`
-  * `scala-ide-dev`
-  * `scala-ide-nightly`
+Launching the ``build.sh`` script will exand to the following Maven command:
 
-After choosing the flavor you wish to build, maven is run using:
+```
+mvn -Peclipse-indigo,scala-2.10.x,scala-ide-stable clean install
+```
 
-    mvn -Peclipse-indigo -Pscala-ide-stable clean package
+You can choose a different profile for any of the three axis: eclipse
+platform, and Scala IDE stream. The Scala profile has to be ``scala-2.10.x`` because 
+this plug-in targets Play v2.1, which is only available for Scala 2.10. 
+Read [here](https://github.com/scala-ide/scala-worksheet/wiki/Build-the-Worksheet)
+for more details.
