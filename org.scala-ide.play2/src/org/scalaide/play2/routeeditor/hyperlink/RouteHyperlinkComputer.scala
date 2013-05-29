@@ -44,7 +44,13 @@ object RouteHyperlinkComputer {
             val obj = rootMirror.getModuleIfDefined(routeAction.typeName)
 
             // method or methods of the object with the given name
-            val method = obj.info.member(newTermName(routeAction.methodName))
+            val objMethod = obj.info.member(newTermName(routeAction.methodName))
+            
+            // if the method of the object doesn't exist, than perhaps routeAction.typeName is actually a class
+            // so let's try getting the class and searching it's methods for routeAction.methodName
+            val method =
+              if (objMethod.exists) objMethod
+              else 					rootMirror.getClassIfDefined(routeAction.typeName).info.member(newTermName(routeAction.methodName))
 
             if (!method.exists) {
               None
