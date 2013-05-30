@@ -80,9 +80,19 @@ private[action] object MembersComputer {
       member.isClass && !member.isTrait && !member.isAbstractClass
 
     override protected def createMembersComputer(_prefix: compiler.Symbol): MembersComputer = {
-      if (_prefix.isPackage) new PackageAndClassMembersComputer {
-        override val compiler: self.compiler.type = self.compiler
-        override val prefix: self.compiler.Symbol = _prefix
+      if (_prefix.isPackage) {
+        // _prefix will be the EmptyPackage if the ActionRouteInput has an empty prefix,
+        // meaning that the input itself is a single word, and thus we need to search among
+        // the RootClass decls for packages, and the EmptyPackage 
+        if (_prefix != compiler.rootMirror.EmptyPackage) new PackageAndClassMembersComputer {
+          override val compiler: self.compiler.type = self.compiler
+          override val prefix: self.compiler.Symbol = _prefix
+        }
+        else new PackageAndClassMembersComputer {
+          override val compiler: self.compiler.type = self.compiler
+          override val prefix: self.compiler.Symbol = _prefix
+          override protected final def allMembers = compiler.rootMirror.RootClass.tpe.decls.toList ++ _prefix.tpe.decls.toList
+        } 
       }
       else if (_prefix.isJava) new JavaInstanceMembersComputer  {
         override val compiler: self.compiler.type = self.compiler
@@ -101,9 +111,18 @@ private[action] object MembersComputer {
       findPackageFromRoot(input.prefix) orElse findModuleFromRoot(input.prefix)
 
     override protected def createMembersComputer(_prefix: compiler.Symbol): MembersComputer = {
-      if (_prefix.isPackage) new PackageAndModuleMembersComputer  {
-        override val compiler: self.compiler.type = self.compiler
-        override val prefix: self.compiler.Symbol = _prefix
+      if (_prefix.isPackage) {
+        // _prefix will be the EmptyPackage if the ActionRouteInput has an empty prefix,
+        // meaning that the input itself is a single word, and thus we need to search among the RootClass decls
+        if (_prefix != compiler.rootMirror.EmptyPackage) new PackageAndModuleMembersComputer  {
+          override val compiler: self.compiler.type = self.compiler
+          override val prefix: self.compiler.Symbol = _prefix
+        }
+        else new PackageAndModuleMembersComputer  {
+          override val compiler: self.compiler.type = self.compiler
+          override val prefix: self.compiler.Symbol = _prefix
+          override protected final def allMembers = compiler.rootMirror.RootClass.tpe.decls.toList ++ _prefix.tpe.decls.toList
+        }
       }
       else if (_prefix.isJava) new JavaStaticMembersComputer  {
         override val compiler: self.compiler.type = self.compiler
@@ -159,7 +178,7 @@ object EmptyMembersComputer extends MembersComputer {
 /** @note This class is not instantiated directly. It contains common behavior used by the subclasses. */
 private abstract class PackageMembersComputer protected () extends MembersComputer {
 
-  final protected def allMembers: List[compiler.Symbol] = prefix.tpe.decls.toList
+  protected def allMembers: List[compiler.Symbol] = prefix.tpe.decls.toList
 
   final override protected def filter(member: compiler.Symbol): Boolean = super.filter(member) && isExpectedMember(member)
 
