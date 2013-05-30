@@ -9,13 +9,17 @@ object RouteAction {
 
   /** Regex for the an action with parameters.
    *  "package.Object.action(...xxx...)"
+   *  or
+   *  "@package.Class.action(...xxx...)"
    */
-  private final val ActionWithParametersRegex = """([^\(]*)\.([^\.\(]*)\(([^\)]*)\)""".r
+  private final val ActionWithParametersRegex = """@?([^\(]*)\.([^\.\(]*)\(([^\)]*)\)""".r
 
   /** Regex for the an action without parameters.
    *  "package.Object.action"
+   *  or
+   *  "@package.Class.action"
    */
-  private final val ActionWithoutParametersRegex = """([^\(]*)\.([^\.\(]*)""".r
+  private final val ActionWithoutParametersRegex = """@?([^\(]*)\.([^\.\(]*)""".r
 
   /** Regex for the individual parameters.
    *  The support format is: "page: Int ?= 1"
