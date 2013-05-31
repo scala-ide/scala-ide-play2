@@ -7,7 +7,7 @@ trait PlayClassNames {
 
 object ScalaPlayClassNames {
   final val ControllerClassFullName = "play.api.mvc.Controller"
-  final val ActionClassFullName = "play.api.mvc.Action"
+  final val ActionClassFullName = "play.api.mvc.EssentialAction"
 }
 
 trait ScalaPlayClassNames extends PlayClassNames {
