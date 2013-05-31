@@ -23,4 +23,8 @@ object SimpleScalaPlayApp extends Controller {
   def overloadedAction(s: String) = Action {}
   def overloadedAction(id: Long) = Action {}
   def overloadedAction() = Action {}
+
+  def overloadedEssentialAction(s: String) = EssentialAction {}
+  def overloadedEssentialAction(id: Long) = EssentialAction {}
+  def overloadedEssentialAction() = EssentialAction {}
 }

@@ -25,7 +25,7 @@ import org.scalaide.play2.JavaPlayClassNames
 trait ControllerMethodResolver extends PlayClassNames {
 
   /** Return an instance of `ControllerMethod`, if the offset points to a Play controller method.
-   *  A Play controller method is any method that returns an instance of `Action`
+   *  A Play controller method is any method that returns an instance of `EssentialAction`
    *
    *  @param cu The compilation unit under inspection
    *  @param offset The offset in the compilation unit where the method definition is
@@ -37,7 +37,7 @@ trait ControllerMethodResolver extends PlayClassNames {
 class ScalaControllerMethodResolver extends ControllerMethodResolver with ScalaPlayClassNames {
   /** Extract a controller method from the Scala unit at the given offset.
    *
-   *  A controller method is any method that returns an `Action`.
+   *  A controller method is any method that returns an `EssentialAction`.
    */
   override def getControllerMethod(cu: ICompilationUnit, offset: Int): Option[ControllerMethod] = cu match {
     case scu: ScalaCompilationUnit =>
@@ -51,7 +51,7 @@ class ScalaControllerMethodResolver extends ControllerMethodResolver with ScalaP
           comp.rootMirror.getClassIfDefined(actionClassFullName)
         }
 
-        /* Is the symbol a method returning `play.api.mvc.Action`. */
+        /* Is the symbol a method returning `play.api.mvc.EssentialAction`. */
         def isControllerMethod(sym: comp.Symbol) = (sym ne null) && (sym ne NoSymbol) && (comp.askOption { () =>
           lazy val returnsAction = sym.info.finalResultType.typeSymbol.isSubClass(actionClass)
 
