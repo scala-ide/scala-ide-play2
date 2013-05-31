@@ -83,13 +83,23 @@ class ActionContentAssistProcessorTest extends CompletionComputerTest {
   }
 
   @Test
-  def overloaded_method_completion() {
+  def overloaded_method_completion_on_action() {
     val route = RouteCompletionFile { "GET / controllers.simple.SimpleScalaPlayApp.overloadedActi#" }
 
     route expectedCompletions (Proposal("overloadedAction()", MemberKind.Def),
       Proposal("overloadedAction(id: Long)", MemberKind.Def),
       Proposal("overloadedAction(s)", MemberKind.Def))
   }
+
+  @Test
+  def overloaded_method_completion_on_essential_action() {
+    val route = RouteCompletionFile { "GET / controllers.simple.SimpleScalaPlayApp.overloadedEsse#" }
+
+    route expectedCompletions (Proposal("overloadedEssentialAction()", MemberKind.Def),
+      Proposal("overloadedEssentialAction(id: Long)", MemberKind.Def),
+      Proposal("overloadedEssentialAction(s)", MemberKind.Def))
+  }
+
 
   @Test
   def simple_val_completion_for_scala_controller() {
