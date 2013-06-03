@@ -17,6 +17,7 @@ object PlayPlugin {
 
   final val PluginId = "org.scala-ide.play2"
   final val RouteFormatterMarginId = PluginId + ".routeeditor.margin"
+  final val RouteFormatterFormatOnSaveId = PluginId + ".routeeditor.formatonsave"
   final val TemplateExtension = "scala.html"
 
   /** Return the current plugin instace */

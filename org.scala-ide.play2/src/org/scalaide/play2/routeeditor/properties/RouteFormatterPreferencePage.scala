@@ -14,6 +14,9 @@ class RouteFormatterPreferencePage extends FieldEditorPreferencePage with IWorkb
     val marginField = new IntegerFieldEditor(PlayPlugin.RouteFormatterMarginId, "Number of spaces between columns", getFieldEditorParent)
     marginField.setValidRange(1, 10)
     addField(marginField)
+    
+    val formatOnSaveToggle = new org.eclipse.jface.preference.BooleanFieldEditor(PlayPlugin.RouteFormatterFormatOnSaveId, "Format on save", getFieldEditorParent)
+    addField(formatOnSaveToggle);
   }
 
   def init(workbench: IWorkbench) {}
