@@ -342,4 +342,60 @@ class ActionContentAssistProcessorTest extends CompletionComputerTest {
 
     route expectedCompletions Proposal("hello(name)", MemberKind.Def, isJava = true)
   }
+  
+  @Test
+  def completion_for_top_level_package() {
+    val route = RouteCompletionFile { "GET / control#" }
+    
+    route expectedCompletions Proposal("controllers", MemberKind.Package)
+  }
+  
+  @Test
+  def completion_for_top_level_package_with_at_prefix() {
+    val route = RouteCompletionFile { "GET / @controll#" }
+    
+    route expectedCompletions Proposal("controllers", MemberKind.Package)
+  }
+  
+  @Test
+  def completion_for_top_level_static_java_method() {
+    val route = RouteCompletionFile { "GET / RootStaticJavaApp#" }
+    
+    route expectedCompletions Proposal("RootStaticJavaApplication", MemberKind.Class, isJava = true)
+  }
+  
+  @Test
+  def completion_for_top_level_static_java_method_with_at_prefix() {
+    val route = RouteCompletionFile { "GET / @RootStaticJavaApp#" }
+
+    route expectedCompletions Proposal("RootStaticJavaApplication", MemberKind.Class, isJava = true)
+  }
+  
+  @Test
+  def completion_for_top_level_scala_class() {
+    val route = RouteCompletionFile { "GET / RootScalaApp#" }
+    
+    route expectedCompletions Proposal("RootScalaApplication", MemberKind.Object)
+  }
+  
+  @Test
+  def completion_for_top_level_scala_class_with_at_prefix() {
+    val route = RouteCompletionFile { "GET / @RootScalaApp#" }
+    
+    route expectedCompletions Proposal("RootScalaApplication", MemberKind.Class)
+  }
+  
+  @Test
+  def completion_for_top_level_scala_package_object() {
+    val route = RouteCompletionFile { "GET / ScalaPack#" }
+    
+    route expectedCompletions Proposal("ScalaPackage", MemberKind.Package)
+  }
+  
+  @Test
+  def completion_for_top_level_scala_package_object_with_at_prefix() {
+    val route = RouteCompletionFile { "GET / @ScalaPack#" }
+    
+    route expectedCompletions Proposal("ScalaPackage", MemberKind.Package)
+  }
 }
