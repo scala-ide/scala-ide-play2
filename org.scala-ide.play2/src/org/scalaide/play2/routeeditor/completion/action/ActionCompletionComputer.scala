@@ -33,7 +33,8 @@ class ActionCompletionComputer(compiler: ScalaPresentationCompiler) {
     * document's region that will be replaced when one of the proposed completions is applied.
     */
   private def computeCompletionOverwriteReplaceRegion(region: IRegion, input: String): IRegion = {
-    val suffixStart = input.lastIndexOf('.') + 1
+    // skip past either the last period or, if there is none, past the starting '@' if one exists.
+    val suffixStart = Math.max(input.lastIndexOf('.'), input.indexOf('@')) + 1
     val suffixOffset = region.getOffset + suffixStart
     val length = Math.max(0, region.getLength - suffixStart)
     new Region(suffixOffset, length)
