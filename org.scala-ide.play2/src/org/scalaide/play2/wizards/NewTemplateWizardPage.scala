@@ -47,7 +47,7 @@ class NewTemplateWizardPage(selection: IStructuredSelection) extends WizardNewFi
         false
       }
     } else {
-      true
+      false
     }
   }
 
