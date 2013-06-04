@@ -32,6 +32,10 @@ private[action] object MembersComputer {
         if (input.prefix.isEmpty) compiler.rootMirror.EmptyPackage
         else prefixSymbol(input)
       }
+      
+      // If the presentation compiler has just been initialized, there is the chance that the symbol has not been initialized,
+      // which means the isJava flag won't be set correctly, which can later cause completion on java symbols to not function.
+      prefix.initialize
       if (prefix == compiler.NoSymbol) {
         logger.debug(s"Could not find a symbol for '${input}'. No completion proposals will be displayed.")
         EmptyMembersComputer
