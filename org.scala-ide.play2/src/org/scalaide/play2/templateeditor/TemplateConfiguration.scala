@@ -45,19 +45,18 @@ import org.scalaide.editor.EditorUI
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration(prefStore) with PropertyChangeHandler {
 
-  val colorManager = new JavaColorManager()
   private val templateDoubleClickStrategy =
     new RouteDoubleClickStrategy()
 
-  private val defaultScanner = new TemplateDefaultScanner(colorManager, prefStore)
+  private val defaultScanner = new TemplateDefaultScanner(prefStore)
 
-  private val plainScanner = new SingleTokenScanner(TemplateSyntaxClasses.PLAIN, colorManager, prefStore)
+  private val plainScanner = new SingleTokenScanner(TemplateSyntaxClasses.PLAIN, prefStore)
 
-  private val scalaScanner = new ScalaCodeScanner(colorManager, prefStore, ScalaVersions.Scala_2_10)
+  private val scalaScanner = new ScalaCodeScanner(prefStore, ScalaVersions.Scala_2_10)
 
-  private val commentScanner = new SingleTokenScanner(TemplateSyntaxClasses.COMMENT, colorManager, prefStore)
+  private val commentScanner = new SingleTokenScanner(TemplateSyntaxClasses.COMMENT, prefStore)
 
-  private val tagScanner = new HtmlTagScanner(colorManager, prefStore)
+  private val tagScanner = new HtmlTagScanner(prefStore)
 
   override def getDoubleClickStrategy(sourceViewer: ISourceViewer, contentType: String) = {
     templateDoubleClickStrategy

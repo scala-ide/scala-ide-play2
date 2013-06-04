@@ -8,7 +8,7 @@ import org.eclipse.jface.text.rules.WordRule
 import org.scalaide.play2.routeeditor.lexical.AbstractRouteScanner
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses
 
-class TemplateDefaultScanner(manager: IColorManager, prefStore: IPreferenceStore) extends AbstractRouteScanner(TemplateSyntaxClasses.DEFAULT, prefStore, manager) {
+class TemplateDefaultScanner(prefStore: IPreferenceStore) extends AbstractRouteScanner(TemplateSyntaxClasses.DEFAULT, prefStore) {
   val atToken = getToken(TemplateSyntaxClasses.MAGIC_AT);
   val braceToken = getToken(TemplateSyntaxClasses.BRACE);
 

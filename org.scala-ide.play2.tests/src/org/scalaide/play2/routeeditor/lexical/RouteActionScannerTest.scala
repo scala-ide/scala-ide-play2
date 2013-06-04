@@ -5,7 +5,9 @@ import org.eclipse.jface.text.rules.IToken
 import org.eclipse.jface.text.rules.Token
 import org.junit.Test
 
-class RouteActionScannerTest extends AbstractRouteScannerTest(new RouteActionScanner(_, _)) {
+class RouteActionScannerTest extends AbstractRouteScannerTest {
+  override val scanner = new RouteActionScanner(prefStore)
+  
   val packageToken = scanner.asInstanceOf[RouteActionScanner].packageToken
   val classToken = scanner.asInstanceOf[RouteActionScanner].classToken
   val methodToken = scanner.asInstanceOf[RouteActionScanner].methodToken

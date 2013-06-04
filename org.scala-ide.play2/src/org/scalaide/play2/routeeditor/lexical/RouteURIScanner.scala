@@ -10,7 +10,7 @@ import org.scalaide.play2.routeeditor.RouteSyntaxClasses.URI_DYNAMIC
 /**
  * scanner for URI part of route file
  */
-class RouteURIScanner(prefStore: IPreferenceStore, manager: IColorManager) extends AbstractRouteScanner(URI, prefStore, manager) {
+class RouteURIScanner(prefStore: IPreferenceStore) extends AbstractRouteScanner(URI, prefStore) {
   def dynamic = getToken(URI_DYNAMIC)
 
   val rules = Array[IRule](
