@@ -3,6 +3,7 @@ package org.scalaide.play2.routeeditor.completion.action
 import scala.tools.eclipse.ScalaPresentationCompiler
 import scala.tools.eclipse.completion.MemberKind
 
+import org.eclipse.jdt.core.IMethod
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.Region
@@ -44,7 +45,19 @@ class ActionCompletionComputer(compiler: ScalaPresentationCompiler) {
     val name = member.decodedName
     member match {
       case m: compiler.MethodSymbol =>
-        val formattedParamss = m.paramss.flatten.map(param => (param.decodedName.toString, param.tpe.toString))
+        lazy val defaultFormattedParamss = m.paramss.flatten.map(param => (param.decodedName.toString, param.tpe.toString))
+        val formattedParamss = m.isJava match {
+          case true  => {
+            val paramNames = compiler.getJavaElement(m) map {
+              case imethod: IMethod => imethod.getParameterNames.toList
+            }
+            paramNames match {
+              case Some(names) => names.zip(m.paramss.flatten.map(_.tpe.toString))
+              case None        => defaultFormattedParamss
+            }
+          }
+          case false => defaultFormattedParamss
+        }
         val controllerMethod = ControllerMethod.apply(member.fullNameString, formattedParamss).toRouteCallSyntax
         val fullyQualifiedMethodCall = {
           // remove empty-parens if member was declared with no-parens. This is nice in general, and especially when when completing Action val. 
