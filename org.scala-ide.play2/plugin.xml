@@ -131,7 +131,7 @@
             commandId="org.scala-ide.play2.routeeditor.commands.rename"
             contextId="org.scala-ide.play2.routeeditor.editorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M2+M3+R">
+            sequence="M1+M3+R">
       </key>
    </extension>
    <extension
