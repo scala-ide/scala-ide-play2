@@ -5,7 +5,9 @@ import org.eclipse.jface.text.rules.IToken
 import org.eclipse.jface.text.rules.Token
 import org.junit.Test
 
-class RouteURIScannerTest extends AbstractRouteScannerTest(new RouteURIScanner(_, _)) {
+class RouteURIScannerTest extends AbstractRouteScannerTest {
+  override val scanner = new RouteURIScanner(prefStore)
+
   private val dynamicToken = scanner.asInstanceOf[RouteURIScanner].dynamic
 
   @Test

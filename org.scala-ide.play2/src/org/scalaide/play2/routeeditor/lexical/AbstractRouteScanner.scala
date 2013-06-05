@@ -7,10 +7,9 @@ import org.eclipse.jdt.ui.text.IColorManager
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.rules.RuleBasedScanner
 
-abstract class AbstractRouteScanner(defaultSyntax: ScalaSyntaxClass, prefStore: IPreferenceStore, manager: IColorManager) extends RuleBasedScanner with AbstractScalaScanner {
+abstract class AbstractRouteScanner(defaultSyntax: ScalaSyntaxClass, prefStore: IPreferenceStore) extends RuleBasedScanner with AbstractScalaScanner {
   fDefaultReturnToken = getToken(defaultSyntax)
   override def preferenceStore = prefStore
-  override def colorManager = manager
 
   def getDefaultReturnToken = fDefaultReturnToken
 
