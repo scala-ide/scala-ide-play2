@@ -102,13 +102,7 @@ class RoutePartitionTokeniser extends PlayPartitionTokeniser {
     })(collection.breakOut)
   }
 
-  override def tokenise(document: IDocument): List[TypedRegion] = {
-    import org.scalaide.editor.util.RegionHelper._
-    
-    val lines = convertToSeperateLines(document)
-    val allRegions = lines.flatMap(tokeniseEachLine(document, _))
-    
-    val defaultRegions = List(new TypedRegion(0, document.getLength(), ROUTE_DEFAULT)) \ allRegions
-    defaultRegions U allRegions
-  }
+  override def tokenise(document: IDocument): List[TypedRegion] =
+    convertToSeperateLines(document).flatMap(tokeniseEachLine(document, _))
+ 
 }

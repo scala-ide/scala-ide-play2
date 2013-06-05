@@ -59,14 +59,14 @@ class RoutePartitionTokeniserTest {
   def empty_lines_tokenized_as_HTPP_partitions() {
     val text = s" \n"
     val tokens = tokenizer.tokenise(text)
-    Assert.assertEquals(List(new TypedRegion(0, 1, ROUTE_HTTP), new TypedRegion(1, 1, ROUTE_DEFAULT), new TypedRegion(2, 0, ROUTE_HTTP)), tokens)
+    Assert.assertEquals(List(new TypedRegion(0, 1, ROUTE_HTTP), new TypedRegion(2, 0, ROUTE_HTTP)), tokens)
   }
 
   @Test
   def GET_followed_by_newline_are_both_partitioned_as_HTTP_partitions() {
     val text = s"GET \n"
     val tokens = tokenizer.tokenise(text)
-    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(3, 1, ROUTE_DEFAULT), new TypedRegion(4, 0, ROUTE_URI), new TypedRegion(4, 1, ROUTE_DEFAULT), new TypedRegion(5, 0, ROUTE_HTTP)), tokens)
+    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(4, 0, ROUTE_URI), new TypedRegion(5, 0, ROUTE_HTTP)), tokens)
   }
 
   /** This test shows that when no HTTP method is found, the first word in the line is always partitioned as a ROUTE_HTTP.
@@ -79,56 +79,56 @@ class RoutePartitionTokeniserTest {
   def when_HTTP_method_is_missing_URI_is_partitioned_as_HTTP_method() {
     val text = " /public"
     val tokens = tokenizer.tokenise(text)
-    Assert.assertEquals(List(new TypedRegion(0, 1, ROUTE_DEFAULT), new TypedRegion(1, 7, ROUTE_HTTP)), tokens)
+    Assert.assertEquals(List(new TypedRegion(1, 7, ROUTE_HTTP)), tokens)
   }
 
   @Test
   def URI_partition_is_always_expected_after_HTTP_partition() {
     val text = "GET "
     val tokens = tokenizer.tokenise(text)
-    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(3, 1, ROUTE_DEFAULT), new TypedRegion(4, 0, ROUTE_URI)), tokens)
+    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(4, 0, ROUTE_URI)), tokens)
   }
 
   @Test
   def simple_URI_after_HTTP_is_correctly_partitioned() {
     val text = "GET /public"
     val tokens = tokenizer.tokenise(text)
-    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(3, 1, ROUTE_DEFAULT), new TypedRegion(4, 7, ROUTE_URI)), tokens)
+    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(4, 7, ROUTE_URI)), tokens)
   }
 
   @Test
   def URI_with_dynamic_part_after_HTTP_is_correctly_partitioned() {
     val text = "GET /clients/:id controllers.Clients.show(id: Long)"
     val tokens = tokenizer.tokenise(text)
-    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(3, 1, ROUTE_DEFAULT), new TypedRegion(4, 12, ROUTE_URI), new TypedRegion(16, 1, ROUTE_DEFAULT), new TypedRegion(17, 34, ROUTE_ACTION)), tokens)
+    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(4, 12, ROUTE_URI), new TypedRegion(17, 34, ROUTE_ACTION)), tokens)
   }
 
   @Test
   def action_after_HTTP_and_URI_is_expected() {
     val text = "GET /public  "
     val tokens = tokenizer.tokenise(text)
-    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(3, 1, ROUTE_DEFAULT), new TypedRegion(4, 7, ROUTE_URI), new TypedRegion(11, 1, ROUTE_DEFAULT), new TypedRegion(12, 1, ROUTE_ACTION)), tokens)
+    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(4, 7, ROUTE_URI), new TypedRegion(12, 1, ROUTE_ACTION)), tokens)
   }
 
   @Test
   def action_after_HTTP_and_URI_is_correctly_partitioned() {
     val text = "GET /public controllers.Home.welcome()"
     val tokens = tokenizer.tokenise(text)
-    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(3, 1, ROUTE_DEFAULT), new TypedRegion(4, 7, ROUTE_URI), new TypedRegion(11, 1, ROUTE_DEFAULT), new TypedRegion(12, 26, ROUTE_ACTION)), tokens)
+    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(4, 7, ROUTE_URI), new TypedRegion(12, 26, ROUTE_ACTION)), tokens)
   }
 
   @Test
   def whitespace_after_action_are_not_included_in_partition() {
     val text = "GET /public controllers.Home.welcome()  " // the trailing whitespaces are relevant for this test! 
     val tokens = tokenizer.tokenise(text)
-    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(3, 1, ROUTE_DEFAULT), new TypedRegion(4, 7, ROUTE_URI), new TypedRegion(11, 1, ROUTE_DEFAULT), new TypedRegion(12, 26, ROUTE_ACTION), new TypedRegion(38, 2, ROUTE_DEFAULT)), tokens)
+    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(4, 7, ROUTE_URI), new TypedRegion(12, 26, ROUTE_ACTION)), tokens)
   }
   
   @Test
   def whitespace_in_action_is_correctly_managed() {
     val text = "GET /public controllers.Home.welcome(name, value)" 
     val tokens = tokenizer.tokenise(text)
-    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(3, 1, ROUTE_DEFAULT), new TypedRegion(4, 7, ROUTE_URI), new TypedRegion(11, 1, ROUTE_DEFAULT), new TypedRegion(12, 37, ROUTE_ACTION)), tokens)
+    Assert.assertEquals(List(new TypedRegion(0, 3, ROUTE_HTTP), new TypedRegion(4, 7, ROUTE_URI), new TypedRegion(12, 37, ROUTE_ACTION)), tokens)
   }
   
   @Test
@@ -142,6 +142,6 @@ class RoutePartitionTokeniserTest {
   def badCommentLeadingSpace() {
     val text = " # some blabla"
     val tokens = tokenizer.tokenise(text)
-    Assert.assertEquals(List(new TypedRegion(0, 1, ROUTE_DEFAULT), new TypedRegion(1, 1, ROUTE_HTTP), new TypedRegion(2, 1, ROUTE_DEFAULT), new TypedRegion(3,4, ROUTE_URI), new TypedRegion(7, 1, ROUTE_DEFAULT), new TypedRegion(8, 6, ROUTE_ACTION)), tokens)
+    Assert.assertEquals(List(new TypedRegion(1, 1, ROUTE_HTTP), new TypedRegion(3,4, ROUTE_URI), new TypedRegion(8, 6, ROUTE_ACTION)), tokens)
   }
 }

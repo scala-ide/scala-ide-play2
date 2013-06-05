@@ -97,7 +97,23 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, prote
     new TypedRegion(newOffset, newLength, region.getType())
   }
 
-  def getPartition(offset: Int): ITypedRegion = getToken(offset) getOrElse new TypedRegion(offset, 1, defaultPartition)
+  def getPartition(offset: Int): ITypedRegion = getToken(offset) getOrElse {
+    val surroundingTokens = ((null :: partitionRegions).sliding(2).find{ case List(_, r) => r.getOffset > offset }).map { case List(a,b) => (a,b) }
+    surroundingTokens match {
+      // Fill the gap between previous and next
+      case Some((previousToken: TypedRegion, nextToken: TypedRegion)) => {
+        val offset = previousToken.getOffset + previousToken.getLength
+        new TypedRegion(offset, nextToken.getOffset - offset, defaultPartition)
+      }
+      // Fill the gap between beginning of doc and next
+      case Some((null, r: TypedRegion)) =>
+        new TypedRegion(0, r.getOffset, defaultPartition)
+      // Either there are no tokens or end of file (in both cases we don't have a way of computing a length)
+      case _ =>
+        new TypedRegion(offset, 0, defaultPartition)
+    }
+  }
+
 
   def getManagingPositionCategories = null
 
