@@ -15,22 +15,20 @@ import org.scalaide.play2.routeeditor.lexical.RouteURIScanner
 
 class RoutePresentationReconciler(prefStore: IPreferenceStore) extends PresentationReconciler with PropertyChangeHandler {
 
-  private val colorManager = new JavaColorManager()
-
   private val scanner =
-    new SingleTokenScanner(RouteSyntaxClasses.DEFAULT, colorManager, prefStore)
+    new SingleTokenScanner(RouteSyntaxClasses.DEFAULT, prefStore)
 
   private val httpScanner =
-    new SingleTokenScanner(RouteSyntaxClasses.HTTP_KEYWORD, colorManager, prefStore)
+    new SingleTokenScanner(RouteSyntaxClasses.HTTP_KEYWORD, prefStore)
 
   private val uriScanner =
-    new RouteURIScanner(prefStore, colorManager)
+    new RouteURIScanner(prefStore)
 
   private val actionScanner =
-    new RouteActionScanner(prefStore, colorManager)
+    new RouteActionScanner(prefStore)
 
   private val commentScanner =
-    new SingleTokenScanner(RouteSyntaxClasses.COMMENT, colorManager, prefStore)
+    new SingleTokenScanner(RouteSyntaxClasses.COMMENT, prefStore)
 
   handlePartition(scanner, RoutePartitions.ROUTE_DEFAULT)
   handlePartition(httpScanner, RoutePartitions.ROUTE_HTTP)

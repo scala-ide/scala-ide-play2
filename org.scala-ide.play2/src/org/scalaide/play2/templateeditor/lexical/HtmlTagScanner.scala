@@ -7,7 +7,7 @@ import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.rules.IToken
 import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClasses._
 
-class HtmlTagScanner(_colorManager: IColorManager, _preferenceStore: IPreferenceStore) extends XmlTagScanner(_colorManager, _preferenceStore) {
+class HtmlTagScanner(preferenceStore: IPreferenceStore) extends XmlTagScanner(preferenceStore) {
   import XmlTagScanner._
 
   var start: Int = -1
