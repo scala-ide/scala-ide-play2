@@ -7,8 +7,12 @@ import org.eclipse.jdt.core.search.SearchPattern
 import org.eclipse.jdt.internal.core.search.BasicSearchEngine
 import scala.Array.apply
 import org.eclipse.core.runtime.NullProgressMonitor
+import org.eclipse.jdt.core.IJavaProject
 
-object MethodFinder {
+/**
+ * Find Java methods in a given project.
+ */
+class MethodFinder(project: IJavaProject) {
   /**
    * Returns an array of method elements which matches with the
    * criterion.
@@ -41,6 +45,6 @@ object MethodFinder {
   }
 
   private def createJavaSearchScope(): IJavaSearchScope = {
-    BasicSearchEngine.createWorkspaceScope()
+    BasicSearchEngine.createJavaSearchScope(Array(project))
   }
 }

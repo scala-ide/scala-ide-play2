@@ -3,12 +3,12 @@ package org.scalaide.play2.routeeditor.hyperlink
 import scala.tools.eclipse.InteractiveCompilationUnit
 import scala.tools.eclipse.ScalaProject
 import scala.tools.eclipse.hyperlink.text.Hyperlink
-
 import org.eclipse.jdt.core.IJavaElement
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.hyperlink.IHyperlink
 import org.scalaide.play2.routeeditor.RouteAction
+import scala.tools.eclipse.util.Utils
 
 object RouteHyperlinkComputer {
 
@@ -65,7 +65,9 @@ object RouteHyperlinkComputer {
               val res = filteredMethod.flatMap {
                 method =>
                   if (method.isJavaDefined) {
-                    val elems = MethodFinder.searchMethod(routeAction.fullName, routeAction.params.map(_._2).toArray)
+                    val elems =
+                      (new MethodFinder(scalaProject.javaProject)).searchMethod(routeAction.fullName, routeAction.params.map(_._2).toArray)
+
                     elems.headOption.map {
                       createJavaHyperlink(routeAction, _)
                     }
