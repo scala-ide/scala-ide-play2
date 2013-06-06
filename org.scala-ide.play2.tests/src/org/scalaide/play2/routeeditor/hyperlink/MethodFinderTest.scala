@@ -4,7 +4,6 @@ import org.junit.Test
 import org.junit.Assert._
 import scala.tools.eclipse.testsetup.TestProjectSetup
 import org.eclipse.jdt.core.IJavaElement
-import MethodFinder._
 import org.eclipse.jdt.core.IMethod
 import org.eclipse.jdt.core.Signature
 import org.junit.Test
@@ -23,6 +22,8 @@ object MethodFinderTest extends TestProjectSetup("aProject", bundleName = "org.s
 class MethodFinderTest {
   MethodFinderTest
   
+  val finder = new MethodFinder(MethodFinderTest.project.javaProject)
+  import finder._
   
   @Test
   def getParametersStringTest() = {
