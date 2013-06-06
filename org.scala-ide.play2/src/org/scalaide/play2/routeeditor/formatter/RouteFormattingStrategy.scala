@@ -1,13 +1,13 @@
 package org.scalaide.play2.routeeditor.formatter
 
 import scala.collection.mutable.ArrayBuffer
-import org.eclipse.jface.text.TypedRegion
 import scala.tools.eclipse.util.EclipseUtils.adaptableToPimpedAdaptable
 
 import org.eclipse.core.resources.IResource
 import org.eclipse.core.runtime.IAdaptable
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.IRegion
+import org.eclipse.jface.text.TypedRegion
 import org.eclipse.jface.text.formatter.FormattingContextProperties
 import org.eclipse.jface.text.formatter.IFormattingContext
 import org.eclipse.jface.text.formatter.IFormattingStrategy
@@ -25,19 +25,11 @@ import org.scalaide.play2.routeeditor.lexical.RoutePartitions.ROUTE_COMMENT
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions.ROUTE_DEFAULT
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions.ROUTE_HTTP
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions.ROUTE_URI
+
 /**
- * formatter of route files
+ * Utility methods and classes that aren't dependent on a specific RouteFormattingStrategy instance
  */
-class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrategy with IFormattingStrategyExtension {
-
-  private var document: IDocument = _
-
-  private var regionOpt: Option[IRegion] = None
-
-  def formatterStarts(context: IFormattingContext) {
-    this.document = context.getProperty(FormattingContextProperties.CONTEXT_MEDIUM).asInstanceOf[IDocument]
-    this.regionOpt = Option(context.getProperty(FormattingContextProperties.CONTEXT_REGION).asInstanceOf[IRegion])
-  }
+object RouteFormattingStrategy {
 
   /**
    * a helper class for each line of code
@@ -50,7 +42,7 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
    * have all 3 parts.
    * @param regions     all of regions of route file
    */
-  def getRoutes(regions: List[TypedRegion]): List[Route] = {
+  private def getRoutes(regions: List[TypedRegion]): List[Route] = {
     val routes = new ArrayBuffer[Route]
     sealed trait State
     case object Http extends State
@@ -72,7 +64,7 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
       region.getType() match {
         case ROUTE_HTTP => {
           state match {
-            case Http => 
+            case Http =>
             case _ => reset
           }
           httpVerb = Some(region)
@@ -110,26 +102,42 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
     routes.toList
   }
 
-  def getMaxHttpVerbLength(lines: List[Route]): Int = {
-    val lengthList = lines map (_.httpVerb.get.getLength())
-    lengthList.max
-  }
+  private def getRegions(document: IDocument): List[TypedRegion] =
+    (new RoutePartitionTokeniser()).tokenise(document)
 
-  def spaces(times: Int) = {
-    var result = ""
-    for (i <- 1 to times) {
-      result += " "
-    }
-    result
+  def getLines(document: IDocument): List[Route] =
+    getRoutes(getRegions(document))
+
+  def getMaxHttpVerbLength(lines: List[Route]): Int =
+    (lines map (_.httpVerb.get.getLength())).max
+
+  def getMaxUriLength(lines: List[Route]): Int =
+    (lines map (_.uri.get.getLength())).max
+
+  def spaces(times: Int) = " " * times
+}
+
+/**
+ * formatter of route files
+ */
+class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrategy with IFormattingStrategyExtension {
+
+  private var document: IDocument = _
+
+  private var regionOpt: Option[IRegion] = None
+
+  def formatterStarts(context: IFormattingContext) {
+    this.document = context.getProperty(FormattingContextProperties.CONTEXT_MEDIUM).asInstanceOf[IDocument]
+    this.regionOpt = Option(context.getProperty(FormattingContextProperties.CONTEXT_REGION).asInstanceOf[IRegion])
   }
 
   def format() {
-    val tokeniser = new RoutePartitionTokeniser()
-    val regions = tokeniser.tokenise(document)
-    val lines = getRoutes(regions)
+    import RouteFormattingStrategy._
+
+    val lines = getLines(document)
     val margin = PlayPlugin.preferenceStore.getInt(PlayPlugin.RouteFormatterMarginId)
-    val maxHttpVerbLength = (lines map (_.httpVerb.get.getLength())).max + margin
-    val maxUriLength = (lines map (_.uri.get.getLength())).max + margin
+    val maxHttpVerbLength = getMaxHttpVerbLength(lines) + margin
+    val maxUriLength = getMaxUriLength(lines) + margin
     val eclipseEdits = lines flatMap { route =>
       val httpEnd = route.httpVerb.get.getOffset() + route.httpVerb.get.getLength()
       val httpSpaceLength = route.uri.get.getOffset() - httpEnd
@@ -137,8 +145,8 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
       val uriEnd = route.uri.get.getOffset() + route.uri.get.getLength()
       val uriSpaceLength = route.action.get.getOffset() - uriEnd
       val uriNeededLength = maxUriLength - route.uri.get.getLength()
-      List(new ReplaceEdit(httpEnd, httpSpaceLength, spaces(httpNeededLength)), 
-          new ReplaceEdit(uriEnd, uriSpaceLength, spaces(uriNeededLength)))
+      List(new ReplaceEdit(httpEnd, httpSpaceLength, spaces(httpNeededLength)),
+        new ReplaceEdit(uriEnd, uriSpaceLength, spaces(uriNeededLength)))
     }
     applyEdits(eclipseEdits)
   }
