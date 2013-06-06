@@ -1,5 +1,7 @@
 package org.scalaide.play2.quickassist
 
+import scala.tools.eclipse.javaelements.ScalaCompilationUnit
+
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IProject
 import org.eclipse.jdt.ui.text.java.IInvocationContext
@@ -16,13 +18,12 @@ import org.eclipse.swt.graphics.Image
 import org.eclipse.ui.PartInitException
 import org.eclipse.ui.PlatformUI
 import org.eclipse.ui.ide.IDE
-import org.eclipse.ui.texteditor.ITextEditor
-import org.scalaide.play2.PlayPlugin
-import org.scalaide.play2.routeeditor.RouteEditor
-import org.scalaide.play2.util.Images
-import scala.tools.eclipse.javaelements.ScalaCompilationUnit
 import org.scalaide.editor.Editor
 import org.scalaide.editor.EditorUI
+import org.scalaide.play2.PlayPlugin
+import org.scalaide.play2.routeeditor.RouteEditor
+import org.scalaide.play2.routeeditor.formatter.RouteFormattingStrategy
+import org.scalaide.play2.util.Images
 
 class AddRouteEntryScala extends IQuickAssistProcessor {
   private lazy val scalaResolver = new ScalaControllerMethodResolver
@@ -111,8 +112,12 @@ class AddRouteEntryScala extends IQuickAssistProcessor {
   // and expose them through completions (this is a platform-supported feature)
 
   private val contextTypeId = "routeContextId"
-  private val routeEntryTemplateString = "${httpMethod}\t\t/${url}\t\t${call}"
-  private val routeEntryTemplate =
+  private def routeEntryTemplateString(implicit doc: IDocument) = {
+    import RouteFormattingStrategy._
+    val lines = getLines(doc)
+    "${httpMethod}" + spaces(getMaxHttpVerbLength(lines)) + "${url}" + spaces(getMaxUriLength(lines)) + "${call}"
+  }
+  private def routeEntryTemplate(implicit doc: IDocument) =
     new Template("newRoute", "Add a new route", contextTypeId, routeEntryTemplateString, true)
 
   private def newTemplateContext(doc: IDocument) = {
@@ -128,6 +133,6 @@ class AddRouteEntryScala extends IQuickAssistProcessor {
     val ctx = newTemplateContext(doc)
     ctx.setVariable("httpMethod", "GET")
     ctx.setVariable("call", call)
-    new TemplateProposal(routeEntryTemplate, ctx, /* not used */ new Region(0, 0), image)
+    new TemplateProposal(routeEntryTemplate(doc), ctx, /* not used */ new Region(0, 0), image)
   }
 }
