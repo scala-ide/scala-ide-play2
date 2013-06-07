@@ -80,11 +80,17 @@ class LocalRename extends AbstractHandler {
                 a.region.getOffset() == partition.getOffset()
             }
 
-            val baseOffset = prefixParts.map(_.size + 1).sum + 1
-            val baseLength = fullPrefix.map(_.size + 1).sum - baseOffset
-
             // transform in tuples
-            Some(sortedMatchingUris.map(p => (p.region.getOffset() + baseOffset, baseLength)))
+            Some(sortedMatchingUris.map(p => {
+              // prefixLength will include an ending '/' if the prefix is indeed a prefix (and not the whole uri).
+              // However, when computing fullPrefix, this extra '/' is not wanted
+              //  (for example, imagine uri = "/foo/bar", prefixParts=Nil, fullPrefix=List("foo"). In this case we
+              //   want to highlight only "foo", NOT "foo/"
+              val lengthAdjustment = if (fullPrefix == p.parts) 0 else 1
+              val baseOffset = p.prefixLength(prefixParts)
+              val baseLength = p.prefixLength(fullPrefix) - baseOffset - lengthAdjustment
+              (p.region.getOffset() + baseOffset, baseLength)
+            }))
           }
         }
     }

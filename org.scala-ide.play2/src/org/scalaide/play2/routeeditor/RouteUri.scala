@@ -8,10 +8,31 @@ import scala.annotation.tailrec
 
 /** Class representing a URI in a route configuration file.
  */
-case class RouteUri protected (parts: List[String]) {
+case class RouteUri (rawUri: String) {
+  val parts: List[String] = {
+    def split(uri: String): List[String] = {
+      val parts = uri.split("/").toList
+      parts.filterNot(_.trim.isEmpty)
+    }
+    split(rawUri)
+  }
+  
+  def isValid: Boolean = rawUri.startsWith("/")
+  
+  def prefixLength(prefixParts: List[String]): Int = {
+    if (startsWith(prefixParts)) {
+      val prefixString = partsToString(prefixParts, isValid)
+      if (prefixParts == parts || prefixParts == Nil)
+        prefixString.length
+      else 
+        prefixString.length + 1 
+    }
+    else -1
+  }
+  
   def startsWith(prefix: String): Boolean = {
     val uriPrefix = RouteUri(prefix)
-    toString().startsWith(uriPrefix.toString)
+    partsToString(parts).startsWith(partsToString(uriPrefix.parts))
   }
 
   def startsWith(prefix: List[String]): Boolean = {
@@ -23,15 +44,17 @@ case class RouteUri protected (parts: List[String]) {
       val splitPoint = Math.max(0, RouteUri(prefix).parts.length - 1)
       val (common, additional) = parts.splitAt(splitPoint)
       (for (i <- 1 to additional.size)
-        yield RouteUri(common ::: additional.slice(0, i)))(collection.breakOut)
+        yield RouteUri(partsToString(common ::: additional.slice(0, i), isValid)))(collection.breakOut)
     } else Nil
   }
-  def append(part: String): RouteUri = RouteUri(parts :+ part)
+  
+  def append(part: String): RouteUri = RouteUri(partsToString(parts :+ part, isValid))
 
   def dynamicUris: List[RouteUri] = List(":", "*", "$") map (append(_))
 
-  /** Returns the parts of the URI which are in contact with the give range, the touched parts, and the parts before them, the prefix.
-   *  The content of the returned tuple is: (prefix parts, touched parts). 
+  /**
+   * Returns the parts of the URI which are in contact with the give range, the touched parts, and the parts before them, the prefix.
+   *  The content of the returned tuple is: (prefix parts, touched parts).
    */
   def partsTouchedBy(offset: Int, length: Int): (List[String], List[String]) = {
     @tailrec
@@ -70,20 +93,13 @@ case class RouteUri protected (parts: List[String]) {
 
     (prefix, touchedParts)
   }
+  
+  private def partsToString(parts: List[String], isValid: Boolean = true) = parts.mkString(if (isValid) "/" else "", "/", "")
 
-  override def toString(): String = parts.mkString("/", "/", "")
+  override def toString(): String = rawUri
 }
 
 object RouteUri {
-  def apply(uri: String): RouteUri = RouteUri(split(uri))
-
-  def isValid(rawUri: String): Boolean = rawUri.startsWith("/")
-
-  private[routeeditor] def split(uri: String): List[String] = {
-    val parts = uri.split("/").toList
-    parts.filterNot(_.trim.isEmpty)
-  }
-
   implicit object AlphabeticOrder extends Ordering[RouteUri] {
     override def compare(x: RouteUri, y: RouteUri): Int =
       x.toString.compare(y.toString)
@@ -92,10 +108,10 @@ object RouteUri {
 
 /** Class representing a URI in a route configuration file, with information about its location in the original file.
  */
-class RouteUriWithRegion private (parts: List[String], val region: IRegion) extends RouteUri(parts)
+class RouteUriWithRegion private (rawUri: String, val region: IRegion) extends RouteUri(rawUri)
 
 object RouteUriWithRegion {
-  def apply(uri: String, region: IRegion) = new RouteUriWithRegion(RouteUri.split(uri), region)
+  def apply(uri: String, region: IRegion) = new RouteUriWithRegion(uri, region)
 
   /** Returns all the existing URIs for the passed `document`. */
   def existingUrisInDocument(document: IDocument): Set[RouteUri] = {
