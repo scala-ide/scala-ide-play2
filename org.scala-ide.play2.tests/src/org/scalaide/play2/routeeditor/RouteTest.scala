@@ -88,7 +88,7 @@ trait RouteTest {
         }
       }
       
-      extractPositions(text.toList, 0, new StringBuilder(), markers.map(c => (c, Nil)).toMap)
+      extractPositions(rawText.toList, 0, new StringBuilder(), markers.map(c => (c, Nil)).toMap)
     }
   }
   
