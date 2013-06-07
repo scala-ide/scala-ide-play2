@@ -66,6 +66,12 @@ class HttpMethodCompletionComputerTest extends CompletionComputerTest {
 
     route expectedCompletions (AllHttpMethodsProposals: _*)
   }
+  
+  @Test
+  def all_Http_Method_completetion_at_beginning_of_empty_preceded_by_empty_line() {
+    val route = RouteCompletionFile { "\n@" }
+    route expectedCompletions (AllHttpMethodsProposals: _*)
+  }
 
   @Test
   def all_Http_Method_completion_at_end_of_empty_line() {
