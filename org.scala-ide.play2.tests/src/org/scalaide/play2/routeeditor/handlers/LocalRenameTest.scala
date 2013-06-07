@@ -13,6 +13,25 @@ import org.eclipse.jface.text.TextSelection
 class LocalRenameTest extends RouteTest {
 
   @Test
+  def replaceSingleLocationOnInvalidPath {
+    testLocations("GET %pa@th%")
+  }
+
+  @Test
+  def replaceLocationsOnInvalidPaths {
+    testLocations(
+      """GET %path%
+        |GET %pa@th%/abc""")
+  }
+  
+  @Test
+  def replaceLocationsOnValidAndInvalidPaths {
+    testLocations(
+      """GET %path%
+        |GET /%pa@th%""")
+  }
+
+  @Test
   def replaceLocationsNoSelection {
     testLocations(
       """GET /path/%abc%/def  controller
