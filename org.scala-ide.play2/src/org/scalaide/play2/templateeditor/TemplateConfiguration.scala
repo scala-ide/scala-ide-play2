@@ -43,7 +43,7 @@ import org.eclipse.jface.text.source.Annotation
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants
 import org.scalaide.editor.EditorUI
 
-class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TemplateEditor) extends TextSourceViewerConfiguration(prefStore) with PropertyChangeHandler {
+class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: TTemplateEditor) extends TextSourceViewerConfiguration(prefStore) with PropertyChangeHandler {
 
   private val templateDoubleClickStrategy =
     new RouteDoubleClickStrategy()
