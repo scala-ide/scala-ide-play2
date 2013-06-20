@@ -176,6 +176,7 @@ object TemplateRegions {
   val SCALA_DOC_REGION = "SCALA_CONTENT"
   val SCALA_MARKER_DOC_REGION = "SCALA_MARKER"
   val COMMENT_DOC_REGION = "TEMPLATE_COMMENT"
+  
 }
 
 class ScalaTextRegion(val syntaxClass: ScalaSyntaxClass, newStart: Int, newTextLength: Int, newLength: Int)
@@ -202,12 +203,7 @@ class TemplateRegionParser extends RegionParser {
    */
   override def newInstance() = new TemplateRegionParser
 
-  override def getDocumentRegions() = {
-    cachedRegions().headOption getOrElse (new BasicStructuredDocumentRegion {
-      start = 0
-      fLength = contents.length
-    })
-  }
+  override def getDocumentRegions() = cachedRegions().head
 
   /* Get the full list of known regions */
   override def getRegions(): java.util.List[ITextRegion] = {
@@ -240,9 +236,6 @@ class TemplateRegionParser extends RegionParser {
   }
   
   def computeRegions(codeString: String) = {
-    import org.eclipse.swt.widgets.Display
-    val display = Display.getCurrent()
-    
     import org.eclipse.wst.xml.core.internal.regions.DOMRegionContext
     import org.eclipse.wst.sse.core.internal.ltk.parser.BlockMarker
     val htmlParser = new XMLSourceParser
@@ -253,8 +246,16 @@ class TemplateRegionParser extends RegionParser {
     
     val mergedTokens = PartitionHelpers.mergeAdjacent(tokens)
     val docRegions: Array[IStructuredDocumentRegion] = mergedTokens.map(token => {
+      // Handle the empty codeString case
+      if (token.getOffset() == 0 && token.getLength() == 0) {
+        val docRegion = new BasicStructuredDocumentRegion
+        docRegion.setStart(0)
+        docRegion.setLength(0)
+        docRegion.addRegion(new ContextRegion("UNDEFINED", 0, 0, 0))
+        Array[IStructuredDocumentRegion](docRegion)
+      }
       // Generate HTML regions using the html parser
-      if (token.getType == TemplatePartitions.TEMPLATE_PLAIN || token.getType == TemplatePartitions.TEMPLATE_TAG) {
+      else if (token.getType == TemplatePartitions.TEMPLATE_PLAIN || token.getType == TemplatePartitions.TEMPLATE_TAG) {
         import scala.collection.JavaConversions._
         val tokenCode = codeString.substring(token.getOffset, token.getOffset + token.getLength)
         htmlParser.reset(tokenCode)
@@ -281,7 +282,8 @@ class TemplateRegionParser extends RegionParser {
               tokens.map(t => new ScalaTextRegion(t.syntaxClass, t.start - token.getOffset, t.length, t.length))
             }
             (TemplateRegions.SCALA_DOC_REGION, textRegions)
-          } else {
+          }
+          else {
             val (tpe, syntaxClass) =
               if (token.getType == TemplatePartitions.TEMPLATE_COMMENT)
                 (TemplateRegions.COMMENT_DOC_REGION, TemplateSyntaxClasses.COMMENT)
@@ -301,8 +303,6 @@ class TemplateRegionParser extends RegionParser {
         Array[IStructuredDocumentRegion](region)
       }
     }).flatten
-    // Not sure if this is necessary since there is no documentation...
-    // Better to be safe than sorry :)
     docRegions.sliding(2).foreach(_ match {
       case Array(l, r) => {
         l.setNext(r)
@@ -317,22 +317,25 @@ class TemplateRegionParser extends RegionParser {
   }
 }
 
-class TemplateDocumentLoader extends AbstractDocumentLoader {
-  
-  private def parser(): RegionParser = new TemplateRegionParser
+import org.eclipse.wst.html.core.internal.encoding.HTMLDocumentLoader
+class TemplateDocumentLoader extends HTMLDocumentLoader {
   
   override def newEncodedDocument() = {
-    val structuredDocument = StructuredDocumentFactory.getNewStructuredDocumentInstance(parser)
+    val structuredDocument = StructuredDocumentFactory.getNewStructuredDocumentInstance(getParser())
     val reparser = new XMLStructuredDocumentReParser
     structuredDocument.asInstanceOf[BasicStructuredDocument].setReParser(reparser)
     // TODO - add reparser if necessary
     // TODO - set the default embedded type content type handler.. whatever that means
     structuredDocument
   }
+
+  override def newInstance() = new TemplateDocumentLoader
   
-  override val getDocumentEncodingDetector = new HTMLDocumentCharsetDetector
+  override def getParser(): RegionParser = new TemplateRegionParser
+  
   override val getDefaultDocumentPartitioner = new TemplateStructuredTextPartitioner
 }
+
 class TemplateStructuredModel extends DOMStyleModelImpl { modelself =>
   
   import org.eclipse.wst.xml.core.internal.document.DOMModelImpl
@@ -351,8 +354,9 @@ class TemplateStructuredModel extends DOMStyleModelImpl { modelself =>
   override def createModelUpdater() = new NestedDOMModelUpdater(this)
 }
 
-class TemplateModelLoader extends AbstractModelLoader {
- override val getDocumentLoader: IDocumentLoader = new TemplateDocumentLoader 
+import org.eclipse.wst.html.core.internal.encoding.HTMLModelLoader
+class TemplateModelLoader extends HTMLModelLoader {
+ override def getDocumentLoader(): IDocumentLoader = new TemplateDocumentLoader 
  override def newModel(): IStructuredModel = new TemplateStructuredModel
  override def newInstance(): IModelLoader = new TemplateModelLoader
  
