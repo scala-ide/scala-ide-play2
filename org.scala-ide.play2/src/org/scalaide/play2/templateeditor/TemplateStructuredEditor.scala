@@ -77,6 +77,7 @@ import org.eclipse.wst.sse.core.internal.text.rules.StructuredTextPartitioner
 import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClasses
 import org.eclipse.jst.jsp.core.internal.parser.JSPSourceParser
 import org.eclipse.jface.text.DocumentEvent
+import org.eclipse.wst.sse.ui.internal.reconcile.validator.ISourceValidator
 
 import org.eclipse.wst.html.core.internal.document.DOMStyleModelImpl
 
@@ -97,27 +98,56 @@ object TemplateStructuredPartitions {
 }
 
 object PartitionHelpers {
+
+  def isMagicAt(token: ITypedRegion, codeString: String) = {
+    val s = codeString.substring(token.getOffset(), token.getOffset() + token.getLength()).trim
+    token.getType() == TemplatePartitions.TEMPLATE_DEFAULT && s.length == 1 && s == "@"
+  }
+  
+  def isBrace(token: ITypedRegion, codeString: String) = {
+    val s = codeString.substring(token.getOffset(), token.getOffset() + token.getLength()).trim
+    token.getType() == TemplatePartitions.TEMPLATE_DEFAULT && s.length == 1 && (s == "}" || s == "{")
+  }
   
   /* Combines neighbouring regions that have the same type */
-  def mergeAdjacent[Repr <: Seq[ITypedRegion]](partitions: Repr): Array[ITypedRegion] = {
+  def mergeAdjacent[Repr <: Seq[ITypedRegion]](partitions: Repr)(test: (ITypedRegion, ITypedRegion) => Option[String]): IndexedSeq[ITypedRegion] = {
     partitions.foldLeft(Array[ITypedRegion]())((accum, region) => {
       accum match {
         case Array() => Array(region)
         case _       => {
-          def merge(l: ITypedRegion, r: ITypedRegion) = 
-            new TypedRegion(l.getOffset, l.getLength + r.getLength, l.getType)
+          def merge(l: ITypedRegion, r: ITypedRegion, t: String) = 
+            new TypedRegion(l.getOffset, l.getLength + r.getLength, t)
           val htmlPartitions = Set(TemplatePartitions.TEMPLATE_PLAIN, TemplatePartitions.TEMPLATE_TAG)
           val previousRegion = accum.last
-          if (((htmlPartitions contains region.getType) && (htmlPartitions contains previousRegion.getType)) ||
-              (region.getType == TemplatePartitions.TEMPLATE_SCALA && previousRegion.getType == TemplatePartitions.TEMPLATE_SCALA)) {
-            import org.eclipse.jface.text.TypedRegion
-            accum.dropRight(1) :+ merge(previousRegion, region)
+          test(previousRegion, region) match {
+            case Some(tpe) => accum.dropRight(1) :+ merge(previousRegion, region, tpe)
+            case None      => accum :+ region
           }
-          else accum :+ region
         }
       }
     })
   }
+  
+  /* Combines neighbouring regions that have the same type */
+  def mergeAdjacentWithSameType[Repr <: Seq[ITypedRegion]](partitions: Repr): IndexedSeq[ITypedRegion] = {
+    val htmlPartitions = Set(TemplatePartitions.TEMPLATE_PLAIN, TemplatePartitions.TEMPLATE_TAG)
+    mergeAdjacent(partitions) { (previousRegion, region) =>
+      if (((htmlPartitions contains region.getType) && (htmlPartitions contains previousRegion.getType)) ||
+         (region.getType == TemplatePartitions.TEMPLATE_SCALA && previousRegion.getType == TemplatePartitions.TEMPLATE_SCALA))
+        Some(region.getType())
+      else None
+    }
+  }
+
+  def combineMagicAt[Repr <: Seq[ITypedRegion]](partitions: Repr, codeString: String): IndexedSeq[ITypedRegion] = {
+    mergeAdjacent(partitions) { (left, right) =>
+      if ((isMagicAt(left, codeString) && right.getType() == TemplatePartitions.TEMPLATE_SCALA) ||
+          (left.getType() == TemplatePartitions.TEMPLATE_SCALA && isMagicAt(right, codeString)))
+        Some(TemplatePartitions.TEMPLATE_SCALA)
+      else None
+    }
+  }
+  
 }
 
 class TemplateStructuredTextPartitioner extends StructuredTextPartitioner {
@@ -174,13 +204,12 @@ class TemplateStructuredTextPartitioner extends StructuredTextPartitioner {
 
 object TemplateRegions {
   val SCALA_DOC_REGION = "SCALA_CONTENT"
-  val SCALA_MARKER_DOC_REGION = "SCALA_MARKER"
   val COMMENT_DOC_REGION = "TEMPLATE_COMMENT"
   
 }
 
 class ScalaTextRegion(val syntaxClass: ScalaSyntaxClass, newStart: Int, newTextLength: Int, newLength: Int)
-  extends ForeignRegion(syntaxClass.displayName, newStart, newTextLength, newLength, "scala")
+  extends ContextRegion(syntaxClass.displayName, newStart, newTextLength, newLength)
 
 class TemplateRegionParser extends RegionParser {
   
@@ -236,6 +265,7 @@ class TemplateRegionParser extends RegionParser {
   }
   
   def computeRegions(codeString: String) = {
+    
     import org.eclipse.wst.xml.core.internal.regions.DOMRegionContext
     import org.eclipse.wst.sse.core.internal.ltk.parser.BlockMarker
     val htmlParser = new XMLSourceParser
@@ -243,8 +273,9 @@ class TemplateRegionParser extends RegionParser {
     htmlParser.addBlockMarker(new BlockMarker("style", null, DOMRegionContext.BLOCK_TEXT, false))
     
     val tokens = TemplatePartitionTokeniser.tokenise(codeString)
-    
-    val mergedTokens = PartitionHelpers.mergeAdjacent(tokens)
+    val mergedTokens = PartitionHelpers.mergeAdjacentWithSameType(PartitionHelpers.combineMagicAt(tokens, codeString)).toArray
+//    var ts = ""; tokens.foreach(t => {ts = ts + codeString.substring(t.getOffset(), t.getOffset() + t.getLength()) + " : " + t + "\n" + ("=" * 10) + "\n"})
+//    var ts2 = ""; mergedTokens.foreach(t => {ts2 = ts2 + codeString.substring(t.getOffset(), t.getOffset() + t.getLength()) + " : " + t + "\n" + ("=" * 10) + "\n"})
     val docRegions: Array[IStructuredDocumentRegion] = mergedTokens.map(token => {
       // Handle the empty codeString case
       if (token.getOffset() == 0 && token.getLength() == 0) {
@@ -255,45 +286,60 @@ class TemplateRegionParser extends RegionParser {
         Array[IStructuredDocumentRegion](docRegion)
       }
       // Generate HTML regions using the html parser
-      else if (token.getType == TemplatePartitions.TEMPLATE_PLAIN || token.getType == TemplatePartitions.TEMPLATE_TAG) {
+      else if (token.getType() == TemplatePartitions.TEMPLATE_PLAIN ||
+               token.getType() == TemplatePartitions.TEMPLATE_TAG   ||
+               (token.getType() == TemplatePartitions.TEMPLATE_DEFAULT && !PartitionHelpers.isBrace(token, codeString))) {
         import scala.collection.JavaConversions._
         val tokenCode = codeString.substring(token.getOffset, token.getOffset + token.getLength)
         htmlParser.reset(tokenCode)
         var htmlFirstDocRegion = htmlParser.getDocumentRegions()
         val arrayBuilder = new scala.collection.mutable.ArrayBuffer[IStructuredDocumentRegion]
         while(htmlFirstDocRegion != null) {
-          val next = htmlFirstDocRegion.getNext
           htmlFirstDocRegion.adjustStart(token.getOffset)
           arrayBuilder += htmlFirstDocRegion
-          htmlFirstDocRegion = next
+          htmlFirstDocRegion = htmlFirstDocRegion.getNext()
         }
         arrayBuilder.result.toArray
       }
-      // Generate a Scala text regions of some sort
       else {
         val (tpe, textRegions): Tuple2[String, Seq[ITextRegion]] =
           if (token.getType == TemplatePartitions.TEMPLATE_SCALA) {
             val textRegions = {
-              // TODO - figure out a good way to get the prefstore from the editor
-              val prefStore = new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.preferenceStore))
-              val scanner = new ScalaCodeScanner(prefStore, ScalaVersions.Scala_2_10)
-              val dummyDoc: IDocument = new org.eclipse.jface.text.Document(codeString)
-              val tokens = scanner.tokenize(dummyDoc, token.getOffset(), token.getLength())
-              tokens.map(t => new ScalaTextRegion(t.syntaxClass, t.start - token.getOffset, t.length, t.length))
+              // I can probably do this is a smarter way by just checking if the string starts with an @, and if so
+              // add the appropriate text region for the magic at, and then the rest of token becomes a normal
+              // scala code text region
+              val scalaCode = codeString.substring(token.getOffset(), token.getOffset() + token.getLength())
+              val scalaCodeTokens = TemplatePartitionTokeniser.tokenise(scalaCode)
+              val textRegions: List[ITextRegion] = scalaCodeTokens.map( t => {
+                val baseOffset = token.getOffset() + t.getOffset()
+                if (PartitionHelpers.isMagicAt(t, scalaCode)) {
+                  List(new ScalaTextRegion(TemplateSyntaxClasses.MAGIC_AT, t.getOffset(), t.getLength(), t.getLength()))
+                }
+                // actual scala code
+                else { //if (t.getType() == TemplatePartitions.TEMPLATE_SCALA) {
+                  // TODO - figure out a good way to get the prefstore from the editor
+                  val prefStore = new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.preferenceStore))
+                  val scanner = new ScalaCodeScanner(prefStore, ScalaVersions.Scala_2_10)
+                  val dummyDoc: IDocument = new org.eclipse.jface.text.Document(codeString)
+                  val tokens = scanner.tokenize(dummyDoc, baseOffset, t.getLength())
+                  tokens.map(v => {new ScalaTextRegion(v.syntaxClass, v.start - token.getOffset(), v.length, v.length)})
+                }
+              }).flatten
+              textRegions
             }
             (TemplateRegions.SCALA_DOC_REGION, textRegions)
           }
+          else if (PartitionHelpers.isBrace(token, codeString)) {
+            val textRegion = new ScalaTextRegion(TemplateSyntaxClasses.BRACE, 0, token.getLength(), token.getLength())
+            (TemplateRegions.SCALA_DOC_REGION, List(textRegion))
+          }
+          else if (token.getType == TemplatePartitions.TEMPLATE_COMMENT) {
+            val textRegion = new ScalaTextRegion(TemplateSyntaxClasses.COMMENT, 0, token.getLength(), token.getLength())
+            (TemplateRegions.COMMENT_DOC_REGION, List(textRegion))
+          }
           else {
-            val (tpe, syntaxClass) =
-              if (token.getType == TemplatePartitions.TEMPLATE_COMMENT)
-                (TemplateRegions.COMMENT_DOC_REGION, TemplateSyntaxClasses.COMMENT)
-              else {
-                val syntaxClass =
-                  if (codeString.charAt(token.getOffset()) == '@') TemplateSyntaxClasses.MAGIC_AT
-                  else TemplateSyntaxClasses.BRACE
-                (TemplateRegions.SCALA_MARKER_DOC_REGION, syntaxClass)
-              }
-            (tpe, List(new ScalaTextRegion(syntaxClass, 0, token.getLength, token.getLength)))
+            // Should never happen
+            ("UNDEFINED", List(new ContextRegion("UNDEFINED", 0, 0, 0)))
           }
         val region = new BasicStructuredDocumentRegion { override def getType() = tpe }
         region.setStart(token.getOffset)
