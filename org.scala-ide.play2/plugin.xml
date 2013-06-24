@@ -40,7 +40,7 @@
    </extension>
    <extension
      point="org.eclipse.core.filebuffers.documentCreation"
-     id="org.eclipse.jst.jsp.core.documentfactories"
+     id="org.scalaide.play2.templateeditor.documentfactories"
      name="%Structured_PlayTemplate_Document_Factory_Extension.name">
      <factory
        contentTypeId="org.scalaide.play2.templateSource"
@@ -53,6 +53,7 @@
       <contentType id="org.scalaide.play2.templateSource" />
     </adapterFactoryDescription>
   </extension>
+  <!-- Template source validation -->
   <extension point="org.eclipse.wst.sse.ui.sourcevalidation">
     <validator
       scope="total"
@@ -64,7 +65,87 @@
       </contentTypeIdentifier>
     </validator>
   </extension>
-    
+  <!-- Template completion proposals -->
+  <extension point="org.eclipse.wst.sse.ui.completionProposal">
+    <proposalCategory
+      id="org.scalaide.play2.completion.proposalCategory.template">
+    </proposalCategory>
+    <proposalComputerExtendedActivation
+          id="org.eclipse.wst.html.ui.proposalComputer.htmlTags">
+       <contentType
+             id="org.scalaide.play2.templateSource">
+          <partitionType
+                id="org.eclipse.wst.html.HTML_DEFAULT">
+          </partitionType>
+          <partitionType
+                id="org.eclipse.wst.html.HTML_COMMENT">
+          </partitionType>
+          <partitionType
+                id="org.eclipse.wst.sse.ST_DEFAULT">
+          </partitionType>
+       </contentType>
+    </proposalComputerExtendedActivation>
+    <proposalComputerExtendedActivation
+          id="org.eclipse.wst.html.ui.proposalComputer.htmlTemplates">
+       <contentType
+             id="org.scalaide.play2.templateSource">
+          <partitionType
+                id="org.eclipse.wst.html.HTML_DEFAULT">
+          </partitionType>
+          <partitionType
+                id="org.eclipse.wst.html.HTML_COMMENT">
+          </partitionType>
+          <partitionType
+                id="org.eclipse.wst.sse.ST_DEFAULT">
+          </partitionType>
+       </contentType>
+    </proposalComputerExtendedActivation>
+    <proposalComputerExtendedActivation
+          id="org.eclipse.wst.xml.ui.proposalComputer.xmlTags">
+       <contentType
+             id="org.scalaide.play2.templateSource">
+          <partitionType
+                id="org.eclipse.wst.xml.XML_DEFAULT">
+          </partitionType>
+       </contentType>
+    </proposalComputerExtendedActivation>
+    <proposalComputerExtendedActivation
+          id="org.eclipse.wst.xml.ui.proposalComputer.xmlTemplates">
+       <contentType
+             id="org.scalaide.play2.templateSource">
+          <partitionType
+                id="org.eclipse.wst.xml.XML_DEFAULT">
+          </partitionType>
+       </contentType>
+    </proposalComputerExtendedActivation>
+    <proposalComputerExtendedActivation
+          id="org.eclipse.wst.css.ui.proposalComputer.css">
+       <contentType
+             id="org.scalaide.play2.templateSource">
+          <partitionType
+                id="org.eclipse.wst.css.STYLE">
+          </partitionType>
+       </contentType>
+    </proposalComputerExtendedActivation>
+    <proposalComputerExtendedActivation
+          id="org.eclipse.wst.css.ui.proposalComputer.cssTemplates">
+       <contentType
+             id="org.scalaide.play2.templateSource">
+          <partitionType
+                id="org.eclipse.wst.css.STYLE">
+          </partitionType>
+       </contentType>
+    </proposalComputerExtendedActivation>
+    <proposalComputer
+      activate="false"
+      categoryId="org.scalaide.play2.completion.proposalCategory.template"
+      class="org.scalaide.play2.templateeditor.completion.CompletionProposalComputer"
+      id="org.scalaide.play2.completion.proposalComputer.template">
+      <contentType id="org.scalaide.play2.templateSource">
+        <partitionType id="__template_scala"></partitionType>
+      </contentType>
+    </proposalComputer>
+  </extension>
     
    <extension
          point="org.eclipse.ui.preferencePages">

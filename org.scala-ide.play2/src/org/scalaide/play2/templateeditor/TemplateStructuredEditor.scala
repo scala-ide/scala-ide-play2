@@ -81,11 +81,12 @@ import org.eclipse.wst.sse.ui.internal.reconcile.validator.ISourceValidator
 import org.eclipse.wst.validation._
 import org.eclipse.wst.validation.internal.provisional.core.IValidator
 import org.eclipse.wst.html.core.internal.document.DOMStyleModelImpl
-
 import org.eclipse.wst.html.core.internal.encoding.HTMLDocumentLoader
-
 import org.eclipse.wst.html.core.internal.encoding.HTMLModelLoader
 import org.eclipse.wst.sse.core.StructuredModelManager
+
+import org.eclipse.jface.text.ITextViewer
+import org.eclipse.jface.text.contentassist.IContextInformationValidator
 
 object ContentTypeIdForScala {
   val ContentTypeID_Scala = "scala.tools.eclipse.scalaSource"
@@ -597,28 +598,6 @@ class TemplateStructuredTextViewerConfiguration(prefStore: IPreferenceStore, edi
     case XMLContent()   => xmlConfiguration.getAutoEditStrategies(sourceViewer, contentType)
     case ScalaContent() => scalaConfiguration.getAutoEditStrategies(sourceViewer, contentType)
     case _              => super.getAutoEditStrategies(sourceViewer, contentType)
-  }
-
-  override def getContentAssistProcessors(sourceViewer: ISourceViewer, partitionType: String) = {
-    val processor: Option[IContentAssistProcessor] = {
-      ContentType(sourceViewer, partitionType) match {
-        case HTMLContent() => {
-          val assistant = htmlConfiguration.getContentAssistant(sourceViewer).asInstanceOf[ContentAssistant]
-          Some(new HTMLStructuredContentAssistProcessor(assistant, partitionType, sourceViewer))
-        }
-        case XMLContent() => {
-          val assistant = xmlConfiguration.getContentAssistant(sourceViewer).asInstanceOf[ContentAssistant]
-          Some(new XMLStructuredContentAssistProcessor(assistant, partitionType, sourceViewer))
-        }
-        case ScalaContent() => {
-          val assistant = scalaConfiguration.getContentAssistant(sourceViewer).asInstanceOf[ContentAssistant]
-          Some(new StructuredContentAssistProcessor(assistant, partitionType, sourceViewer, prefStore))
-        }
-        case _ => None
-      }
-    }
-
-    processor.map(Array(_)) getOrElse super.getContentAssistProcessors(sourceViewer, partitionType)
   }
 
   override protected def getHyperlinkDetectorTargets(sourceViewer: ISourceViewer) = {

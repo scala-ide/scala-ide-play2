@@ -14,8 +14,38 @@ import org.eclipse.ui.texteditor.ITextEditor
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import org.eclipse.jface.text.Region
 import scala.tools.eclipse.completion.CompletionProposal
+import org.scalaide.editor.util.EditorHelper
+import org.eclipse.wst.sse.ui.contentassist.{ICompletionProposalComputer, CompletionProposalInvocationContext}
+import org.eclipse.core.runtime.IProgressMonitor
+import scala.tools.eclipse.InteractiveCompilationUnit
 
-class CompletionProposalComputer(textEditor: ITextEditor) extends ScalaCompletions with IContentAssistProcessor {
+class CompletionProposalComputer extends ScalaCompletions with IContentAssistProcessor with ICompletionProposalComputer {
+
+  var textEditor: Option[ITextEditor] = None
+  
+  def this(textEditor: ITextEditor) = {
+    this()
+    this.textEditor = Some(textEditor)
+  }
+  
+  /* ICompletionProposalComputer methods */
+  
+  def sessionStarted() : Unit = { }
+  
+  def computeCompletionProposals(context: CompletionProposalInvocationContext, monitor: IProgressMonitor): java.util.List[ICompletionProposal] = {
+    import scala.collection.JavaConversions._
+    this.computeCompletionProposals(context.getViewer(), context.getInvocationOffset()).toList
+  }
+  
+  def computeContextInformation(context: CompletionProposalInvocationContext, monitor: IProgressMonitor): java.util.List[IContextInformation] = {
+    import scala.collection.JavaConversions._
+    this.computeContextInformation(context.getViewer(), context.getInvocationOffset()).toList
+  }
+  
+  def sessionEnded(): Unit = { }
+  
+  /* IContentAssistProcessor methods */
+  
   override def getCompletionProposalAutoActivationCharacters() = Array('.')
 
   override def getContextInformationAutoActivationCharacters() = Array[Char]()
@@ -25,7 +55,14 @@ class CompletionProposalComputer(textEditor: ITextEditor) extends ScalaCompletio
   override def getContextInformationValidator = null
 
   override def computeCompletionProposals(viewer: ITextViewer, offset: Int): Array[ICompletionProposal] = {
-    EditorUtils.getEditorCompilationUnit(textEditor) match {
+    // TODO - I don't like relying on withCurrentEditor.. I'd prefer to find a better way to get the *actual* editor
+    // in a way where we can be 100% positive it's the correct editor.
+    val compileUnit: Option[InteractiveCompilationUnit] = textEditor match {
+      case Some(editor) => EditorUtils.getEditorCompilationUnit(editor)
+      case None => EditorHelper.withCurrentEditor(editor => EditorUtils.getEditorCompilationUnit(editor))
+    }
+    
+    compileUnit match {
       case Some(tcu: TemplateCompilationUnit) =>
         tcu.askReload()
         tcu.withSourceFile { findCompletions(viewer, offset, tcu) }(List[ICompletionProposal]()).toArray
