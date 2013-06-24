@@ -4,6 +4,7 @@ import org.eclipse.core.resources.IFile
 import org.eclipse.ui.IEditorInput
 import org.eclipse.ui.part.FileEditorInput
 import org.eclipse.ui.texteditor.ITextEditor
+import org.eclipse.jface.text.IDocument
 
 /** Abstract provider for compilation units.
   *
@@ -20,6 +21,12 @@ abstract class CompilationUnitProvider[T <: CompilationUnit] {
       unit.connect(editor.getDocumentProvider().getDocument(input))
       unit
     }
+  }
+  
+  def fromFileAndDocument(file: IFile, doc: IDocument): T = {
+    val unit = mkCompilationUnit(file)
+    unit.connect(doc)
+    unit
   }
 
   private def getFile(editorInput: IEditorInput, fileExtension: String): IFile = {

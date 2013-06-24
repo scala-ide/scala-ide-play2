@@ -78,8 +78,14 @@ import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClasses
 import org.eclipse.jst.jsp.core.internal.parser.JSPSourceParser
 import org.eclipse.jface.text.DocumentEvent
 import org.eclipse.wst.sse.ui.internal.reconcile.validator.ISourceValidator
-
+import org.eclipse.wst.validation._
+import org.eclipse.wst.validation.internal.provisional.core.IValidator
 import org.eclipse.wst.html.core.internal.document.DOMStyleModelImpl
+
+import org.eclipse.wst.html.core.internal.encoding.HTMLDocumentLoader
+
+import org.eclipse.wst.html.core.internal.encoding.HTMLModelLoader
+import org.eclipse.wst.sse.core.StructuredModelManager
 
 object ContentTypeIdForScala {
   val ContentTypeID_Scala = "scala.tools.eclipse.scalaSource"
@@ -362,8 +368,6 @@ class TemplateRegionParser extends RegionParser {
     docRegions
   }
 }
-
-import org.eclipse.wst.html.core.internal.encoding.HTMLDocumentLoader
 class TemplateDocumentLoader extends HTMLDocumentLoader {
   
   override def newEncodedDocument() = {
@@ -399,8 +403,6 @@ class TemplateStructuredModel extends DOMStyleModelImpl { modelself =>
   override def createModelParser() = new NestedDOMModelParser(this)
   override def createModelUpdater() = new NestedDOMModelUpdater(this)
 }
-
-import org.eclipse.wst.html.core.internal.encoding.HTMLModelLoader
 class TemplateModelLoader extends HTMLModelLoader {
  override def getDocumentLoader(): IDocumentLoader = new TemplateDocumentLoader 
  override def newModel(): IStructuredModel = new TemplateStructuredModel
@@ -458,6 +460,110 @@ class ScalaLineStyleProvider(prefStore: IPreferenceStore) extends AbstractLineSt
    
    protected override def loadColors(): Unit =
      { /* ScalaSyntaxClass instances are stored internally in the scala text regions*/ }
+}
+
+class ScalaSourceValidator extends AbstractValidator with IValidator {
+  println("test")
+  
+  import org.eclipse.core.runtime.IProgressMonitor
+  import org.eclipse.jface.text.IRegion
+  import org.eclipse.jface.text.IDocumentListener
+  import org.eclipse.jface.text.reconciler.IReconcilingStrategy
+  import org.eclipse.wst.validation.internal.provisional.core.IReporter
+  import org.eclipse.wst.validation.internal.provisional.core.IValidationContext
+  import org.scalaide.play2.templateeditor.reconciler.TemplateReconcilingStrategy
+  import org.scalaide.editor._
+  import org.scalaide.editor.util._
+  
+//  var editor: Option[TTemplateEditor] = None
+//  var templateReconciler: Option[IReconcilingStrategy] = None
+//  
+//  /* ISourceValidator method */
+//  
+//  def connect(document: IDocument) = {
+//    EditorHelper.doWithCurrentEditor {
+//      case templateEditor: TTemplateEditor => {
+//        editor = Some(templateEditor)
+//        templateReconciler = Some(TemplateReconcilingStrategy(templateEditor))
+//        templateReconciler.foreach(_.setDocument(document))
+//      }
+//    }
+//  }
+//  
+//  def disconnect(document: IDocument) = {
+//    templateReconciler.foreach(_.setDocument(null))
+//    templateReconciler = None
+//    editor = None
+//  }
+//  
+//  def validate(dirtyRegion: IRegion, helper: IValidationContext, reporter: IReporter) =
+//    templateReconciler.foreach(_.reconcile(null)) // the reconciler always works on the whole file
+  
+  /* IValidator methods */
+  
+  def cleanup(report: IReporter) = {}
+  
+  def validate(helper: IValidationContext, reporter: IReporter) = {
+    import org.eclipse.core.resources.IMarker
+    import org.eclipse.core.resources.IResource
+    import org.eclipse.core.resources.ResourcesPlugin
+    import org.eclipse.core.runtime.Path
+    import org.eclipse.jdt.core.IJavaModelMarker
+    import org.eclipse.wst.validation.internal.operations.LocalizedMessage
+    import org.eclipse.wst.validation.internal.provisional.core.IMessage
+    import org.scalaide.play2.templateeditor.TemplateCompilationUnit
+    import scala.util.Try
+
+    val wsroot = ResourcesPlugin.getWorkspace().getRoot()
+    for {
+      uri <- helper.getURIs()
+      if !reporter.isCancelled()
+      currentFile <- Option(wsroot.getFile(new Path(uri)))
+      if currentFile.exists()
+      model <- Try(StructuredModelManager.getModelManager().getModelForRead(currentFile))
+    }{
+      val markerType = IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER
+      // clear previous messages and markers
+      reporter.removeAllMessages(this)
+      if (/*!model.isDirty() &&*/ currentFile.isAccessible()) {
+        for {
+          markers <- Try(currentFile.findMarkers(markerType, true, IResource.DEPTH_ONE))
+          marker <- markers
+        } marker.delete()
+      }
+      
+      val doc = model.getStructuredDocument()
+      val compilationUnit = TemplateCompilationUnit.fromFileAndDocument(currentFile, doc)
+      for (error <- compilationUnit.reconcile(doc.get())) {
+        val (priority, severity, messageSeverity) =
+          if (error.isError()) (IMarker.PRIORITY_HIGH, IMarker.SEVERITY_ERROR, IMessage.HIGH_SEVERITY)
+          else if (error.isWarning()) (IMarker.PRIORITY_NORMAL, IMarker.SEVERITY_WARNING, IMessage.NORMAL_SEVERITY)
+          else (IMarker.PRIORITY_LOW, IMarker.SEVERITY_INFO, IMessage.LOW_SEVERITY)
+
+        val message = new LocalizedMessage(messageSeverity, error.getMessage(), currentFile)
+        message.setLineNo(doc.getLineOfOffset(error.getSourceStart()) + 1)
+        message.setOffset(error.getSourceStart())
+        message.setLength(error.getSourceEnd() - error.getSourceStart() + 1)
+        reporter.addMessage(this, message)
+        
+        val marker = currentFile.createMarker(markerType)
+        marker.setAttribute(IMarker.LINE_NUMBER, message.getLineNumber())
+        marker.setAttribute(IMarker.CHAR_START, message.getOffset())
+        marker.setAttribute(IMarker.CHAR_END, message.getOffset() + message.getLength())
+        marker.setAttribute(IMarker.MESSAGE, message.getText())
+        marker.setAttribute(IMarker.USER_EDITABLE, java.lang.Boolean.FALSE)
+        marker.setAttribute(IMarker.PRIORITY, priority)
+        marker.setAttribute(IMarker.SEVERITY, severity)
+      }
+      model.releaseFromRead()
+    }
+  }
+  
+  /* AbstractValidator methods */
+  
+  override def validate(event: ValidationEvent, state: ValidationState, monitor: IProgressMonitor) = {
+    null
+  }
 }
 
 // According to http://www.eclipsezone.com/eclipse/forums/t73617.html#92026455 in the SourceViewer and SourceViewerConfiguration hierarchy
