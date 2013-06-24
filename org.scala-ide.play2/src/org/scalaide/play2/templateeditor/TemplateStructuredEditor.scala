@@ -462,42 +462,9 @@ class ScalaLineStyleProvider(prefStore: IPreferenceStore) extends AbstractLineSt
      { /* ScalaSyntaxClass instances are stored internally in the scala text regions*/ }
 }
 
-class ScalaSourceValidator extends AbstractValidator with IValidator {
-  println("test")
-  
-  import org.eclipse.core.runtime.IProgressMonitor
-  import org.eclipse.jface.text.IRegion
-  import org.eclipse.jface.text.IDocumentListener
-  import org.eclipse.jface.text.reconciler.IReconcilingStrategy
+class ScalaSourceValidator extends IValidator {
   import org.eclipse.wst.validation.internal.provisional.core.IReporter
   import org.eclipse.wst.validation.internal.provisional.core.IValidationContext
-  import org.scalaide.play2.templateeditor.reconciler.TemplateReconcilingStrategy
-  import org.scalaide.editor._
-  import org.scalaide.editor.util._
-  
-//  var editor: Option[TTemplateEditor] = None
-//  var templateReconciler: Option[IReconcilingStrategy] = None
-//  
-//  /* ISourceValidator method */
-//  
-//  def connect(document: IDocument) = {
-//    EditorHelper.doWithCurrentEditor {
-//      case templateEditor: TTemplateEditor => {
-//        editor = Some(templateEditor)
-//        templateReconciler = Some(TemplateReconcilingStrategy(templateEditor))
-//        templateReconciler.foreach(_.setDocument(document))
-//      }
-//    }
-//  }
-//  
-//  def disconnect(document: IDocument) = {
-//    templateReconciler.foreach(_.setDocument(null))
-//    templateReconciler = None
-//    editor = None
-//  }
-//  
-//  def validate(dirtyRegion: IRegion, helper: IValidationContext, reporter: IReporter) =
-//    templateReconciler.foreach(_.reconcile(null)) // the reconciler always works on the whole file
   
   /* IValidator methods */
   
@@ -557,12 +524,6 @@ class ScalaSourceValidator extends AbstractValidator with IValidator {
       }
       model.releaseFromRead()
     }
-  }
-  
-  /* AbstractValidator methods */
-  
-  override def validate(event: ValidationEvent, state: ValidationState, monitor: IProgressMonitor) = {
-    null
   }
 }
 
