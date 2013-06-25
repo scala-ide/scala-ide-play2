@@ -84,7 +84,6 @@ import org.eclipse.wst.html.core.internal.document.DOMStyleModelImpl
 import org.eclipse.wst.html.core.internal.encoding.HTMLDocumentLoader
 import org.eclipse.wst.html.core.internal.encoding.HTMLModelLoader
 import org.eclipse.wst.sse.core.StructuredModelManager
-
 import org.eclipse.jface.text.ITextViewer
 import org.eclipse.jface.text.contentassist.IContextInformationValidator
 
@@ -528,12 +527,33 @@ class ScalaSourceValidator extends IValidator {
   }
 }
 
+import org.eclipse.jface.text.IRegion
+import org.eclipse.wst.sse.ui.internal.taginfo.AbstractHoverProcessor
+import org.scalaide.editor.util.EditorHelper
+import org.scalaide.play2.templateeditor.hover.TemplateHover
+class TemplateScalaTextHoverProcessor extends AbstractHoverProcessor {
+  
+  def getHoverInfo(textViewer: ITextViewer, hoverRegion: IRegion): String = {
+    val result = 
+      for (file <- EditorHelper.findFileOfDocument(textViewer.getDocument()))
+      yield new TemplateHover(TemplateCompilationUnit.fromFileAndDocument(file, textViewer.getDocument())).getHoverInfo(textViewer, hoverRegion)
+    result getOrElse null 
+  }
+
+  def getHoverRegion(textViewer: ITextViewer, offset: Int): IRegion = {
+    val result =
+      for (file <- EditorHelper.findFileOfDocument(textViewer.getDocument()))
+        yield new TemplateHover(TemplateCompilationUnit.fromFileAndDocument(file, textViewer.getDocument())).getHoverRegion(textViewer, offset)
+    result getOrElse null
+  }
+}
+
 // According to http://www.eclipsezone.com/eclipse/forums/t73617.html#92026455 in the SourceViewer and SourceViewerConfiguration hierarchy
 // "content type" actually means "partition type"
 class TemplateStructuredTextViewerConfiguration(prefStore: IPreferenceStore, editor: TTemplateEditor) extends StructuredTextViewerConfiguration {
-  
+
   def this() = this(null, null)
-   
+
   private val htmlConfiguration = new StructuredTextViewerConfigurationHTML
   private val xmlConfiguration = new StructuredTextViewerConfigurationXML
   private val scalaConfiguration: TemplateConfiguration = if (prefStore != null && editor != null) new TemplateConfiguration(prefStore, editor) else null

@@ -30,6 +30,12 @@
       <sourceViewerConfiguration
         class="org.scalaide.play2.templateeditor.TemplateStructuredTextViewerConfiguration"
         target="org.scalaide.play2.templateSource" />
+      <documentationTextHover
+          class="org.scalaide.play2.templateeditor.TemplateScalaTextHoverProcessor"
+          target="__template_scala" />
+      <documentationTextHover
+          class="org.eclipse.wst.html.ui.internal.taginfo.HTMLTagInfoHoverProcessor"
+          target="org.eclipse.wst.html.HTML_DEFAULT" />
    </extension>
    <extension point="org.eclipse.wst.sse.core.modelHandler">
       <modelHandler
