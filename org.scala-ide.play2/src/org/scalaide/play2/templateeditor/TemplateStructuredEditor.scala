@@ -89,7 +89,7 @@ import org.eclipse.jface.text.ITextViewer
 import org.eclipse.jface.text.contentassist.IContextInformationValidator
 
 object ContentTypeIdForScala {
-  val ContentTypeID_Scala = "scala.tools.eclipse.scalaSource"
+  val ContentTypeID_Scala = "org.scalaide.play2.templateSource"
 }
 
 object TemplateStructuredPartitions {

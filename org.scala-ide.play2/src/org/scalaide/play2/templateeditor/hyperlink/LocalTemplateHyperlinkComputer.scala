@@ -11,6 +11,8 @@ import scala.tools.eclipse.hyperlink.text.Hyperlink
 import org.eclipse.jface.text.ITextViewer
 import org.eclipse.ui.texteditor.ITextEditor
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
+import org.scalaide.editor.util.EditorHelper
+import org.eclipse.jface.text.IDocument
 
 /** A hyperlink detector that only looks for local definitions.
  *
@@ -20,17 +22,13 @@ import org.scalaide.play2.templateeditor.compiler.PositionHelper
  *  This detector only handles symbols that are defined in the *same* compilation unit.
  */
 class LocalTemplateHyperlinkComputer extends AbstractHyperlinkDetector {
-
   final override def detectHyperlinks(viewer: ITextViewer, currentSelection: IRegion, canShowMultipleHyperlinks: Boolean): Array[IHyperlink] = {
-    val textEditor = getAdapter(classOf[ITextEditor]).asInstanceOf[ITextEditor]
-    detectHyperlinks(textEditor, currentSelection, canShowMultipleHyperlinks)
+    detectHyperlinks(viewer.getDocument(), currentSelection, canShowMultipleHyperlinks)
   }
 
-  final def detectHyperlinks(textEditor: ITextEditor, currentSelection: IRegion, canShowMultipleHyperlinks: Boolean): Array[IHyperlink] = {
+  final def detectHyperlinks(doc: IDocument, currentSelection: IRegion, canShowMultipleHyperlinks: Boolean): Array[IHyperlink] = {
     def findHyperlinks(icu: TemplateCompilationUnit): List[IHyperlink] = {
-      val input = textEditor.getEditorInput
-      val doc = textEditor.getDocumentProvider.getDocument(input)
-      if (!doc.getContentType(currentSelection.getOffset()).equals(TemplatePartitions.TEMPLATE_SCALA)) {
+      if (doc.getPartition(currentSelection.getOffset()).getType() != TemplatePartitions.TEMPLATE_SCALA) {
         return Nil // should not be null, if it was null, it would throw an exception
       }
       if (doc.getChar(currentSelection.getOffset()) == '.') // otherwise it will generate an error
@@ -69,11 +67,12 @@ class LocalTemplateHyperlinkComputer extends AbstractHyperlinkDetector {
       }
     }
 
-    if (textEditor == null) null // can be null if generated through ScalaPreviewerFactory
+    if (doc == null) null // can be null if generated through ScalaPreviewerFactory
     else {
-      EditorUtils.getEditorCompilationUnit(textEditor) match {
-        case Some(scu: TemplateCompilationUnit) =>
-
+      val fileOption = EditorHelper.findFileOfDocument(doc)
+      fileOption match {
+        case Some(file) => {
+          val scu = TemplateCompilationUnit.fromFileAndDocument(file, doc)
           findHyperlinks(scu) match {
             // I know you will be tempted to remove this, but don't do it, JDT expects null when no hyperlinks are found.
             case Nil => null
@@ -81,7 +80,7 @@ class LocalTemplateHyperlinkComputer extends AbstractHyperlinkDetector {
               if (canShowMultipleHyperlinks) links.toArray
               else Array(links.head)
           }
-
+        }
         case _ => null
       }
     }

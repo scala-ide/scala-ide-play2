@@ -1,7 +1,7 @@
 package org.scalaide.editor.util
 
 import scala.tools.eclipse.ISourceViewerEditor
-
+import org.eclipse.jface.text.ITextViewer
 import org.eclipse.jface.text.link.LinkedModeModel
 import org.eclipse.jface.text.link.LinkedModeUI
 import org.eclipse.jface.text.link.LinkedPosition
@@ -10,6 +10,12 @@ import org.eclipse.ui.IEditorPart
 import org.eclipse.ui.IWorkbenchPage
 import org.eclipse.ui.IWorkbenchWindow
 import org.eclipse.ui.PlatformUI
+import org.eclipse.core.filebuffers.FileBuffers
+import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.jface.text.IDocument
+import org.eclipse.core.resources.IFile
+import org.eclipse.ui.texteditor.AbstractTextEditor
+import org.eclipse.ui.part.FileEditorInput
 
 object EditorHelper {
 
@@ -33,6 +39,24 @@ object EditorHelper {
         }
       }
     }
+  }
+  
+  def findFileOfDocument(document: IDocument): Option[IFile] = {
+    val fileBufferManager = FileBuffers.getTextFileBufferManager()
+    val wsroot = ResourcesPlugin.getWorkspace().getRoot()
+    for (textFileBuffer <- Option(fileBufferManager.getTextFileBuffer(document));
+         file <- Option(wsroot.getFile(textFileBuffer.getLocation()));
+         if file.exists())
+      yield file
+  }
+  
+  def findEditorOfDocument[T <: IEditorPart](document: IDocument): Option[T] = {
+    for (file <- findFileOfDocument(document);
+         window <- activeWorkbenchWindow;
+         page <- activePage(window);
+         editor <- Option(page.findEditor(new FileEditorInput(file)));
+         if editor.isInstanceOf[T])
+      yield editor.asInstanceOf[T]
   }
 
   /** Enters the editor in the LinkedModeUI with the given list of positions.
