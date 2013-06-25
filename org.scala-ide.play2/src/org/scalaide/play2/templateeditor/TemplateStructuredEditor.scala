@@ -492,12 +492,11 @@ class ScalaSourceValidator extends IValidator {
       val markerType = IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER
       // clear previous messages and markers
       reporter.removeAllMessages(this)
-      if (/*!model.isDirty() &&*/ currentFile.isAccessible()) {
-        for {
-          markers <- Try(currentFile.findMarkers(markerType, true, IResource.DEPTH_ONE))
-          marker <- markers
-        } marker.delete()
-      }
+      for {
+        markers <- Try(currentFile.findMarkers(markerType, true, IResource.DEPTH_ONE))
+        marker <- markers
+      } marker.delete()
+        
       
       val doc = model.getStructuredDocument()
       val compilationUnit = TemplateCompilationUnit.fromFileAndDocument(currentFile, doc)
