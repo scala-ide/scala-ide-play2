@@ -175,8 +175,8 @@
   </extension>
   <extension point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
     <hyperlinkDetector
-      class="org.scalaide.play2.templateeditor.hyperlink.StructuredTemplateDeclarationHyperlinkDetector"
-      id="org.scalaide.play2.templateeditor.TemplateScalaHyperlinkDetector"
+      class="org.scalaide.play2.templateeditor.sse.hyperlink.StructuredTemplateDeclarationHyperlinkDetector"
+      id="org.scalaide.play2.templateeditor.sse.hyperlink.StructuredTemplateDeclarationHyperlinkDetector"
       name="%Template_Scala_hyperlink"
       targetId="org.scalaide.play2.templateSource">
     </hyperlinkDetector>
