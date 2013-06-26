@@ -51,12 +51,18 @@ object EditorHelper {
   }
   
   def findEditorOfDocument[T <: IEditorPart](document: IDocument): Option[T] = {
-    for (file <- findFileOfDocument(document);
-         window <- activeWorkbenchWindow;
-         page <- activePage(window);
-         editor <- Option(page.findEditor(new FileEditorInput(file)));
-         if editor.isInstanceOf[T])
-      yield editor.asInstanceOf[T]
+    val test = findFileOfDocument(document) flatMap { file =>
+      Option(PlatformUI.getWorkbench().getWorkbenchWindows()) map { windows =>
+        windows flatMap { window =>
+          activePage(window) flatMap { page =>
+            Option(page.findEditor(new FileEditorInput(file))).filter(_.isInstanceOf[T]) map { editor =>
+              editor.asInstanceOf[T]
+            }
+          }
+        }
+      }
+    }
+    test.map(_.headOption).flatten
   }
 
   /** Enters the editor in the LinkedModeUI with the given list of positions.
