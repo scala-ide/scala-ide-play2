@@ -398,20 +398,14 @@ class TemplateDocumentLoader extends HTMLDocumentLoader {
   override val getDefaultDocumentPartitioner = new TemplateStructuredTextPartitioner
 }
 
+// This class (and the inner classes) will need to be overhauled when adding HTMLValidator support
 class TemplateStructuredModel extends DOMStyleModelImpl { modelself =>
   
   import org.eclipse.wst.xml.core.internal.document.DOMModelImpl
   import org.eclipse.wst.xml.core.internal.document.XMLModelParser
   import org.eclipse.wst.xml.core.internal.document.XMLModelUpdater
 
-  class NestedDOMModelParser(model: DOMModelImpl) extends XMLModelParser(model) {
-    // Might not be necessary to actually override these methods
-    override def isNestedCommentText(regionType: String) =
-      regionType == TemplateRegions.COMMENT_DOC_REGION //DOMJSPRegionContexts.JSP_COMMENT_TEXT;
-    override def isNestedContent(regionType: String) =
-      regionType == TemplateRegions.SCALA_DOC_REGION //DOMJSPRegionContexts.JSP_CONTENT;
-  }
-  
+  class NestedDOMModelParser(model: DOMModelImpl) extends XMLModelParser(model) 
   class NestedDOMModelUpdater(model: DOMModelImpl) extends XMLModelUpdater(model)
   override def createModelParser() = new NestedDOMModelParser(this)
   override def createModelUpdater() = new NestedDOMModelUpdater(this)
