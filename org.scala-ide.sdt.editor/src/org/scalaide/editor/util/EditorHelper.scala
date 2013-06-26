@@ -51,7 +51,7 @@ object EditorHelper {
   }
   
   def findEditorOfDocument(document: IDocument): Option[ISourceViewerEditor] = {
-    val test = findFileOfDocument(document) flatMap { file =>
+    val result = findFileOfDocument(document) flatMap { file =>
       Option(PlatformUI.getWorkbench().getWorkbenchWindows()) map { windows =>
         windows flatMap { window =>
           activePage(window) flatMap { page =>
@@ -62,7 +62,7 @@ object EditorHelper {
         }
       }
     }
-    test.flatMap(_.headOption)
+    result.flatMap(_.headOption)
   }
 
   /** Enters the editor in the LinkedModeUI with the given list of positions.
