@@ -372,9 +372,21 @@ class TemplateDocumentLoader extends HTMLDocumentLoader {
   
   override def newEncodedDocument() = {
     val structuredDocument = StructuredDocumentFactory.getNewStructuredDocumentInstance(getParser())
-    val reparser = new XMLStructuredDocumentReParser
+    val reparser = new XMLStructuredDocumentReParser {
+      override protected def findDirtyEnd(end: Int): IStructuredDocumentRegion = {
+        val result = fStructuredDocument.getLastStructuredDocumentRegion()
+        if (result != null) fStructuredDocument.setCachedDocumentRegion(result)
+        dirtyEnd = result
+        dirtyEnd
+      }
+
+      override protected def findDirtyStart(start: Int): Unit = {
+        val result = fStructuredDocument.getFirstStructuredDocumentRegion()
+        if (result != null) fStructuredDocument.setCachedDocumentRegion(result)
+        dirtyStart = result
+      }
+    }
     structuredDocument.asInstanceOf[BasicStructuredDocument].setReParser(reparser)
-    // TODO - add reparser if necessary
     // TODO - set the default embedded type content type handler.. whatever that means
     structuredDocument
   }
@@ -393,6 +405,7 @@ class TemplateStructuredModel extends DOMStyleModelImpl { modelself =>
   import org.eclipse.wst.xml.core.internal.document.XMLModelUpdater
 
   class NestedDOMModelParser(model: DOMModelImpl) extends XMLModelParser(model) {
+    // Might not be necessary to actually override these methods
     override def isNestedCommentText(regionType: String) =
       regionType == TemplateRegions.COMMENT_DOC_REGION //DOMJSPRegionContexts.JSP_COMMENT_TEXT;
     override def isNestedContent(regionType: String) =
