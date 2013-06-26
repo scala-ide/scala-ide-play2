@@ -55,11 +55,9 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
   override def getContextInformationValidator = null
 
   override def computeCompletionProposals(viewer: ITextViewer, offset: Int): Array[ICompletionProposal] = {
-    // TODO - I don't like relying on withCurrentEditor.. I'd prefer to find a better way to get the *actual* editor
-    // in a way where we can be 100% positive it's the correct editor.
     val compileUnit: Option[InteractiveCompilationUnit] = textEditor match {
       case Some(editor) => EditorUtils.getEditorCompilationUnit(editor)
-      case None => EditorHelper.withCurrentEditor(editor => EditorUtils.getEditorCompilationUnit(editor))
+      case None => EditorHelper.findEditorOfDocument(viewer.getDocument()).flatMap(EditorUtils.getEditorCompilationUnit(_))
     }
     
     compileUnit match {

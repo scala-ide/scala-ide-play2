@@ -29,7 +29,7 @@ class StructuredTemplateDeclarationHyperlinkDetector extends AbstractHyperlinkDe
   val templateDeclHyperlinkDetector = TemplateDeclarationHyperlinkDetector()
   
   final override def detectHyperlinks(viewer: ITextViewer, currentSelection: IRegion, canShowMultipleHyperlinks: Boolean): Array[IHyperlink] = {
-    val textEditor = EditorHelper.findEditorOfDocument[ITextEditor](viewer.getDocument()) getOrElse null
+    val textEditor = EditorHelper.findEditorOfDocument(viewer.getDocument()) getOrElse null
     templateDeclHyperlinkDetector.detectHyperlinks(textEditor, currentSelection, canShowMultipleHyperlinks)
   } 
 }
