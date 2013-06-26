@@ -502,39 +502,34 @@ class ScalaSourceValidator extends IValidator {
       if currentFile.exists()
       model <- Try(StructuredModelManager.getModelManager().getModelForRead(currentFile))
     }{
-      val markerType = IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER
-      // clear previous messages and markers
-      reporter.removeAllMessages(this)
-      for {
-        markers <- Try(currentFile.findMarkers(markerType, true, IResource.DEPTH_ONE))
-        marker <- markers
-      } marker.delete()
+      try {
+        val markerType = IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER
+        for {
+          markers <- Try(currentFile.findMarkers(markerType, true, IResource.DEPTH_ONE))
+          marker <- markers
+        } marker.delete()
         
-      
-      val doc = model.getStructuredDocument()
-      val compilationUnit = TemplateCompilationUnit.fromFileAndDocument(currentFile, doc)
-      for (error <- compilationUnit.reconcile(doc.get())) {
-        val (priority, severity, messageSeverity) =
-          if (error.isError()) (IMarker.PRIORITY_HIGH, IMarker.SEVERITY_ERROR, IMessage.HIGH_SEVERITY)
-          else if (error.isWarning()) (IMarker.PRIORITY_NORMAL, IMarker.SEVERITY_WARNING, IMessage.NORMAL_SEVERITY)
-          else (IMarker.PRIORITY_LOW, IMarker.SEVERITY_INFO, IMessage.LOW_SEVERITY)
+        val doc = model.getStructuredDocument()
+        val compilationUnit = TemplateCompilationUnit.fromFileAndDocument(currentFile, doc)
+        for (error <- compilationUnit.reconcile(doc.get())) {
+          val (priority, severity) =
+            if (error.isError()) (IMarker.PRIORITY_HIGH, IMarker.SEVERITY_ERROR)
+            else if (error.isWarning()) (IMarker.PRIORITY_NORMAL, IMarker.SEVERITY_WARNING)
+            else (IMarker.PRIORITY_LOW, IMarker.SEVERITY_INFO)
 
-        val message = new LocalizedMessage(messageSeverity, error.getMessage(), currentFile)
-        message.setLineNo(doc.getLineOfOffset(error.getSourceStart()) + 1)
-        message.setOffset(error.getSourceStart())
-        message.setLength(error.getSourceEnd() - error.getSourceStart() + 1)
-        reporter.addMessage(this, message)
-        
-        val marker = currentFile.createMarker(markerType)
-        marker.setAttribute(IMarker.LINE_NUMBER, message.getLineNumber())
-        marker.setAttribute(IMarker.CHAR_START, message.getOffset())
-        marker.setAttribute(IMarker.CHAR_END, message.getOffset() + message.getLength())
-        marker.setAttribute(IMarker.MESSAGE, message.getText())
-        marker.setAttribute(IMarker.USER_EDITABLE, java.lang.Boolean.FALSE)
-        marker.setAttribute(IMarker.PRIORITY, priority)
-        marker.setAttribute(IMarker.SEVERITY, severity)
+          val marker = currentFile.createMarker(markerType)
+          marker.setAttribute(IMarker.LINE_NUMBER, doc.getLineOfOffset(error.getSourceStart()) + 1)
+          marker.setAttribute(IMarker.CHAR_START, error.getSourceStart())
+          marker.setAttribute(IMarker.CHAR_END, error.getSourceStart() + (error.getSourceEnd() - error.getSourceStart() + 1))
+          marker.setAttribute(IMarker.MESSAGE, error.getMessage())
+          marker.setAttribute(IMarker.USER_EDITABLE, java.lang.Boolean.FALSE)
+          marker.setAttribute(IMarker.PRIORITY, priority)
+          marker.setAttribute(IMarker.SEVERITY, severity)
+        }
       }
-      model.releaseFromRead()
+      finally {
+        model.releaseFromRead()
+      }
     }
   }
 }
