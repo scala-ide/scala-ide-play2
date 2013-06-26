@@ -14,7 +14,7 @@
             name="Route Editor">
       </editor>
       <editor
-            class="org.scalaide.play2.templateeditor.TemplateStructuredEditor"
+            class="org.scalaide.play2.templateeditor.sse.TemplateStructuredEditor"
             contributorClass="org.eclipse.jst.jsp.ui.internal.editor.ActionContributorJSP"
             default="true"
             icon="icons/play.png"
@@ -28,7 +28,7 @@
    
    <extension point="org.eclipse.wst.sse.ui.editorConfiguration">
       <sourceViewerConfiguration
-        class="org.scalaide.play2.templateeditor.TemplateStructuredTextViewerConfiguration"
+        class="org.scalaide.play2.templateeditor.sse.TemplateStructuredTextViewerConfiguration"
         target="org.scalaide.play2.templateSource" />
       <documentationTextHover
           class="org.scalaide.play2.templateeditor.sse.hover.TemplateScalaTextHoverProcessor"
@@ -253,7 +253,7 @@
             id="org.scalaide.play2.templateSource"
             name="Play Template File"
             priority="high">
-            <describer class="org.scalaide.play2.templateeditor.TemplateContentDescriber"/>
+            <describer class="org.scalaide.play2.templateeditor.sse.TemplateContentDescriber"/>
       </content-type>
    </extension>
    <extension
