@@ -7,7 +7,6 @@ import org.scalaide.editor.util.EditorHelper
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import org.scalaide.play2.templateeditor.hover.TemplateHover
 
-
 class TemplateScalaTextHoverProcessor extends AbstractHoverProcessor {
   
   def getHoverInfo(textViewer: ITextViewer, hoverRegion: IRegion): String = {

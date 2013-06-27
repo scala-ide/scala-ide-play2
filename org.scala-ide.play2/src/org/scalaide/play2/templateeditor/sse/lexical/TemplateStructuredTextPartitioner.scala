@@ -11,9 +11,8 @@ import org.scalaide.play2.templateeditor.lexical.TemplateDocumentPartitioner
 import org.scalaide.play2.templateeditor.lexical.TemplatePartitions
 
 class TemplateStructuredTextPartitioner extends StructuredTextPartitioner {
-  private val templatePartitioner: TemplateDocumentPartitioner = new TemplateDocumentPartitioner
+  
   private val htmlPartitioner: StructuredTextPartitionerForHTML = new StructuredTextPartitionerForHTML
-  private var document: IDocument = null
   
   override def connect(document: IDocument) = {
     super.connect(document)
@@ -57,7 +56,7 @@ class TemplateStructuredTextPartitioner extends StructuredTextPartitioner {
   
   override def newInstance(): IDocumentPartitioner = {
     val instance = new TemplateStructuredTextPartitioner
-    instance.connect(document)
+    instance.connect(fStructuredDocument)
     instance
   }
 }

@@ -13,6 +13,8 @@ class TemplateDocumentLoader extends HTMLDocumentLoader {
   
   override def newEncodedDocument() = {
     val structuredDocument = StructuredDocumentFactory.getNewStructuredDocumentInstance(getParser())
+    
+    // A reparser that always reparses the whole document
     val reparser = new XMLStructuredDocumentReParser {
       override protected def findDirtyEnd(end: Int): IStructuredDocumentRegion = {
         val result = fStructuredDocument.getLastStructuredDocumentRegion()
@@ -28,7 +30,8 @@ class TemplateDocumentLoader extends HTMLDocumentLoader {
       }
     }
     structuredDocument.asInstanceOf[BasicStructuredDocument].setReParser(reparser)
-    // TODO - set the default embedded type content type handler.. whatever that means
+    // TODO - set the default embedded type content type handler.. whatever that means.
+    // I don't believe we'll ever need to do that, but if it comes up in the future, this is the place to do it.
     structuredDocument
   }
 

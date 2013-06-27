@@ -11,15 +11,25 @@ import org.scalaide.play2.templateeditor.TTemplateEditor
 
 class TemplateStructuredEditor extends StructuredTextEditor with TTemplateEditor {
   
-  override protected lazy val preferenceStore: IPreferenceStore = new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.preferenceStore))
+  override protected lazy val preferenceStore: IPreferenceStore =
+    new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.preferenceStore))
   
+  /* This is a nasty hack. 
+   * The problem:  The TemplateStructuredTextViewerConfiguration needs the pref store and a reference to the editor.
+   *               However, it is instantiated through an extension point, so we don't have the opportunity to give create as we need.
+   * The solution: Intercept the instance of the TemplateStructuredTextViewerConfiguration and inject it/create a new one with the 
+   *               pref store and reference to the editor (self) 
+   * Note: the TemplateStructuredTextViewerConfiguration has additional logic to support this hack.
+   */
   override def setSourceViewerConfiguration(config: SourceViewerConfiguration) = {
     config match {
       case templateConfig: TemplateStructuredTextViewerConfiguration => {
-        super.setSourceViewerConfiguration(new TemplateStructuredTextViewerConfiguration(preferenceStore, this))
+        templateConfig.editor = this
+        templateConfig.prefStore = preferenceStore
       }
-      case _ => super.setSourceViewerConfiguration(config)
+      case _ =>
     }
+    super.setSourceViewerConfiguration(config)
   }
 }
 

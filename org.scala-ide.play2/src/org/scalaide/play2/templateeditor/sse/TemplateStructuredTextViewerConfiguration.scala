@@ -17,13 +17,15 @@ import org.scalaide.play2.templateeditor.sse.style.ScalaLineStyleProvider
 
 // According to http://www.eclipsezone.com/eclipse/forums/t73617.html#92026455 in the SourceViewer and SourceViewerConfiguration hierarchy
 // "content type" actually means "partition type"
-class TemplateStructuredTextViewerConfiguration(prefStore: IPreferenceStore, editor: TTemplateEditor) extends StructuredTextViewerConfiguration {
+class TemplateStructuredTextViewerConfiguration extends StructuredTextViewerConfiguration {
 
-  def this() = this(null, null)
-
+  // public and mutable so that the TemplateStructuredEditor can inject the values
+  var prefStore: IPreferenceStore = null
+  var editor: TTemplateEditor = null
   private val htmlConfiguration = new StructuredTextViewerConfigurationHTML
   private val xmlConfiguration = new StructuredTextViewerConfigurationXML
-  private val scalaConfiguration: TemplateConfiguration = if (prefStore != null && editor != null) new TemplateConfiguration(prefStore, editor) else null
+  // must be lazy because creation depends on injected prefStore and editor fields
+  private lazy val scalaConfiguration: TemplateConfiguration = new TemplateConfiguration(prefStore, editor)
 
   private sealed trait ContentType
   private case class HTMLContent extends ContentType
@@ -40,10 +42,7 @@ class TemplateStructuredTextViewerConfiguration(prefStore: IPreferenceStore, edi
       if (htmlContentTypes contains contentType) HTMLContent()
       else if (xmlContentTypes contains contentType) XMLContent()
       else if (scalaPartitions contains contentType) ScalaContent()
-      else {
-        println(contentType)
-        DefaultContent()
-      }
+      else DefaultContent()
     }
   }
   

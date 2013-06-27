@@ -15,7 +15,7 @@ object PartitionHelpers {
     token.getType() == TemplatePartitions.TEMPLATE_DEFAULT && s.length == 1 && (s == "}" || s == "{")
   }
   
-  /* Combines neighbouring regions that have the same type */
+  /* Combines neighbouring regions based on some user provided criteria */
   def mergeAdjacent[Repr <: Seq[ITypedRegion]](partitions: Repr)(test: (ITypedRegion, ITypedRegion) => Option[String]): IndexedSeq[ITypedRegion] = {
     partitions.foldLeft(Array[ITypedRegion]())((accum, region) => {
       accum match {
@@ -45,6 +45,7 @@ object PartitionHelpers {
     }
   }
 
+  /* Combine magic at with scala code partitions */
   def combineMagicAt[Repr <: Seq[ITypedRegion]](partitions: Repr, codeString: String): IndexedSeq[ITypedRegion] = {
     mergeAdjacent(partitions) { (left, right) =>
       if ((isMagicAt(left, codeString) && right.getType() == TemplatePartitions.TEMPLATE_SCALA) ||

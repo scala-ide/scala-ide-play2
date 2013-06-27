@@ -9,7 +9,7 @@ import org.scalaide.play2.templateeditor.hyperlink.TemplateDeclarationHyperlinkD
 
 
 class StructuredTemplateDeclarationHyperlinkDetector extends AbstractHyperlinkDetector {
-  val templateDeclHyperlinkDetector = TemplateDeclarationHyperlinkDetector()
+  protected val templateDeclHyperlinkDetector = TemplateDeclarationHyperlinkDetector()
   
   final override def detectHyperlinks(viewer: ITextViewer, currentSelection: IRegion, canShowMultipleHyperlinks: Boolean): Array[IHyperlink] = {
     val textEditor = EditorHelper.findEditorOfDocument(viewer.getDocument()) getOrElse null
