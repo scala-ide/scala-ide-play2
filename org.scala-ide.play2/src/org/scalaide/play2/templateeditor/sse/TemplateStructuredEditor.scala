@@ -6,10 +6,10 @@ import org.eclipse.ui.editors.text.EditorsUI
 import org.eclipse.ui.texteditor.ChainedPreferenceStore
 import org.eclipse.wst.sse.ui.StructuredTextEditor
 import org.scalaide.play2.PlayPlugin
-import org.scalaide.play2.templateeditor.TTemplateEditor
+import org.scalaide.play2.templateeditor.AbstractTemplateEditor
 
 
-class TemplateStructuredEditor extends StructuredTextEditor with TTemplateEditor {
+class TemplateStructuredEditor extends StructuredTextEditor with AbstractTemplateEditor {
   
   override protected lazy val preferenceStore: IPreferenceStore =
     new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.preferenceStore))

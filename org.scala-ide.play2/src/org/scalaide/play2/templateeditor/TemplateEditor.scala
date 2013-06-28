@@ -20,13 +20,14 @@ import org.scalaide.editor.CompilationUnitProvider
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.ui.editors.text.TextEditor
 
-trait TTemplateEditor extends SourceCodeEditor { self: TextEditor =>
+trait AbstractTemplateEditor extends SourceCodeEditor { self: TextEditor =>
+  
   override protected type UnderlyingCompilationUnit = TemplateCompilationUnit
 
   override val compilationUnitProvider: CompilationUnitProvider[UnderlyingCompilationUnit] = TemplateCompilationUnit
 }
 
-class TemplateEditor extends TextEditor with TTemplateEditor {
+class TemplateEditor extends TextEditor with AbstractTemplateEditor {
 
   override protected lazy val preferenceStore: IPreferenceStore = new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.preferenceStore))
   private val sourceViewConfiguration = new TemplateConfiguration(preferenceStore, this)

@@ -11,7 +11,7 @@ import org.eclipse.wst.sse.ui.StructuredTextViewerConfiguration
 import org.eclipse.wst.xml.core.internal.provisional.contenttype.ContentTypeIdForXML
 import org.eclipse.wst.xml.core.text.IXMLPartitions
 import org.eclipse.wst.xml.ui.StructuredTextViewerConfigurationXML
-import org.scalaide.play2.templateeditor.TTemplateEditor
+import org.scalaide.play2.templateeditor.AbstractTemplateEditor
 import org.scalaide.play2.templateeditor.TemplateConfiguration
 import org.scalaide.play2.templateeditor.sse.style.ScalaLineStyleProvider
 
@@ -21,7 +21,7 @@ class TemplateStructuredTextViewerConfiguration extends StructuredTextViewerConf
 
   // public and mutable so that the TemplateStructuredEditor can inject the values
   var prefStore: IPreferenceStore = null
-  var editor: TTemplateEditor = null
+  var editor: AbstractTemplateEditor = null
   private val htmlConfiguration = new StructuredTextViewerConfigurationHTML
   private val xmlConfiguration = new StructuredTextViewerConfigurationXML
   // must be lazy because creation depends on injected prefStore and editor fields
