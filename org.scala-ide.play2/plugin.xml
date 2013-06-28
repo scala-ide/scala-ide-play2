@@ -504,19 +504,20 @@
       </handler>
    </extension>
    <!-- Enable the FormatHandler for Template Content Type -->
+   <!-- TODO: I was expecting this to enable the html formatter to work properly. But it didn't. Need to figure out why -->
    <extension point="org.eclipse.ui.handlers">
      <handler 
        class="org.eclipse.wst.sse.ui.internal.handlers.FormatHandler"
        commandId="org.eclipse.wst.sse.ui.format">
        <activeWhen>
-         <reference definitionId="org.eclipse.wst.html.ui.htmlContentType.definition"></reference>
+         <reference definitionId="org.scalaide.play2.templateSourceContentType.definition"></reference>
        </activeWhen>
        <enabledWhen>
-         <reference definitionId="org.eclipse.wst.html.ui.htmlContentType.definition"></reference>
+         <reference definitionId="org.scalaide.play2.templateSourceContentType.definition"></reference>
        </enabledWhen>
      </handler>
    </extension>
-   <!-- Set up a definition for HTML Content Types -->
+   <!-- Set up a definition for Template Content Types -->
    <extension point="org.eclipse.core.expressions.definitions">
      <definition id="org.scalaide.play2.templateSourceContentType.definition">
        <iterate ifEmpty="false">
