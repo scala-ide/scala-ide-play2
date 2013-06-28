@@ -15,7 +15,7 @@
       </editor>
       <editor
             class="org.scalaide.play2.templateeditor.sse.TemplateStructuredEditor"
-            contributorClass="org.eclipse.jst.jsp.ui.internal.editor.ActionContributorJSP"
+            contributorClass="org.scalaide.play2.templateeditor.sse.TemplateActionContributor"
             default="true"
             icon="icons/play.png"
             id="org.scalaide.play2.templateSource"
@@ -392,12 +392,129 @@
          </menu>
       </menuContribution>
    </extension>
+   <extension point="org.eclipse.ui.editorActions">
+   <!--  <editorContribution
+      id="org.eclipse.wst.html.core.htmlsource.source.editorActions"
+      targetID="org.eclipse.wst.html.core.htmlsource.source">
+      <action
+        id="CleanupDocument"
+        label="%CleanupDocument_label"
+        definitionId="org.eclipse.wst.sse.ui.cleanup.document"
+        tooltip="%CleanupDocument_tooltip"
+        class="org.eclipse.wst.html.ui.internal.edit.ui.CleanupActionHTMLDelegate"
+        actionID="CleanupDocument">
+      </action>
+      <action
+        id="ToggleComment"
+        label="%ToggleComment_label"
+        definitionId="org.eclipse.wst.sse.ui.toggle.comment"
+        tooltip="%ToggleComment_tooltip"
+        class="org.eclipse.wst.xml.ui.internal.actions.ToggleCommentActionXMLDelegate"
+        actionID="ToggleComment">
+      </action>
+      <action
+        id="AddBlockComment"
+        label="%AddBlockComment_label"
+        definitionId="org.eclipse.wst.sse.ui.add.block.comment"
+        tooltip="%AddBlockComment_tooltip"
+        class="org.eclipse.wst.xml.ui.internal.actions.AddBlockCommentActionXMLDelegate"
+        actionID="AddBlockComment">
+      </action>
+      <action
+        id="RemoveBlockComment"
+        label="%RemoveBlockComment_label"
+        definitionId="org.eclipse.wst.sse.ui.remove.block.comment"
+        tooltip="%RemoveBlockComment_tooltip"
+        class="org.eclipse.wst.xml.ui.internal.actions.RemoveBlockCommentActionXMLDelegate"
+        actionID="RemoveBlockComment">
+      </action>
+      <action
+        id="FindOccurrences"
+        label="%FindOccurrences_label"
+        definitionId="org.eclipse.wst.sse.ui.search.find.occurrences"
+        class="org.eclipse.wst.html.ui.internal.search.HTMLFindOccurrencesActionDelegate"
+        actionID="FindOccurrences">
+      </action>
+      <action
+        id="StructureSelectEnclosing"
+        label="%StructureSelectEnclosing_label"
+        definitionId="org.eclipse.wst.sse.ui.structure.select.enclosing"
+        tooltip="%StructureSelectEnclosing_tooltip"
+        class="org.eclipse.wst.xml.ui.internal.selection.StructuredSelectEnclosingXMLActionDelegate"
+        actionID="StructureSelectEnclosing">
+      </action>
+      <action
+        id="StructureSelectNext"
+        label="%StructureSelectNext_label"
+        definitionId="org.eclipse.wst.sse.ui.structure.select.next"
+        tooltip="%StructureSelectNext_tooltip"
+        class="org.eclipse.wst.xml.ui.internal.selection.StructuredSelectNextXMLActionDelegate"
+        actionID="StructureSelectNext">
+      </action>
+      <action
+        id="StructureSelectPrevious"
+        label="%StructureSelectPrevious_label"
+        definitionId="org.eclipse.wst.sse.ui.structure.select.previous"
+        tooltip="%StructureSelectPrevious_tooltip"
+        class="org.eclipse.wst.xml.ui.internal.selection.StructuredSelectPreviousXMLActionDelegate"
+        actionID="StructureSelectPrevious">
+      </action>
+      <action
+        id="StructureSelectHistory"
+        label="%StructureSelectHistory_label"
+        definitionId="org.eclipse.wst.sse.ui.structure.select.last"
+        tooltip="%StructureSelectHistory_tooltip"
+        class="org.eclipse.wst.sse.ui.internal.selection.StructuredSelectHistoryActionDelegate"
+        actionID="StructureSelectHistory">
+      </action>
+    </editorContribution>-->
+        <editorContribution
+            targetID="org.scalaide.play2.templateSource"
+            id="org.scalaide.play2.templateSource.ruler.actions">
+         <action
+               label="%AddBookmark.label"
+               helpContextId="org.eclipse.ui.bookmark_action_context"
+               class="org.eclipse.ui.texteditor.BookmarkRulerAction"
+               actionID="RulerDoubleClick"
+               id="org.eclipse.ui.texteditor.BookmarkRulerAction"/>
+         <action
+               label="%SelectRuler.label"
+               class="org.eclipse.ui.texteditor.SelectRulerAction"
+               actionID="RulerClick"
+               id="org.eclipse.ui.texteditor.SelectRulerAction"/>
+        </editorContribution>
+   </extension>
    <extension
          point="org.eclipse.ui.handlers">
       <handler
             class="org.scalaide.play2.routeeditor.handlers.LocalRename"
             commandId="org.scala-ide.play2.routeeditor.commands.rename">
       </handler>
+   </extension>
+   <!-- Enable the FormatHandler for Template Content Type -->
+   <extension point="org.eclipse.ui.handlers">
+     <handler 
+       class="org.eclipse.wst.sse.ui.internal.handlers.FormatHandler"
+       commandId="org.eclipse.wst.sse.ui.format">
+       <activeWhen>
+         <reference definitionId="org.eclipse.wst.html.ui.htmlContentType.definition"></reference>
+       </activeWhen>
+       <enabledWhen>
+         <reference definitionId="org.eclipse.wst.html.ui.htmlContentType.definition"></reference>
+       </enabledWhen>
+     </handler>
+   </extension>
+   <!-- Set up a definition for HTML Content Types -->
+   <extension point="org.eclipse.core.expressions.definitions">
+     <definition id="org.scalaide.play2.templateSourceContentType.definition">
+       <iterate ifEmpty="false">
+         <adapt type="org.eclipse.core.resources.IFile">
+           <!-- Force property tester to load, should not cause entire plug-in to start -->
+           <test property="org.eclipse.wst.sse.core.resources.contentTypeId"
+             value="org.scalaide.play2.templateSource" forcePluginActivation="true"/>
+         </adapt>
+       </iterate>
+     </definition>
    </extension>
    <!--
    <extension
