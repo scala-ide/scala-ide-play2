@@ -35,7 +35,7 @@ class TemplateDeclarationHyperlinkDetector extends DeclarationHyperlinkDetector 
       return Nil
     val wordRegion = ScalaWordFinder.findWord(doc.get, currentSelection.getOffset)
     
-    import Utils.any2optionable
+    import Utils._
     val tu = icu.asInstanceOfOpt[TemplateCompilationUnit]
 
     tu.flatMap(_.mapTemplateToScalaRegion(wordRegion)) match {

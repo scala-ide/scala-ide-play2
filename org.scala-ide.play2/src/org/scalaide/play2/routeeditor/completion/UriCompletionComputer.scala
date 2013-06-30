@@ -1,6 +1,5 @@
 package org.scalaide.play2.routeeditor.completion
 
-import scala.tools.eclipse.util.Utils.any2optionable
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.ITextViewer
