@@ -10,6 +10,14 @@ import org.eclipse.wst.xml.core.internal.regions.DOMRegionContext._
 import org.scalaide.play2.templateeditor.sse.lexical.TemplateDocumentRegions._
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses._
 import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClasses
+import org.eclipse.wst.xml.core.internal.parser.regions.XMLContentRegion
+import org.eclipse.wst.xml.core.internal.parser.regions.TagOpenRegion
+import org.eclipse.wst.xml.core.internal.parser.regions.TagNameRegion
+import org.eclipse.wst.xml.core.internal.parser.regions.AttributeNameRegion
+import org.eclipse.wst.xml.core.internal.parser.regions.AttributeEqualsRegion
+import org.eclipse.wst.xml.core.internal.parser.regions.AttributeValueRegion
+import org.eclipse.wst.xml.core.internal.parser.regions.TagCloseRegion
+import org.eclipse.wst.sse.core.internal.parser.ContextRegion
 
 class TemplateRegionParserTest {
   
@@ -36,7 +44,16 @@ class TemplateRegionParserTest {
   private def kw(length: Int) = new ScalaTextRegion(ScalaSyntaxClasses.KEYWORD, 0, length, length)
   private def oth(length: Int) = new ScalaTextRegion(ScalaSyntaxClasses.DEFAULT, 0, length, length)
   private def str(length: Int) = new ScalaTextRegion(ScalaSyntaxClasses.STRING, 0, length, length)
-
+    
+  private def xmlcontent(length: Int) = new XMLContentRegion(0, length)
+  private def xmlto(length: Int) = new TagOpenRegion(0, length, length)
+  private def xmltc = new TagCloseRegion(0)
+  private def xmltn(length: Int) = new TagNameRegion(0, length, length)
+  private def xmltan(length: Int) = new AttributeNameRegion(0, length, length)
+  private def xmltav(length: Int) = new AttributeValueRegion(0, length, length)
+  private def xmltae = new AttributeEqualsRegion(0, 1, 1)
+  
+  private def ctx(length: Int) = new ContextRegion("UNDEFINED", 0, length, length)
 
   private def addTextRegions(doc: IStructuredDocumentRegion, textRegions: Seq[ITextRegion]): Unit =
     textRegions.foreach(doc.addRegion(_))
@@ -52,7 +69,7 @@ class TemplateRegionParserTest {
   def htmlTest() = {
     val p2 = "<html></html>"
     val e2 = tr(docR(6, XML_TAG_NAME), docR(7, XML_TAG_NAME))
-    performChecks(e2, p2)
+    performChecks(e2, p2, true)
   }
     
   @Test
@@ -72,7 +89,7 @@ class TemplateRegionParserTest {
   @Test
   def zeroLengthTest() = {
     val p5 = ""
-    val e5 = tr(docR(0, "UNDEFINED"))
+    val e5 = tr(docR(0, "UNDEFINED", tr(ctx(0))))
     performChecks(e5, p5)
   }
 
@@ -80,7 +97,7 @@ class TemplateRegionParserTest {
   def whitespaceTest() = {
     val p6 = " "
     val e6 = tr(docR(1, XML_CONTENT))
-    performChecks(e6, p6)
+    performChecks(e6, p6, true)
   }
   
   @Test
@@ -89,26 +106,22 @@ class TemplateRegionParserTest {
       """@defining("test") { uuid =>
 <body data-ws-url="@routes.Application.listen(uuid).webSocketURL(request)" data-uuid="@uuid">
 }"""
+    // XMLStructuredDocumentRegions use the second text region of its children at its own type
     val e =
-      tr(docR(17, SCALA_DOC_REGION, tr(at, oth(8), bk, str(6), bk)),
-         docR(2,  SCALA_DOC_REGION, tr(bc)),
-         docR(8,  SCALA_DOC_REGION, tr(oth(1), oth(4), oth(1), op(2))),
-         docR(1,  XML_CONTENT),
-         docR(19, XML_TAG_NAME),
-         docR(54, SCALA_DOC_REGION, tr(at, oth(6), op(), oth(11), op(), oth(6), op(), oth(12), bk, oth(7), bk)),
-         docR(13, XML_CONTENT), // a known bug
-         docR(5, SCALA_DOC_REGION, tr(at, oth(4))),
-         docR(3, XML_CONTENT), // same part of the known bug
-         docR(1, SCALA_DOC_REGION, tr(bc)))
+      tr(docR(28, oth(1).getType(), tr(at, oth(8), bk, str(6), bk, bc, oth(1), oth(4), oth(1), op(2), xmlcontent(1))),
+         docR(90, xmltan(1).getType(),
+              tr(xmlto(1), xmltn(5), xmltan(11), xmltae, xmltav(1), at, oth(6), op(), oth(11), op(), oth(6), bk, oth(4), bk,
+                 op(), oth(12), bk, kw(4), bk, xmltav(2), xmltan(9), xmltae, xmltav(1), at, oth(4), xmltav(1), xmltc)),
+         docR(2, bc.getType(), tr(xmlcontent(1), bc)))
   }
   
   @Test
   def jsScriptTest() = {
     val p = """<script type="text/javascript">function f() { return 0 }</script>"""
-    performChecks(tr(docR(31, XML_TAG_NAME), docR(25, BLOCK_TEXT), docR(9, XML_TAG_NAME)), p)
+    performChecks(tr(docR(31, XML_TAG_NAME), docR(25, BLOCK_TEXT), docR(9, XML_TAG_NAME)), p, true)
   }
   
-  private def performChecks(expected: List[IStructuredDocumentRegion], code: String) = {
+  private def performChecks(expected: List[IStructuredDocumentRegion], code: String, pureHTML: Boolean = false) = {
     val parser = new TemplateRegionParser
     parser.reset(code)
     val actual = parser.computeRegions(code).toList
@@ -147,9 +160,8 @@ class TemplateRegionParserTest {
         assertTrue(s"Document region, $actualDocRegion, has overlap in child text regions", noOverlap(actualTextRegions))
         assertTrue(s"Document region, $actualDocRegion, has incomplete child text regions", complete(actualTextRegions, actualDocRegion.getLength()))
 
-        // We'll assume the html text regions are always correct
-        val tpe = actualDocRegion.getType()
-        if ((tpe == COMMENT_DOC_REGION || tpe == SCALA_DOC_REGION)) {
+        // Don't bother checking text regions if we haven't injected any of our own text regions
+        if (!pureHTML) {
           val expectedTextRegions = expectedDocRegion.getRegions().toArray().toList
           if (actualTextRegions.size == expectedTextRegions.size) {
             for ((actualTextRegion, expectedTextRegion) <- (actualTextRegions zip expectedTextRegions)) {
