@@ -16,6 +16,7 @@ import play.templates.ScalaTemplateCompiler.TemplateTree
 import scala.util.parsing.input.Positional
 import scala.util.parsing.input.OffsetPosition
 import scala.util.parsing.input.NoPosition
+import play.templates.ScalaTemplateParser
 
 /**
  * A helper for using tmeplate parser
@@ -103,10 +104,9 @@ object TemplateParsing {
    * Returns list of different types of region of the template code
    */
   def handleTemplateCode(templateCode: String) = {
-    val result = parser.parser(templateCode) match {
-      case parser.Success(p, _) =>
-        handleTemplate(p.asInstanceOf[Template])
-      case parser.NoSuccess(message, input) => List()
+    val result = ScalaTemplateParser.performTaskWithInclusiveDot(parser.parse(templateCode)) match {
+      case parser.Success(p, _)          => handleTemplate(p)
+      case parser.Error(p, rest, errors) => handleTemplate(p)
     }
     result
   }

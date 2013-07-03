@@ -42,6 +42,10 @@ import views.html._
       case TemplateCompilationError(source, message, line, column) =>
         val offset = PositionHelper.convertLineColumnToOffset(content, line, column)
         Failure(TemplateToScalaCompilationError(source, message, offset, line, column))
+      case ex: Exception => {
+        val error = s"Caught unknown exception: '${ex.getMessage()}'\n${ex.getStackTraceString}"
+        Failure(TemplateToScalaCompilationError(source, error, 0, 0, 0))
+      }
     }
   }
 

@@ -202,7 +202,7 @@ package play.templates {
     }
     
     def parseAndGenerateCode(templateName: Array[String], content: Array[Byte], absolutePath: String, resultType: String, formatterType: String, additionalImports: String) = {
-      templateParser.parser(new CharSequenceReader(new String(content, "UTF-8"))) match {
+      templateParser.parse(new String(content, "UTF-8")) match {
         case templateParser.Success(parsed, rest) if rest.atEnd => {
           generateFinalTemplate(absolutePath, 
             content,
@@ -216,8 +216,9 @@ package play.templates {
         case templateParser.Success(_, rest) => {
           throw new TemplateCompilationError(new File(absolutePath), "Not parsed?", rest.pos.line, rest.pos.column)
         }
-        case templateParser.NoSuccess(message, input) => {
-          throw new TemplateCompilationError(new File(absolutePath), message, input.pos.line, input.pos.column)
+        case templateParser.Error(_, rest, errors) => {
+          val firstError = errors.head
+          throw new TemplateCompilationError(new File(absolutePath), s"Errors ocurred while parsing.\n${firstError.str}", firstError.pos.line, firstError.pos.column)
         }
       }
     }
@@ -249,7 +250,7 @@ package play.templates {
       }
     }
 
-    val templateParser = new TemplateParser
+    val templateParser = new ScalaTemplateParser
 
     class TemplateParser extends JavaTokenParsers {
 
@@ -496,7 +497,7 @@ package play.templates {
     }
 
     def visit(elem: Seq[TemplateTree], previous: Seq[Any]): Seq[Any] = {
-      elem match {
+      elem.toList match {
         case head :: tail =>
           val tripleQuote = "\"\"\""
           visit(tail, head match {

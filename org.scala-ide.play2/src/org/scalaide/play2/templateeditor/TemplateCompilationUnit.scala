@@ -128,8 +128,11 @@ case class TemplateCompilationUnit(_workspaceFile: IFile) extends CompilationUni
   def mapTemplateToScalaRegion(region: IRegion): Option[IRegion] = synchronized {
     for { 
       start <- mapTemplateToScalaOffset(region.getOffset())
-      end <- mapTemplateToScalaOffset(region.getOffset() + region.getLength() - 1)
-    } yield new Region(start, end - start + 1)
+      end <- mapTemplateToScalaOffset(region.getOffset() + region.getLength())
+    } yield {
+      val range = end - start
+      new Region(start, if (range > 0) range + 1 else 0)
+    }
   }
 
   /** maps an offset in template file into generated scala file
