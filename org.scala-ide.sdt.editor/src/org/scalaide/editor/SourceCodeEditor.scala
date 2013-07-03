@@ -14,7 +14,7 @@ import org.eclipse.jface.text.source.IAnnotationModelExtension2
 import org.eclipse.jface.text.source.ISourceViewer
 import org.eclipse.ui.editors.text.TextEditor
 
-abstract class SourceCodeEditor extends TextEditor with ISourceViewerEditor with InteractiveCompilationUnitEditor {
+trait SourceCodeEditor extends ISourceViewerEditor with InteractiveCompilationUnitEditor { self: TextEditor =>
 
   protected type UnderlyingCompilationUnit <: CompilationUnit
 

@@ -14,17 +14,212 @@
             name="Route Editor">
       </editor>
       <editor
+            class="org.scalaide.play2.templateeditor.sse.TemplateStructuredEditor"
+            contributorClass="org.scalaide.play2.templateeditor.sse.TemplateActionContributor"
+            default="true"
+            icon="icons/newtemplate.png"
+            id="org.scalaide.play2.templateeditor.sse.TemplateStructuredEditor"
+            name="New Template Editor">
+         <contentTypeBinding
+               contentTypeId="org.scalaide.play2.templateSource" />
+      </editor>
+      <editor
             class="org.scalaide.play2.templateeditor.TemplateEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            default="true"
+            default="false"
             icon="icons/play.png"
             id="org.scalaide.play2.templateeditor.TemplateEditor"
             name="Template Editor">
          <contentTypeBinding
-               contentTypeId="org.scalaide.play2.templateSource">
-         </contentTypeBinding>
+               contentTypeId="org.scalaide.play2.templateSource" />
       </editor>
    </extension>
+   <!-- Structured Template Editor configuration -->
+   <extension point="org.eclipse.wst.sse.ui.editorConfiguration">
+      <sourceViewerConfiguration
+        class="org.scalaide.play2.templateeditor.sse.TemplateStructuredTextViewerConfiguration"
+        target="org.scalaide.play2.templateSource" />
+      <documentationTextHover
+          class="org.scalaide.play2.templateeditor.sse.hover.TemplateScalaTextHoverProcessor"
+          target="__template_scala" />
+      <documentationTextHover
+          class="org.eclipse.wst.html.ui.internal.taginfo.HTMLTagInfoHoverProcessor"
+          target="org.eclipse.wst.html.HTML_DEFAULT" />
+      <contentOutlineConfiguration
+          class="org.eclipse.wst.html.ui.views.contentoutline.HTMLContentOutlineConfiguration"
+          target="org.scalaide.play2.templateSource" />
+      <quickOutlineConfiguration
+          class="org.eclipse.wst.xml.ui.internal.quickoutline.XMLQuickOutlineConfiguration"
+          target="org.scalaide.play2.templateSource"/>
+      <provisionalConfiguration
+          type="foldingstrategy"
+          class="org.eclipse.wst.xml.ui.internal.projection.XMLFoldingStrategy"
+          target="org.scalaide.play2.templateSource" />
+      <provisionalDefinition
+          type="spellingregions"
+          value="XML_COMMENT_TEXT, XML_CONTENT, Template Comment"
+          target="org.scalaide.play2.templateSource" />
+   </extension>
+   <!-- Structured Template Editor Model Handler -->
+   <extension point="org.eclipse.wst.sse.core.modelHandler">
+      <modelHandler
+        class="org.scalaide.play2.templateeditor.sse.model.TemplateModelHandler"
+        associatedContentTypeId="org.scalaide.play2.templateSource"
+        id="org.scalaide.play2.templateModelHandler">
+      </modelHandler>
+   </extension>
+   <!-- Structured Template Editor Document Factory -->
+   <extension
+     point="org.eclipse.core.filebuffers.documentCreation"
+     id="org.scalaide.play2.templateeditor.documentfactories"
+     name="%Structured_PlayTemplate_Document_Factory_Extension.name">
+     <factory
+       contentTypeId="org.scalaide.play2.templateSource"
+       class="org.eclipse.wst.sse.core.internal.filebuffers.BasicStructuredDocumentFactory" />
+  </extension>
+  <!-- Structured Template Editor Adapter Factory -->
+  <extension
+    point="org.eclipse.wst.sse.ui.adapterFactoryDescription">
+    <adapterFactoryDescription
+      class="org.scalaide.play2.templateeditor.sse.model.TemplateAdapterFactoryProvider">
+      <contentType id="org.scalaide.play2.templateSource" />
+    </adapterFactoryDescription>
+  </extension>
+  <!-- Template source validation -->
+  <extension point="org.eclipse.wst.sse.ui.sourcevalidation">
+    <validator
+      scope="total"
+      class="org.scalaide.play2.templateeditor.sse.validation.ScalaSourceValidator"
+      id="org.scalaide.play2.templateeditor.sse.validation.ScalaSourceValidator">
+      <contentTypeIdentifier
+        id="org.scalaide.play2.templateSource">
+        <partitionType id="__template_scala"/>
+      </contentTypeIdentifier>
+    </validator>
+  </extension>
+  <extension
+    point="org.eclipse.core.filebuffers.annotationModelCreation">
+    <factory
+      contentTypeId="org.scalaide.play2.templateSource"
+      class="org.eclipse.wst.sse.ui.internal.StructuredResourceMarkerAnnotationModelFactory" />
+  </extension>
+  <!-- Template completion proposals -->
+  <extension point="org.eclipse.wst.sse.ui.completionProposal">
+    <proposalCategory
+      id="org.scalaide.play2.completion.proposalCategory.template">
+    </proposalCategory>
+    <proposalComputerExtendedActivation
+          id="org.eclipse.wst.html.ui.proposalComputer.htmlTags">
+       <contentType
+             id="org.scalaide.play2.templateSource">
+          <partitionType
+                id="org.eclipse.wst.html.HTML_DEFAULT">
+          </partitionType>
+          <partitionType
+                id="org.eclipse.wst.html.HTML_COMMENT">
+          </partitionType>
+          <partitionType
+                id="org.eclipse.wst.sse.ST_DEFAULT">
+          </partitionType>
+       </contentType>
+    </proposalComputerExtendedActivation>
+    <proposalComputerExtendedActivation
+          id="org.eclipse.wst.html.ui.proposalComputer.htmlTemplates">
+       <contentType
+             id="org.scalaide.play2.templateSource">
+          <partitionType
+                id="org.eclipse.wst.html.HTML_DEFAULT">
+          </partitionType>
+          <partitionType
+                id="org.eclipse.wst.html.HTML_COMMENT">
+          </partitionType>
+          <partitionType
+                id="org.eclipse.wst.sse.ST_DEFAULT">
+          </partitionType>
+       </contentType>
+    </proposalComputerExtendedActivation>
+    <proposalComputerExtendedActivation
+          id="org.eclipse.wst.xml.ui.proposalComputer.xmlTags">
+       <contentType
+             id="org.scalaide.play2.templateSource">
+          <partitionType
+                id="org.eclipse.wst.xml.XML_DEFAULT">
+          </partitionType>
+       </contentType>
+    </proposalComputerExtendedActivation>
+    <proposalComputerExtendedActivation
+          id="org.eclipse.wst.xml.ui.proposalComputer.xmlTemplates">
+       <contentType
+             id="org.scalaide.play2.templateSource">
+          <partitionType
+                id="org.eclipse.wst.xml.XML_DEFAULT">
+          </partitionType>
+       </contentType>
+    </proposalComputerExtendedActivation>
+    <proposalComputerExtendedActivation
+          id="org.eclipse.wst.css.ui.proposalComputer.css">
+       <contentType
+             id="org.scalaide.play2.templateSource">
+          <partitionType
+                id="org.eclipse.wst.css.STYLE">
+          </partitionType>
+       </contentType>
+    </proposalComputerExtendedActivation>
+    <proposalComputerExtendedActivation
+          id="org.eclipse.wst.css.ui.proposalComputer.cssTemplates">
+       <contentType
+             id="org.scalaide.play2.templateSource">
+          <partitionType
+                id="org.eclipse.wst.css.STYLE">
+          </partitionType>
+       </contentType>
+    </proposalComputerExtendedActivation>
+    <proposalComputer
+      activate="false"
+      categoryId="org.scalaide.play2.completion.proposalCategory.template"
+      class="org.scalaide.play2.templateeditor.completion.CompletionProposalComputer"
+      id="org.scalaide.play2.completion.proposalComputer.template">
+      <contentType id="org.scalaide.play2.templateSource">
+        <partitionType id="__template_scala"></partitionType>
+      </contentType>
+    </proposalComputer>
+  </extension>
+  <!-- Template and HTML hyperlinking -->
+  <extension point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectorTargets">
+    <target
+      id="org.scalaide.play2.templateSource"
+      name="%Template_Source_target_name"/>
+    <target
+      id="org.eclipse.wst.html.core.htmlsource"
+      name="%HTML_Editors_target_name"/>
+    <target
+      id="org.eclipse.wst.html.SCRIPT"
+      name="%hyperlink.target.script.name"/>
+    <target
+      id="org.eclipse.wst.html.SCRIPT.EVENTHANDLER"
+      name="%hyperlink.target.eventhandler.name"/>
+  </extension>
+  <extension point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+    <hyperlinkDetector
+      class="org.scalaide.play2.templateeditor.sse.hyperlink.StructuredTemplateDeclarationHyperlinkDetector"
+      id="org.scalaide.play2.templateeditor.sse.hyperlink.StructuredTemplateDeclarationHyperlinkDetector"
+      name="%Template_Scala_hyperlink"
+      targetId="org.scalaide.play2.templateSource">
+    </hyperlinkDetector>
+    <hyperlinkDetector
+      class="org.scalaide.play2.templateeditor.hyperlink.LocalTemplateHyperlinkComputer"
+      id="org.scalaide.play2.templateeditor.hyperlink.LocalTemplateHyperlinkComputer"
+      name="%Template_Local_Definition_hyperlink"
+      targetId="org.scalaide.play2.templateSource">
+    </hyperlinkDetector>
+    <hyperlinkDetector
+      class="org.eclipse.wst.html.ui.internal.hyperlink.AnchorHyperlinkDetector"
+      id="org.eclipse.wst.html.ui.internal.hyperlink.AnchorHyperlinkDetector"
+      name="%hyperlinkDetector.anchor.name"
+      targetId="org.eclipse.core.runtime.xml">
+    </hyperlinkDetector>
+  </extension>
+    
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -84,6 +279,7 @@
             id="org.scalaide.play2.templateSource"
             name="Play Template File"
             priority="high">
+            <describer class="org.scalaide.play2.templateeditor.sse.TemplateContentDescriber"/>
       </content-type>
    </extension>
    <extension
@@ -222,12 +418,55 @@
          </menu>
       </menuContribution>
    </extension>
+   <extension point="org.eclipse.ui.editorActions">
+     <editorContribution
+         targetID="org.scalaide.play2.templateSource"
+         id="org.scalaide.play2.templateSource.ruler.actions">
+      <action
+            label="%AddBookmark.label"
+            helpContextId="org.eclipse.ui.bookmark_action_context"
+            class="org.eclipse.ui.texteditor.BookmarkRulerAction"
+            actionID="RulerDoubleClick"
+            id="org.eclipse.ui.texteditor.BookmarkRulerAction"/>
+      <action
+            label="%SelectRuler.label"
+            class="org.eclipse.ui.texteditor.SelectRulerAction"
+            actionID="RulerClick"
+            id="org.eclipse.ui.texteditor.SelectRulerAction"/>
+     </editorContribution>
+   </extension>
    <extension
          point="org.eclipse.ui.handlers">
       <handler
             class="org.scalaide.play2.routeeditor.handlers.LocalRename"
             commandId="org.scala-ide.play2.routeeditor.commands.rename">
       </handler>
+   </extension>
+   <!-- Enable the FormatHandler for Template Content Type -->
+   <!-- TODO: I was expecting this to enable the html formatter to work properly. But it didn't. Need to figure out why -->
+   <extension point="org.eclipse.ui.handlers">
+     <handler 
+       class="org.eclipse.wst.sse.ui.internal.handlers.FormatHandler"
+       commandId="org.eclipse.wst.sse.ui.format">
+       <activeWhen>
+         <reference definitionId="org.scalaide.play2.templateSourceContentType.definition"></reference>
+       </activeWhen>
+       <enabledWhen>
+         <reference definitionId="org.scalaide.play2.templateSourceContentType.definition"></reference>
+       </enabledWhen>
+     </handler>
+   </extension>
+   <!-- Set up a definition for Template Content Types -->
+   <extension point="org.eclipse.core.expressions.definitions">
+     <definition id="org.scalaide.play2.templateSourceContentType.definition">
+       <iterate ifEmpty="false">
+         <adapt type="org.eclipse.core.resources.IFile">
+           <!-- Force property tester to load, should not cause entire plug-in to start -->
+           <test property="org.eclipse.wst.sse.core.resources.contentTypeId"
+             value="org.scalaide.play2.templateSource" forcePluginActivation="true"/>
+         </adapt>
+       </iterate>
+     </definition>
    </extension>
    <!--
    <extension

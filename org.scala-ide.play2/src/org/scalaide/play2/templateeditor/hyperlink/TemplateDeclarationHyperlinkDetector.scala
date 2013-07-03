@@ -23,12 +23,13 @@ import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import scala.tools.eclipse.hyperlink.text.detector.DeclarationHyperlinkDetector
 import scala.tools.eclipse.util.Utils
 
+
 class TemplateDeclarationHyperlinkDetector extends DeclarationHyperlinkDetector {
 
   override def runDetectionStrategy(icu: InteractiveCompilationUnit, textEditor: ITextEditor, currentSelection: IRegion): List[IHyperlink] = {
     val input = textEditor.getEditorInput
     val doc = textEditor.getDocumentProvider.getDocument(input)
-    if (!doc.getContentType(currentSelection.getOffset()).equals(TemplatePartitions.TEMPLATE_SCALA)) {
+    if (doc.getPartition(currentSelection.getOffset()).getType() != TemplatePartitions.TEMPLATE_SCALA) {
       return Nil // should not be null, if it was null, it would throw an exception
     }
     if (doc.getChar(currentSelection.getOffset()) == '.') // otherwise it will generate an error

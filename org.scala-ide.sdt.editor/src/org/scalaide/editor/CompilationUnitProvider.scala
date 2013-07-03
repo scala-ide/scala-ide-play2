@@ -1,9 +1,10 @@
 package org.scalaide.editor
 
 import org.eclipse.core.resources.IFile
-
 import org.eclipse.ui.IEditorInput
 import org.eclipse.ui.part.FileEditorInput
+import org.eclipse.ui.texteditor.ITextEditor
+import org.eclipse.jface.text.IDocument
 
 /** Abstract provider for compilation units.
   *
@@ -11,7 +12,7 @@ import org.eclipse.ui.part.FileEditorInput
   */
 abstract class CompilationUnitProvider[T <: CompilationUnit] {
   /** Returns a new compilation unit for the passed `editor` */
-  def fromEditor(editor: SourceCodeEditor): T = {
+  def fromEditor(editor: ITextEditor): T = {
     val input = editor.getEditorInput
     if (input == null)
       throw new NullPointerException("No editor input for the passed `editor`. Hint: Maybe the editor isn't yet fully initialized?")
@@ -20,6 +21,12 @@ abstract class CompilationUnitProvider[T <: CompilationUnit] {
       unit.connect(editor.getDocumentProvider().getDocument(input))
       unit
     }
+  }
+  
+  def fromFileAndDocument(file: IFile, doc: IDocument): T = {
+    val unit = mkCompilationUnit(file)
+    unit.connect(doc)
+    unit
   }
 
   private def getFile(editorInput: IEditorInput, fileExtension: String): IFile = {
