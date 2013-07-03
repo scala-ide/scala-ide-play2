@@ -16,7 +16,7 @@ class TemplateStructuredEditor extends StructuredTextEditor with AbstractTemplat
   
   /* This is a nasty hack. 
    * The problem:  The TemplateStructuredTextViewerConfiguration needs the pref store and a reference to the editor.
-   *               However, it is instantiated through an extension point, so we don't have the opportunity to give create as we need.
+   *               However, the viewer configuration is instantiated through an extension point, so we don't have the opportunity to give it the pref store and a reference to the editor.
    * The solution: Intercept the instance of the TemplateStructuredTextViewerConfiguration and inject it/create a new one with the 
    *               pref store and reference to the editor (self) 
    * Note: the TemplateStructuredTextViewerConfiguration has additional logic to support this hack.

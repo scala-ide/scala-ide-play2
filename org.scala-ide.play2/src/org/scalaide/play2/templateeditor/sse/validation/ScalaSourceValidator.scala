@@ -13,6 +13,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidationContext
 import org.eclipse.wst.validation.internal.provisional.core.IValidator
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 
+
 class ScalaSourceValidator extends IValidator {
   
   /* IValidator methods */
@@ -20,15 +21,6 @@ class ScalaSourceValidator extends IValidator {
   def cleanup(report: IReporter) = {}
   
   def validate(helper: IValidationContext, reporter: IReporter) = {
-    import org.eclipse.core.resources.IMarker
-    import org.eclipse.core.resources.IResource
-    import org.eclipse.core.resources.ResourcesPlugin
-    import org.eclipse.core.runtime.Path
-    import org.eclipse.jdt.core.IJavaModelMarker
-    import org.eclipse.wst.validation.internal.operations.LocalizedMessage
-    import org.eclipse.wst.validation.internal.provisional.core.IMessage
-    import org.scalaide.play2.templateeditor.TemplateCompilationUnit
-    import scala.util.Try
 
     val wsroot = ResourcesPlugin.getWorkspace().getRoot()
     for {

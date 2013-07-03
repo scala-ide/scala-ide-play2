@@ -3,6 +3,7 @@ package org.scalaide.play2.templateeditor.sse.lexical
 import org.eclipse.jface.text.ITypedRegion
 import org.eclipse.jface.text.TypedRegion
 import org.scalaide.play2.templateeditor.lexical.TemplatePartitions
+import scala.collection.mutable.ArrayBuffer
 
 object PartitionHelpers {
   def isMagicAt(token: ITypedRegion, codeString: String) = {
@@ -14,24 +15,27 @@ object PartitionHelpers {
     val s = codeString.substring(token.getOffset(), token.getOffset() + token.getLength()).trim
     token.getType() == TemplatePartitions.TEMPLATE_DEFAULT && s.length == 1 && (s == "}" || s == "{")
   }
-  
+
   /* Combines neighbouring regions based on some user provided criteria */
   def mergeAdjacent[Repr <: Seq[ITypedRegion]](partitions: Repr)(test: (ITypedRegion, ITypedRegion) => Option[String]): IndexedSeq[ITypedRegion] = {
-    partitions.foldLeft(Array[ITypedRegion]())((accum, region) => {
-      accum match {
-        case Array() => Array(region)
-        case _       => {
-          def merge(l: ITypedRegion, r: ITypedRegion, t: String) = 
-            new TypedRegion(l.getOffset, l.getLength + r.getLength, t)
-          val htmlPartitions = Set(TemplatePartitions.TEMPLATE_PLAIN, TemplatePartitions.TEMPLATE_TAG)
-          val previousRegion = accum.last
-          test(previousRegion, region) match {
-            case Some(tpe) => accum.dropRight(1) :+ merge(previousRegion, region, tpe)
-            case None      => accum :+ region
-          }
+    val htmlPartitions = Set(TemplatePartitions.TEMPLATE_PLAIN, TemplatePartitions.TEMPLATE_TAG)
+    val accum = new ArrayBuffer[ITypedRegion]
+    for (region <- partitions) {
+      if (accum.length == 0)
+        accum += region
+      else {
+        def merge(l: ITypedRegion, r: ITypedRegion, t: String) =
+          new TypedRegion(l.getOffset, l.getLength + r.getLength, t)
+        val previousRegion = accum.last
+        test(previousRegion, region) match {
+          case Some(tpe) =>
+            accum(accum.length - 1) = merge(previousRegion, region, tpe)
+          case None =>
+            accum += region
         }
       }
-    })
+    }
+    accum
   }
   
   /* Combines neighbouring regions that have the same type */

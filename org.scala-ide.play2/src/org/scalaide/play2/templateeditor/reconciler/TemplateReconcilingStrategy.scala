@@ -17,10 +17,6 @@ object TemplateReconcilingStrategy {
   private class Reloader(templateEditor: AbstractTemplateEditor) extends IDocumentListener {
     def documentChanged(event: DocumentEvent) {
       templateEditor.compilationUnitProvider.fromEditor(templateEditor).askReload()
-      // FIXME: Couldn't this be a call to `askReload` like in the worksheet plugin?
-      // templateEditor.getInteractiveCompilationUnit.updateTemplateSourceFile()
-      // FIXME: This looks fishy: Why do we need to invalidate the text presentation?
-      // templateEditor.getViewer.invalidateTextPresentation()
     }
 
     def documentAboutToBeChanged(event: DocumentEvent) {}

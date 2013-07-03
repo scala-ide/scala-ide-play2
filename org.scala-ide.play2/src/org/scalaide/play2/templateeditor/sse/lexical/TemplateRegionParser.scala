@@ -2,12 +2,10 @@ package org.scalaide.play2.templateeditor.sse.lexical
 
 import java.io.Reader
 import java.io.StringReader
-
 import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
 import scala.tools.eclipse.lexical.ScalaCodeScanner
 import scala.tools.eclipse.logging.HasLogger
-
 import org.eclipse.jface.text.IDocument
 import org.eclipse.ui.editors.text.EditorsUI
 import org.eclipse.ui.texteditor.ChainedPreferenceStore
@@ -35,8 +33,8 @@ import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses
 import org.scalaide.play2.templateeditor.lexical.TemplatePartitionTokeniser
 import org.scalaide.play2.templateeditor.lexical.TemplatePartitions
-
 import scalariform.ScalaVersions
+import scala.collection.mutable.HashMap
 
 object TemplateDocumentRegions {
   val SCALA_DOC_REGION = "SCALA_CONTENT"
@@ -98,17 +96,17 @@ class TemplateRegionParser extends RegionParser with HasLogger {
   }
   
   def computeRegions(codeString: String): Array[IStructuredDocumentRegion] = {
-    @tailrec
-    def getDocumentRegionAtOffset(headRegion: IStructuredDocumentRegion, offset: Int): Option[IStructuredDocumentRegion] = {
-      if (headRegion == null) None
-      else {
-        if (headRegion.containsOffset(offset))
-          Some(headRegion)
-        else
-          getDocumentRegionAtOffset(headRegion.getNext(), offset)
-      }
-    }
     
+    def buildDocRegionMap(headRegion: IStructuredDocumentRegion): collection.Map[Int, IStructuredDocumentRegion] = {
+      val map = new HashMap[Int, IStructuredDocumentRegion]
+      var current = headRegion
+      while (current != null) {
+        for (i <- current.getStart() to (current.getEnd() - 1))
+          map(i) = current
+        current = current.getNext()
+      }
+      map
+    }
     
     def getNumberOfDocumentRegions(headRegion: IStructuredDocumentRegion) = {
       @tailrec
@@ -146,6 +144,8 @@ class TemplateRegionParser extends RegionParser with HasLogger {
     htmlParser.addBlockMarker(new BlockMarker("style", null, DOMRegionContext.BLOCK_TEXT, false))
     htmlParser.reset(codeString)
     val htmlDocumentRegions = htmlParser.getDocumentRegions()
+    val htmlDocumentRegionsMap = buildDocRegionMap(htmlDocumentRegions)
+    lazy val htmlDocumentRegionsLength = getNumberOfDocumentRegions(htmlDocumentRegions)
     var resultRegions = htmlDocumentRegions
     
     // tokenise, merge '@' tokens with scala code tokens, and then merge any adjacent tokens of the same type.
@@ -165,7 +165,7 @@ class TemplateRegionParser extends RegionParser with HasLogger {
             // scala code text region. I don't believe there would ever be a case where an @ in the middle of the token,
             // but I really must verify that assumption before making the change.
             val scalaCode = codeString.substring(token.getOffset(), token.getOffset() + token.getLength())
-            val regions = TemplatePartitionTokeniser.tokenise(scalaCode).map(t => {
+            val regions = TemplatePartitionTokeniser.tokenise(scalaCode).flatMap(t => {
               val baseOffset = token.getOffset() + t.getOffset()
               if (PartitionHelpers.isMagicAt(t, scalaCode)) {
                 List(new ScalaTextRegion(TemplateSyntaxClasses.MAGIC_AT, t.getOffset(), t.getLength(), t.getLength()))
@@ -178,7 +178,7 @@ class TemplateRegionParser extends RegionParser with HasLogger {
                 val tokens = scanner.tokenize(dummyDoc, baseOffset, t.getLength())
                 tokens.map(v => { new ScalaTextRegion(v.syntaxClass, v.start - token.getOffset(), v.length, v.length) })
               }
-            }).flatten
+            })
             (regions, TemplateDocumentRegions.SCALA_DOC_REGION)
           }
           else if (PartitionHelpers.isBrace(token, codeString))
@@ -188,11 +188,11 @@ class TemplateRegionParser extends RegionParser with HasLogger {
           else (List(), "UNDEFINED")
         }
         
-        if (templateTextRegions.isEmpty == false) {
+        if (templateTextRegions.nonEmpty) {
           // absolute offsets
           val (startEffectedOffset, endEffectedOffset) = (token.getOffset(), token.getOffset() + token.getLength())
-          val startEffectedDocumentRegionOpt = getDocumentRegionAtOffset(htmlDocumentRegions, startEffectedOffset)
-          val endEffectedDocumentRegionOpt = getDocumentRegionAtOffset(htmlDocumentRegions, endEffectedOffset - 1)
+          val startEffectedDocumentRegionOpt = htmlDocumentRegionsMap.get(startEffectedOffset)
+          val endEffectedDocumentRegionOpt = htmlDocumentRegionsMap.get(endEffectedOffset - 1)
           
           (startEffectedDocumentRegionOpt, endEffectedDocumentRegionOpt) match {
             case (Some(startEffectedDocumentRegion), Some(endEffectedDocumentRegion)) => {
@@ -204,7 +204,7 @@ class TemplateRegionParser extends RegionParser with HasLogger {
                 region.setLength(token.getLength())
                 templateTextRegions.foreach(region.addRegion(_))
                 
-                if (getNumberOfDocumentRegions(htmlDocumentRegions) == 1) {
+                if (htmlDocumentRegionsLength == 1) {
                   resultRegions = region
                 }
                 else {
