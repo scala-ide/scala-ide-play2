@@ -1,7 +1,7 @@
 package org.scalaide.play2.routeeditor
 
 import org.eclipse.jface.text.IDocument
-import scala.tools.eclipse.util.Utils.any2optionable
+import scala.tools.eclipse.util.Utils
 import org.scalaide.play2.routeeditor.lexical.RouteDocumentPartitioner
 import org.eclipse.jface.text.IRegion
 import scala.annotation.tailrec
@@ -120,6 +120,7 @@ object RouteUriWithRegion {
   
   /** Returns all the regions with URI in the passed `document`. */
   def allUrisInDocument(document: IDocument): List[RouteUriWithRegion] = {
+    import Utils._
     (for {
       partitioner <- document.getDocumentPartitioner().asInstanceOfOpt[RouteDocumentPartitioner].toList
       partition <- partitioner.uriPartitions

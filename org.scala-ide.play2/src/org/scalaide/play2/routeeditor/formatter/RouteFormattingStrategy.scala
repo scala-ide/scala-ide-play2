@@ -1,7 +1,7 @@
 package org.scalaide.play2.routeeditor.formatter
 
 import scala.collection.mutable.ArrayBuffer
-import scala.tools.eclipse.util.EclipseUtils.adaptableToPimpedAdaptable
+import scala.tools.eclipse.util.EclipseUtils
 
 import org.eclipse.core.resources.IResource
 import org.eclipse.core.runtime.IAdaptable
@@ -166,7 +166,10 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
     this.regionOpt = None
   }
 
-  private def getProject = editor.getEditorInput.asInstanceOf[IAdaptable].adaptTo[IResource].getProject
+  private def getProject = {
+    import EclipseUtils._
+    editor.getEditorInput.asInstanceOf[IAdaptable].adaptTo[IResource].getProject
+  }
 
   def format(content: String, isLineStart: Boolean, indentation: String, positions: Array[Int]): String = null
 

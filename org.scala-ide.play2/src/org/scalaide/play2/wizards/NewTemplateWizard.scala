@@ -2,7 +2,6 @@ package org.scalaide.play2.wizards
 
 import scala.tools.eclipse.logging.HasLogger
 import scala.tools.eclipse.util.SWTUtils
-import scala.tools.eclipse.util.Utils.any2optionable
 
 import org.eclipse.jface.viewers.IStructuredSelection
 
