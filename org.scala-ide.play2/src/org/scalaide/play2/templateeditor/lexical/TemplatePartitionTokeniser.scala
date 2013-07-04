@@ -63,13 +63,14 @@ object TemplatePartitionTokeniser extends PlayPartitionTokeniser {
     allRegions U defaultRegions
   }
 
-  def tokenise(template: IDocument): List[TypedRegion] = {
-    val templateCode = template.get
+  def tokenise(template: IDocument): List[TypedRegion] = 
+    tokenise(template.get)
+
+  def tokenise(templateCode: String): List[TypedRegion] = {
     val xmlTagRegions = getXMLTagRegions(templateCode)
     val (scalaCommentRegions, plainRegions) = getScalaCommentAndPlainRegions(templateCode)
     val xmlTagPlainRegions = xmlTagRegions ^ plainRegions
     val plainWithoutXmlTagRegions = plainRegions \ xmlTagRegions
     calculateAllRegions(xmlTagPlainRegions, scalaCommentRegions, plainWithoutXmlTagRegions, templateCode)
   }
-
 }
