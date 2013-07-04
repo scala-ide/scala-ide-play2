@@ -337,8 +337,9 @@ class SyntaxColouringPreferencePage(allSyntaxClasses: List[ScalaSyntaxClass], de
       massSetEnablement(false)
     case Some(syntaxClass) =>
       import syntaxClass._
-      syntaxForegroundColorEditor.setColorValue(EclipseUtils.prefStoreToPimpedPrefStore(overlayStore) getColor foregroundColourKey)
-      syntaxBackgroundColorEditor.setColorValue(EclipseUtils.prefStoreToPimpedPrefStore(overlayStore) getColor backgroundColourKey)
+      import EclipseUtils._
+      syntaxForegroundColorEditor.setColorValue(overlayStore getColor foregroundColourKey)
+      syntaxBackgroundColorEditor.setColorValue(overlayStore getColor backgroundColourKey)
       val backgroundColorEnabled = overlayStore getBoolean backgroundColourEnabledKey
       backgroundColorEnabledCheckBox.setSelection(backgroundColorEnabled)
       enabledCheckBox.setSelection(overlayStore getBoolean enabledKey)
