@@ -8,8 +8,8 @@ Fragment-Host: org.scala-ide.play2
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.scala-ide.scala.library,
  org.eclipse.equinox.weaving.aspectj,
- org.junit4;bundle-version="4.5.0",
- org.scala-ide.sdt.core
+ org.scala-ide.sdt.core,
+ org.junit
 Import-Package: scala.tools.eclipse.testsetup,
  org.aspectj.weaver.loadtime.definition
 Bundle-ClassPath: .,
