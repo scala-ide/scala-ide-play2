@@ -35,6 +35,12 @@ import org.scalaide.play2.templateeditor.lexical.TemplatePartitionTokeniser
 import org.scalaide.play2.templateeditor.lexical.TemplatePartitions
 import scalariform.ScalaVersions
 import scala.collection.mutable.HashMap
+import org.eclipse.wst.xml.core.internal.parser.regions.AttributeNameRegion
+import org.eclipse.wst.sse.core.internal.provisional.events.StructuredDocumentEvent
+import org.eclipse.wst.sse.core.internal.provisional.events.RegionChangedEvent
+import org.eclipse.wst.sse.core.internal.util.Debug
+import org.eclipse.wst.xml.core.internal.parser.regions.RegionUpdateRule
+import org.eclipse.wst.sse.core.internal.util.Utilities
 
 object TemplateDocumentRegions {
   val SCALA_DOC_REGION = "SCALA_CONTENT"
@@ -116,10 +122,61 @@ class TemplateRegionParser extends RegionParser with HasLogger {
       }
       aux(headRegion, 0)
     }
+    
+    // This is a copy and pasted implementation of AttributeNameRegion, with the only change being that adjustTextLength
+    // actually adds the parameter to the field :). Had to reimplement the whole class because the fields in AttributeNameRegion are private
+    class FixedAttributeNameRegion(start: Int, textLength: Int, length: Int) extends AttributeNameRegion(start, textLength, length) { 
+      private var fLength: Int = length
+      private var fStart: Int = start
+      private var fTextLength: Int = textLength
+
+      override def adjustLength(i: Int) { fLength += i }
+      override def adjustStart(i: Int) { fStart += i }
+      override def adjustTextLength(i: Int) { fTextLength += i } // this is the only thing that's changed!!
+      override def equatePositions(region: ITextRegion) {
+        fStart = region.getStart
+        fLength = region.getLength
+        fTextLength = region.getTextLength
+      }
+      override def getEnd(): Int = fStart + fLength
+      override def getLength(): Int = fLength
+      override def getStart(): Int = fStart
+      override def getTextEnd(): Int = fStart + fTextLength
+      override def getTextLength(): Int = fTextLength
+      override def updateRegion(requester: AnyRef, 
+          parent: IStructuredDocumentRegion, 
+          changes: String, 
+          requestStart: Int, 
+          lengthToReplace: Int): StructuredDocumentEvent = {
+        var result: RegionChangedEvent = null
+        if (Debug.debugStructuredDocument) {
+          println("\t\tContextRegion::updateModel")
+          println("\t\t\tregion type is " + getType())
+        }
+        var canHandle = false
+        canHandle = if ((changes == null) || (changes.length == 0)) if ((fStart >= getTextEnd) || 
+          (Math.abs(lengthToReplace) >= getTextEnd - getStart)) false else true else if ((RegionUpdateRule.canHandleAsWhiteSpace(this, 
+          parent, changes, requestStart, lengthToReplace)) || 
+          RegionUpdateRule.canHandleAsLetterOrDigit(this, parent, changes, requestStart, lengthToReplace)) true else false
+        if (canHandle) {
+          if (Debug.debugStructuredDocument) {
+            println("change handled by region")
+          }
+          val lengthDifference = Utilities.calculateLengthDifference(changes, lengthToReplace)
+          if (!RegionUpdateRule.canHandleAsWhiteSpace(this, parent, changes, requestStart, lengthToReplace)) {
+            fTextLength += lengthDifference
+          }
+          fLength += lengthDifference
+          result = new RegionChangedEvent(parent.getParentDocument, requester, parent, this, changes, requestStart, 
+            lengthToReplace)
+        }
+        result
+      }
+    }
 
     def copyXMLTextRegion(region: ITextRegion): ITextRegion = region match {
       case attribEquals: AttributeEqualsRegion => new AttributeEqualsRegion(attribEquals.getStart(), attribEquals.getTextLength(), attribEquals.getLength())
-      case attribName: AttributeNameRegion => new AttributeNameRegion(attribName.getStart(), attribName.getTextLength(), attribName.getLength())
+      case attribName: AttributeNameRegion => new FixedAttributeNameRegion(attribName.getStart(), attribName.getTextLength(), attribName.getLength())
       case attribValue: AttributeValueRegion => new AttributeValueRegion(attribValue.getStart(), attribValue.getTextLength(), attribValue.getLength())
       case emptyTagClose: EmptyTagCloseRegion => new EmptyTagCloseRegion(emptyTagClose.getStart(), emptyTagClose.getTextLength(), emptyTagClose.getLength())
       case endTagOpen: EndTagOpenRegion => new EndTagOpenRegion(endTagOpen.getStart(), endTagOpen.getTextLength(), endTagOpen.getLength())
@@ -242,7 +299,9 @@ class TemplateRegionParser extends RegionParser with HasLogger {
                   // split left text region if necessary
                   if (effectedDocRegion.getStartOffset(leftTextRegion) < startEffectedOffset) {
                     val leftSplit = copyXMLTextRegion(leftTextRegion)
-                    leftSplit.adjustLength(-(effectedDocRegion.getEndOffset(leftTextRegion) - startEffectedOffset))
+                    val adjustment = -(effectedDocRegion.getEndOffset(leftTextRegion) - startEffectedOffset)
+                    leftSplit.adjustLength(adjustment)
+                    leftSplit.adjustTextLength(adjustment)
                     newTextRegions += leftSplit
                   }
                   
@@ -260,6 +319,7 @@ class TemplateRegionParser extends RegionParser with HasLogger {
                     val adjustment = endEffectedOffset - effectedDocRegion.getStartOffset(rightTextRegion)
                     rightSplit.adjustStart(adjustment)
                     rightSplit.adjustLength(-adjustment)
+                    rightSplit.adjustTextLength(-adjustment)
                     newTextRegions += rightSplit
                   }
                   
