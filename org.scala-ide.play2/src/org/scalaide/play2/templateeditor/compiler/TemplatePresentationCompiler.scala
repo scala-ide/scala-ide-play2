@@ -57,7 +57,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
         val problems = scalaProject.withPresentationCompiler(pc => pc.problemsOf(src.file))()
         def mapOffset(offset: Int) = generatedSource.mapPosition(offset)
         def mapLine(line: Int) = generatedSource.mapLine(line)
-        problems map (p => p match {
+        problems.filter(!isAtCodeDotSpecial(_, generatedSource.content)) map (p => p match {
           // problems of the generated scala file
           case problem: DefaultProblem => new DefaultProblem(
             tcu.getTemplateFullPath.toCharArray(),
@@ -95,6 +95,17 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
       1)
   }
 
+  private def isAtCodeDotSpecial(p: IProblem, content: String): Boolean = {
+    val start = content.lastIndexOf("_display_(Seq[Any](", p.getSourceEnd());
+    if (start != -1 && p.getSourceEnd() < content.length() - 2) {
+      val substr = content.substring(start, p.getSourceEnd() + 2);
+
+      TemplatePresentationCompiler.AtCodeDotSpecialRegex.findFirstIn(substr).isDefined;
+    } else {
+      false;
+    }
+  }
+
   /**
    * Reload the template compilation unit
    *
@@ -121,6 +132,11 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
   def destroy() = {
     CompilerUsing.templateCompiler.TemplateAsFunctionCompiler.CompilerInstance.compiler.askShutdown()
   }
+}
+
+object TemplatePresentationCompiler {
+
+  val AtCodeDotSpecialRegex = """_display_\(Seq\[Any\]\(\/\*\d+\.\d+\*\/\p{javaJavaIdentifierStart}\p{javaJavaIdentifierPart}+\/\*\d+\.\d+\*\/\.\)\)""".r
 }
 
 object ScalaFileManager {

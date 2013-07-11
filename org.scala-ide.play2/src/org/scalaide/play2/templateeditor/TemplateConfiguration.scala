@@ -73,6 +73,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Abstrac
     assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer))
     assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), TemplatePartitions.TEMPLATE_SCALA)
     assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), TemplatePartitions.TEMPLATE_PLAIN)
+    assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), TemplatePartitions.TEMPLATE_TAG)
     assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), IDocument.DEFAULT_CONTENT_TYPE)
     assistant
   }

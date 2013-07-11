@@ -7,6 +7,9 @@ import scala.util.parsing.input.OffsetPosition
  *  While the current implementation is identical to the original source, this might change in the future. 
  *  Please, have a look at the git history of this file to know the exact set of changes.
  *  
+ *  05/27/2013 - Added atCodeDotSpecial to handle special cases of simple expressions like at~ident~dot and
+ *               improve the code completion inside the play2 template editor. 
+ *  
  *  @note Please, make sure to update the above notice the moment sensible changes are made to this source, as this is required by the section 
  *        4.2.b of the Apache2 license (Play2 is licensed under Apache2). 
  *        Specifically, 4.2.b in the Apache2 license states: '''You must cause any modified files to carry prominent notices stating that You changed the files'''.
@@ -441,7 +444,14 @@ package play.templates {
         }
       }
 
+      def atCodeDotSpecial: Parser[Seq[TemplateTree]] = {
+        at ~> positioned(identifier ^^ { case ident => Simple(ident) }) ~ positioned("." ^^ { case d => Simple(d) }) ~ positioned(("<" | " " | "\t" | "\n" | "\r") ^^ { case s => Plain(s) }) ^^ {
+          case ident ~ code ~ t => List(Display(ScalaExp(ident :: code :: Nil)), t);
+        }
+      }
+
       def mixed: Parser[Seq[TemplateTree]] = {
+        atCodeDotSpecial |
         ((comment | scalaBlockDisplayed | caseExpression | matchExpression | forExpression | safeExpression | plain | expression) ^^ { case t => List(t) }) |
           (positionalLiteral("{") ~ several(mixed) ~ positionalLiteral("}")) ^^ { case p1 ~ content ~ p2 => { p1 +: content.flatten :+ p2 } }
       }
