@@ -303,10 +303,7 @@ class TemplateRegionParser extends RegionParser with HasLogger {
                 }
               }
               else {
-                // handle the case where we need to trim text regions and then insert our text regions
-                // Note: this code does not try to handle scala code that spans two (or more) xml document regions
-                if (startEffectedDocumentRegion == endEffectedDocumentRegion) {
-                  val effectedDocRegion = startEffectedDocumentRegion
+                def insertScalaRegions(effectedDocRegion: IStructuredDocumentRegion, templateTextRegions: Seq[ScalaTextRegion], startEffectedOffset: Int, endEffectedOffset: Int) = {
                   val textRegions = effectedDocRegion.getRegions().toArray().toArray // "textregionlist to java array to scala array
                   val leftTextRegion = effectedDocRegion.getRegionAtCharacterOffset(startEffectedOffset)
                   val rightTextRegion = effectedDocRegion.getRegionAtCharacterOffset(endEffectedOffset - 1) // end offsets are not inclusive
@@ -362,8 +359,96 @@ class TemplateRegionParser extends RegionParser with HasLogger {
                     newTextRegionList.add(tr)
                   effectedDocRegion.setRegions(newTextRegionList)
                 }
+                
+                // handle the case where we need to trim text regions and then insert our text regions
+                // Note: this code does not try to handle scala code that spans two (or more) xml document regions
+                if (startEffectedDocumentRegion == endEffectedDocumentRegion) {
+                  val effectedDocRegion = startEffectedDocumentRegion
+                  insertScalaRegions(effectedDocRegion, templateTextRegions, startEffectedOffset, endEffectedOffset)
+                }
                 else {
-                  logger.debug("TemplateRegionParser: the scenario where scala code crosses two different xml document regions is not implemented.")
+                  // Get a list of all effected document regions, plus their corresponding start and end effected offsets
+                  //   (which will correspond exactly to the document's start and end for the non-head and non-tail elements.
+                  var effectedDocuments: ListBuffer[(IStructuredDocumentRegion, Int, Int)] = {
+                     val result: ListBuffer[(IStructuredDocumentRegion, Int, Int)] = ListBuffer((startEffectedDocumentRegion, startEffectedOffset, startEffectedDocumentRegion.getEnd()))
+                     var doc = startEffectedDocumentRegion.getNext()
+                     while (doc != endEffectedDocumentRegion) {
+                       doc = doc.getNext()
+                       if (doc != endEffectedDocumentRegion)
+                         result += ((doc, doc.getStart(), doc.getEnd()))
+                     } 
+                     result += ((endEffectedDocumentRegion, endEffectedDocumentRegion.getStart(), endEffectedOffset))
+                     
+                     // there can be gaps.. so create new doc regions for the gaps
+                     for (i <- 0 to (result.length - 2)) {
+                       val ((l, lstart, lend), (r, rstart, _)) = result(i) -> result(i+1)
+                       if (lend != rstart) {
+                         val newRegion = new BasicStructuredDocumentRegion
+                         newRegion.addRegion(new ContextRegion("UNDEFINED", 0, rstart - lend, rstart - lend))
+                         newRegion.setStart(lend)
+                         newRegion.setLength(rstart - lend)
+                         l.setNext(newRegion)
+                         newRegion.setPrevious(l)
+                         newRegion.setNext(r)
+                         r.setPrevious(newRegion)
+                         result.insert(i+1, (newRegion, lend, rstart))
+                       }
+                     }
+                     
+                     result
+                   }
+                  
+                  var currentTextRegion = 0 
+                  val scalaRegions: ArrayBuffer[ScalaTextRegion] = ArrayBuffer()
+                  for ((effectedDocRegion, startEffectedOffset, endEffectedOffset) <- effectedDocuments) {
+                    def globalOffset(offset: Int) = token.getOffset() + offset
+                    
+                    var done = false
+                    while (!done && currentTextRegion < templateTextRegions.length) {
+                      val tr = templateTextRegions(currentTextRegion)
+                      val trGlobalStart = globalOffset(tr.getStart())
+                      val trGlobalEnd = globalOffset(tr.getEnd())
+                      
+                      val contained = trGlobalStart >= startEffectedOffset && trGlobalEnd <= endEffectedOffset
+                      val leftOverlap = trGlobalStart < startEffectedOffset && trGlobalEnd <= endEffectedOffset
+                      val rightOverlap = trGlobalStart >= startEffectedOffset && trGlobalStart < endEffectedOffset && trGlobalEnd > endEffectedOffset
+                      val overspan = trGlobalStart <= startEffectedOffset && trGlobalEnd >= endEffectedOffset
+                      
+                      // the scala text region is fully within the doc region
+                      if (contained) {
+                        scalaRegions += tr
+                        currentTextRegion += 1
+                      }
+                      // the scala text region overlaps the left hand side of the doc region
+                      else if (leftOverlap) {
+                        val trcopy = tr.copy()
+                        trcopy.setStart(startEffectedOffset - effectedDocRegion.getStart())
+                        trcopy.setLength(trcopy.getLength() - (startEffectedOffset - trGlobalStart))
+                        scalaRegions += trcopy
+                        currentTextRegion += 1
+                      }
+                      // the scala text region overlaps the right hand side of the doc region
+                      else if (rightOverlap) {
+                        val trcopy = tr.copy()
+                        trcopy.setLength(trcopy.getLength() - (trGlobalEnd - endEffectedOffset))
+                        scalaRegions += trcopy
+                        // don't increment currentTextRegion because it might also be used by the next structured document
+                      }
+                      // the scala text region fully encompasses the doc region 
+                      else if (overspan) {
+                        val trcopy = tr.copy()
+                        trcopy.setStart(0)
+                        trcopy.setLength(effectedDocRegion.getLength())
+                        scalaRegions += tr.copy()
+                        // don't increment currentTextRegion because it might also be used by the next structured document
+                      }
+                      
+                      done = overspan || rightOverlap || (trGlobalStart >= endEffectedOffset)
+                    }
+                    
+                    insertScalaRegions(effectedDocRegion, scalaRegions, startEffectedOffset, endEffectedOffset)
+                    scalaRegions.clear()
+                  }
                 }
               }
             }
