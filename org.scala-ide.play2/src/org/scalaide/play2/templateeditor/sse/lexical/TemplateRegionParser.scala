@@ -45,6 +45,8 @@ import play.templates.ScalaTemplateParser
 import org.eclipse.jface.text.TypedRegion
 import scala.collection.mutable.ListBuffer
 import org.eclipse.jface.text.Document
+import PartitionHelpers._
+import org.eclipse.jface.text.ITypedRegion
 
 object TemplateDocumentRegions {
   val SCALA_DOC_REGION = "SCALA_CONTENT"
@@ -214,15 +216,15 @@ class TemplateRegionParser extends RegionParser with HasLogger {
     
     // tokenise, merge '@' tokens with scala code tokens, and then merge any adjacent tokens of the same type.
     // Merging here has the affect of not having neighbouring document regions of the same type
-    val tokens = TemplatePartitionTokeniser.tokenise(codeString).toVector
-    val tokenIndexLookup = new collection.mutable.HashMap[Int, TypedRegion]
+    val tokens = separateBraceOrMagicAtFromEqual(TemplatePartitionTokeniser.tokenise(codeString), codeString).toVector
+    val tokenIndexLookup = new collection.mutable.HashMap[Int, ITypedRegion]
     tokenIndexLookup.sizeHint(tokens.length)
     for (reg <- tokens) {
       val kv = (reg.getOffset(), reg)
       tokenIndexLookup += kv
     }
 
-    val mergedTokens = PartitionHelpers.mergeAdjacentWithSameType(PartitionHelpers.combineMagicAt(tokens, codeString)).toArray
+    val mergedTokens = mergeAdjacentWithSameType(combineMagicAt(tokens, codeString)).toArray
     val dummyDoc = new Document(codeString)
     for (token <- mergedTokens) {
       val representsHTML =
