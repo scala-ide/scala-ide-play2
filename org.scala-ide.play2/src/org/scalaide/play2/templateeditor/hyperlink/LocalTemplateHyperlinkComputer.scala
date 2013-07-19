@@ -72,7 +72,7 @@ class LocalTemplateHyperlinkComputer extends AbstractHyperlinkDetector {
       val fileOption = EditorHelper.findFileOfDocument(doc)
       fileOption match {
         case Some(file) => {
-          val scu = TemplateCompilationUnit.fromFileAndDocument(file, doc)
+          val scu = TemplateCompilationUnitProvider(false).fromFileAndDocument(file, doc)
           findHyperlinks(scu) match {
             // I know you will be tempted to remove this, but don't do it, JDT expects null when no hyperlinks are found.
             case Nil => null

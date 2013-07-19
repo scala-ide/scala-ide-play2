@@ -107,7 +107,7 @@ class TemplateRegionParser extends RegionParser with HasLogger {
     cachedRegions.reset()
   }
   
-  def computeRegions(codeString: String): Array[IStructuredDocumentRegion] = ScalaTemplateParser.performTaskWithInclusiveDot {
+  def computeRegions(codeString: String): Array[IStructuredDocumentRegion] = {
     
     def buildDocRegionMap(headRegion: IStructuredDocumentRegion): collection.Map[Int, IStructuredDocumentRegion] = {
       val map = new HashMap[Int, IStructuredDocumentRegion]

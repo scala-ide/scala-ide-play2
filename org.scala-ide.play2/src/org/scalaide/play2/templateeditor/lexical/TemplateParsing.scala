@@ -1,7 +1,6 @@
 package org.scalaide.play2.templateeditor.lexical
 
 import scala.util.parsing.input.CharSequenceReader
-import play.templates.ScalaTemplateCompiler
 import play.templates.ScalaTemplateCompiler.Block
 import play.templates.ScalaTemplateCompiler.Comment
 import play.templates.ScalaTemplateCompiler.Def
@@ -23,8 +22,8 @@ import play.templates.ScalaTemplateParser
  */
 object TemplateParsing {
   implicit def stringToCharSeq(str: String) = new CharSequenceReader(str)
-  val compiler = ScalaTemplateCompiler
-  val parser = compiler.templateParser
+
+  val parser = new ScalaTemplateParser
 
   sealed abstract class PlayTemplate(input: Positional, kind: String) {
     val offset = input.pos match {
@@ -104,7 +103,7 @@ object TemplateParsing {
    * Returns list of different types of region of the template code
    */
   def handleTemplateCode(templateCode: String) = {
-    val result = ScalaTemplateParser.performTaskWithInclusiveDot(parser.parse(templateCode)) match {
+    val result = parser.parse(templateCode, true) match {
       case parser.Success(p, _)          => handleTemplate(p)
       case parser.Error(p, rest, errors) => handleTemplate(p)
     }

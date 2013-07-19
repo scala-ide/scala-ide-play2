@@ -19,6 +19,9 @@ import org.eclipse.wst.sse.ui.contentassist.{ICompletionProposalComputer, Comple
 import org.eclipse.core.runtime.IProgressMonitor
 import scala.tools.eclipse.InteractiveCompilationUnit
 import play.templates.ScalaTemplateParser
+import org.scalaide.play2.templateeditor.AbstractTemplateEditor
+import org.scalaide.play2.templateeditor.TemplateEditor
+import org.scalaide.play2.templateeditor.TemplateCompilationUnitProvider
 
 class CompletionProposalComputer extends ScalaCompletions with IContentAssistProcessor with ICompletionProposalComputer {
 
@@ -56,15 +59,22 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
   override def getContextInformationValidator = null
 
   override def computeCompletionProposals(viewer: ITextViewer, offset: Int): Array[ICompletionProposal] = {
-    val compileUnit: Option[InteractiveCompilationUnit] = textEditor match {
-      case Some(editor) => EditorUtils.getEditorCompilationUnit(editor)
-      case None => ScalaTemplateParser.performTaskWithInclusiveDot {
-        EditorHelper.findEditorOfDocument(viewer.getDocument()).flatMap(EditorUtils.getEditorCompilationUnit(_))
+    val editor: Option[AbstractTemplateEditor] = textEditor match {
+      case Some(e: AbstractTemplateEditor) => Some(e)
+      case None => EditorHelper.findEditorOfDocument(viewer.getDocument()).filter(_.isInstanceOf[AbstractTemplateEditor]).asInstanceOf[Option[AbstractTemplateEditor]]
+      case _ => None
+    }
+
+    val compileUnit: Option[TemplateCompilationUnit] = editor map { templateEditor =>
+      templateEditor.compilationUnitProvider match {
+        case tcup: TemplateCompilationUnitProvider => tcup.copy(usesInclusiveDot = true).fromEditor(templateEditor)
+        case _ => null // will be caught by the catch-all case in the compileUnit match
       }
     }
     
     compileUnit match {
-      case Some(tcu: TemplateCompilationUnit) => ScalaTemplateParser.performTaskWithInclusiveDot {
+      case Some(tcu) => {
+        // FIXME: askReload doesn't (always) trigger a recompile
         tcu.askReload()
         tcu.withSourceFile { findCompletions(viewer, offset, tcu) }(List[ICompletionProposal]()).toArray
       }

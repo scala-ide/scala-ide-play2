@@ -46,7 +46,7 @@ class PlayProject private (val scalaProject: ScalaProject) {
   def initialize() {
     val templateCompilationUnits = for (
       r <- scalaProject.underlying.members() if r.isInstanceOf[IFile] && r.getFullPath().toString().endsWith("." + PlayPlugin.TemplateExtension)
-    ) yield TemplateCompilationUnit(r.asInstanceOf[IFile])
+    ) yield TemplateCompilationUnit(r.asInstanceOf[IFile], false) // FIXME: Why do we need to create these compilation units in the first place? If we actually do, should the inclusiveDot parameter here be false or true?
     templateCompilationUnits foreach (_.askReload())
     // TODO: Why was there a second round of ask reload here?
     // templateCompilationUnits.reverse foreach (_.askReload())

@@ -34,7 +34,7 @@ import org.scalaide.editor.CompilationUnitProvider
  *  view of a tmeplate with the Eclipse IDE view of the underlying
  *  resource.
  */
-case class TemplateCompilationUnit(_workspaceFile: IFile) extends CompilationUnit(_workspaceFile) with HasLogger {
+case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: Boolean) extends CompilationUnit(_workspaceFile) with HasLogger {
 
   /** A virtual file which is in synch with content of the document
    *  in order not to use a temporary real file
@@ -161,7 +161,7 @@ case class TemplateCompilationUnit(_workspaceFile: IFile) extends CompilationUni
     if (oldContents != getTemplateContents) {
       oldContents = getTemplateContents
       logger.debug("[generating template] " + getTemplateFullPath)
-      cachedGenerated = CompilerUsing.compileTemplateToScalaVirtual(getTemplateContents.toString(), file.file, playProject)
+      cachedGenerated = CompilerUsing.compileTemplateToScalaVirtual(getTemplateContents.toString(), file.file, playProject, usesInclusiveDot)
     }
     cachedGenerated
   }
@@ -174,7 +174,7 @@ case class TemplateCompilationUnit(_workspaceFile: IFile) extends CompilationUni
 
 }
 
-object TemplateCompilationUnit extends CompilationUnitProvider[TemplateCompilationUnit] {
-  override protected def mkCompilationUnit(file: IFile): TemplateCompilationUnit = TemplateCompilationUnit(file)
+case class TemplateCompilationUnitProvider(val usesInclusiveDot: Boolean) extends CompilationUnitProvider[TemplateCompilationUnit] {
+  override protected def mkCompilationUnit(file: IFile): TemplateCompilationUnit = TemplateCompilationUnit(file, usesInclusiveDot)
   override protected def fileExtension: String = PlayPlugin.TemplateExtension
 }

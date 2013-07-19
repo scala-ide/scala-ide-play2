@@ -12,22 +12,6 @@ import scala.tools.eclipse.logging.HasLogger
 import scala.annotation.elidable
 import scala.annotation.elidable._
 
-// FIXME - remove this logic/the global state and somehow weave this logic into the Parser itself at it's invocation sites.
-object ScalaTemplateParser {
-  
-  protected var methodsShouldIncludeTrailingDot: Boolean = false
-  
-  def performTaskWithInclusiveDot[T](task: => T): T = {
-    methodsShouldIncludeTrailingDot = true
-    try {
-      val result = task
-      result
-    } finally {
-      methodsShouldIncludeTrailingDot = false
-    }
-  }
-}
-
 /**
  * ScalaTemplateParser is a recursive descent parser for a modified grammar of the Play2 template language as loosely defined [[http://www.playframework.com/documentation/2.1.x/ here]] and more rigorously defined by the original template parser, [[play.templates.ScalaTemplateCompiler.TemplateParser]].
  * ScalaTemplateParser is meant to be a near drop in replacement for [[play.templates.ScalaTemplateCompiler.TemplateParser]].
@@ -188,6 +172,7 @@ class ScalaTemplateParser extends HasLogger {
   
   private val input: Input = new Input
   private val errorStack: ListBuffer[PosString] = ListBuffer()
+  private var inclusiveDot_ : Boolean = false
   
   /** 
    *  Try to match `str` and advance `str.length` characters.
@@ -714,7 +699,7 @@ class ScalaTemplateParser extends HasLogger {
       result
     }
     
-    if (ScalaTemplateParser.methodsShouldIncludeTrailingDot) 
+    if (inclusiveDot_) 
       inclusiveDot()
     else
       exclusiveDot()
@@ -803,10 +788,11 @@ class ScalaTemplateParser extends HasLogger {
     (imports, localDefs, templates, mixeds)
   }
   
-  def parse(source: String): ParseResult = {
+  def parse(source: String, inclusiveDot: Boolean): ParseResult = {
     // Initialize mutable state
     input.reset(source)
     errorStack.clear()
+    inclusiveDot_ = inclusiveDot
     
     val commentpos = input.offset
     val cm = Option(position(comment(), commentpos))
