@@ -23,7 +23,7 @@ import play.templates.ScalaTemplateParser
 object TemplateParsing {
   implicit def stringToCharSeq(str: String) = new CharSequenceReader(str)
 
-  val parser = new ScalaTemplateParser
+  val parser = new ScalaTemplateParser(true)
 
   sealed abstract class PlayTemplate(input: Positional, kind: String) {
     val offset = input.pos match {
@@ -103,7 +103,7 @@ object TemplateParsing {
    * Returns list of different types of region of the template code
    */
   def handleTemplateCode(templateCode: String) = {
-    val result = parser.parse(templateCode, true) match {
+    val result = parser.parse(templateCode) match {
       case parser.Success(p, _)          => handleTemplate(p)
       case parser.Error(p, rest, errors) => handleTemplate(p)
     }

@@ -202,8 +202,8 @@ package play.templates {
     }
     
     def parseAndGenerateCode(templateName: Array[String], content: Array[Byte], absolutePath: String, resultType: String, formatterType: String, additionalImports: String, inclusiveDot: Boolean) = {
-      val templateParser = new ScalaTemplateParser()
-      templateParser.parse(new String(content, "UTF-8"), inclusiveDot) match {
+      val templateParser = new ScalaTemplateParser(inclusiveDot)
+      templateParser.parse(new String(content, "UTF-8")) match {
         case templateParser.Success(parsed, rest) if rest.atEnd => {
           generateFinalTemplate(absolutePath, 
             content,

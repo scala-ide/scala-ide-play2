@@ -59,16 +59,13 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
   override def getContextInformationValidator = null
 
   override def computeCompletionProposals(viewer: ITextViewer, offset: Int): Array[ICompletionProposal] = {
-    val editor: Option[AbstractTemplateEditor] = textEditor match {
-      case Some(e: AbstractTemplateEditor) => Some(e)
-      case None => EditorHelper.findEditorOfDocument(viewer.getDocument()).filter(_.isInstanceOf[AbstractTemplateEditor]).asInstanceOf[Option[AbstractTemplateEditor]]
-      case _ => None
-    }
+    val editorFilter: PartialFunction[ITextEditor, AbstractTemplateEditor] = { case e: AbstractTemplateEditor => e }
+    val editor = (textEditor collect editorFilter) orElse (EditorHelper.findEditorOfDocument(viewer.getDocument()) collect editorFilter)
 
     val compileUnit: Option[TemplateCompilationUnit] = editor map { templateEditor =>
       templateEditor.compilationUnitProvider match {
         case tcup: TemplateCompilationUnitProvider => tcup.copy(usesInclusiveDot = true).fromEditor(templateEditor)
-        case _ => null // will be caught by the catch-all case in the compileUnit match
+        case _ => null // null will be caught by the catch-all case in the compileUnit match
       }
     }
     

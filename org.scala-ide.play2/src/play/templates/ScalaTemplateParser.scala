@@ -91,7 +91,7 @@ import scala.annotation.elidable._
  *   - Invalid ("alone") '@' symbols. 
  */
 
-class ScalaTemplateParser extends HasLogger {
+class ScalaTemplateParser(val shouldParseInclusiveDot: Boolean) extends HasLogger {
   
   import ScalaTemplateCompiler._
   import scala.util.parsing.input.Positional
@@ -172,7 +172,6 @@ class ScalaTemplateParser extends HasLogger {
   
   private val input: Input = new Input
   private val errorStack: ListBuffer[PosString] = ListBuffer()
-  private var inclusiveDot_ : Boolean = false
   
   /** 
    *  Try to match `str` and advance `str.length` characters.
@@ -699,7 +698,7 @@ class ScalaTemplateParser extends HasLogger {
       result
     }
     
-    if (inclusiveDot_) 
+    if (shouldParseInclusiveDot) 
       inclusiveDot()
     else
       exclusiveDot()
@@ -788,11 +787,10 @@ class ScalaTemplateParser extends HasLogger {
     (imports, localDefs, templates, mixeds)
   }
   
-  def parse(source: String, inclusiveDot: Boolean): ParseResult = {
+  def parse(source: String): ParseResult = {
     // Initialize mutable state
     input.reset(source)
     errorStack.clear()
-    inclusiveDot_ = inclusiveDot
     
     val commentpos = input.offset
     val cm = Option(position(comment(), commentpos))
