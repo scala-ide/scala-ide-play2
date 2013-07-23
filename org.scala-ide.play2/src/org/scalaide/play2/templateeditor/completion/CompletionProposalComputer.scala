@@ -18,6 +18,10 @@ import org.scalaide.editor.util.EditorHelper
 import org.eclipse.wst.sse.ui.contentassist.{ICompletionProposalComputer, CompletionProposalInvocationContext}
 import org.eclipse.core.runtime.IProgressMonitor
 import scala.tools.eclipse.InteractiveCompilationUnit
+import play.templates.ScalaTemplateParser
+import org.scalaide.play2.templateeditor.AbstractTemplateEditor
+import org.scalaide.play2.templateeditor.TemplateEditor
+import org.scalaide.play2.templateeditor.TemplateCompilationUnitProvider
 
 class CompletionProposalComputer extends ScalaCompletions with IContentAssistProcessor with ICompletionProposalComputer {
 
@@ -55,15 +59,22 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
   override def getContextInformationValidator = null
 
   override def computeCompletionProposals(viewer: ITextViewer, offset: Int): Array[ICompletionProposal] = {
-    val compileUnit: Option[InteractiveCompilationUnit] = textEditor match {
-      case Some(editor) => EditorUtils.getEditorCompilationUnit(editor)
-      case None => EditorHelper.findEditorOfDocument(viewer.getDocument()).flatMap(EditorUtils.getEditorCompilationUnit(_))
+    val editorFilter: PartialFunction[ITextEditor, AbstractTemplateEditor] = { case e: AbstractTemplateEditor => e }
+    val editor = (textEditor collect editorFilter) orElse (EditorHelper.findEditorOfDocument(viewer.getDocument()) collect editorFilter)
+
+    val compileUnit: Option[TemplateCompilationUnit] = editor map { templateEditor =>
+      templateEditor.compilationUnitProvider match {
+        case tcup: TemplateCompilationUnitProvider => tcup.copy(usesInclusiveDot = true).fromEditor(templateEditor)
+        case _ => null // null will be caught by the catch-all case in the compileUnit match
+      }
     }
     
     compileUnit match {
-      case Some(tcu: TemplateCompilationUnit) =>
+      case Some(tcu) => {
+        // FIXME: askReload doesn't (always) trigger a recompile
         tcu.askReload()
         tcu.withSourceFile { findCompletions(viewer, offset, tcu) }(List[ICompletionProposal]()).toArray
+      }
       case _ => Array()
     }
   }
@@ -77,8 +88,10 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
         mappedPosition <- tcu.mapTemplateToScalaOffset(position - 1)
         realPosition = mappedPosition + 1
       } yield {
-        findCompletions(mappedRegion)(realPosition, tcu)(sourceFile, compiler).sortBy(_.relevance).reverse map { prop =>
-          val newProp = prop.copy(startPos = prop.startPos - realPosition + position)
+        // `realPosition` is only valid if completing on a non-zero length name
+        val actualPosition = if (region.getLength() == 0) mappedRegion.getOffset() else realPosition 
+        findCompletions(mappedRegion)(realPosition, tcu)(sourceFile, compiler).sortBy(prop => -(prop.relevance)) map { prop =>
+          val newProp = prop.copy(startPos = prop.startPos - actualPosition + position)
           ScalaCompletionProposal(viewer.getSelectionProvider)(newProp)  
         }
       }

@@ -1,7 +1,6 @@
 package org.scalaide.play2.templateeditor.sse.validation
 
 import scala.util.Try
-
 import org.eclipse.core.resources.IMarker
 import org.eclipse.core.resources.IResource
 import org.eclipse.core.resources.ResourcesPlugin
@@ -11,7 +10,7 @@ import org.eclipse.wst.sse.core.StructuredModelManager
 import org.eclipse.wst.validation.internal.provisional.core.IReporter
 import org.eclipse.wst.validation.internal.provisional.core.IValidationContext
 import org.eclipse.wst.validation.internal.provisional.core.IValidator
-import org.scalaide.play2.templateeditor.TemplateCompilationUnit
+import org.scalaide.play2.templateeditor.TemplateCompilationUnitProvider
 
 
 class ScalaSourceValidator extends IValidator {
@@ -38,7 +37,7 @@ class ScalaSourceValidator extends IValidator {
         } marker.delete()
         
         val doc = model.getStructuredDocument()
-        val compilationUnit = TemplateCompilationUnit.fromFileAndDocument(currentFile, doc)
+        val compilationUnit = TemplateCompilationUnitProvider(false).fromFileAndDocument(currentFile, doc)
         for (error <- compilationUnit.reconcile(doc.get())) {
           val (priority, severity) =
             if (error.isError()) (IMarker.PRIORITY_HIGH, IMarker.SEVERITY_ERROR)

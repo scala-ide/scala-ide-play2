@@ -55,7 +55,7 @@ class TemplatePartitionTokeniserTest {
     val p1 = """@test = {
   is viewed
 }"""
-    t(List(d(0, 1), s(1, 4), d(5, 4), p(9, 13), d(22, 1)), p1)
+    t(List(d(0, 1), s(1, 4), d(5, 4), p(9, 3), p(12, 10), d(22, 1)), p1)
     // bug #20
     // reusable block with scala code
     val p2 = """@test = @{

@@ -29,7 +29,7 @@ import views.html._
    * invokes compile method of template compiler and returns generated source object or
    * in the case of error, returns appropriate exception
    */
-  def compileTemplateToScalaVirtual(content: String, source: File, playProject: PlayProject): Try[GeneratedSourceVirtual] = {
+  def compileTemplateToScalaVirtual(content: String, source: File, playProject: PlayProject, inclusiveDot: Boolean): Try[GeneratedSourceVirtual] = {
     val sourcePath = playProject.sourceDir.getAbsolutePath()
     if (source.getAbsolutePath().indexOf(sourcePath) == -1)
       logger.debug(s"Template file '${source.getAbsolutePath}' must be located in '$sourcePath' or one of its subfolders!")
@@ -37,11 +37,23 @@ import views.html._
     val extension = source.getName.split('.').last
 
     Try {
-      templateCompiler.compileVirtual(content, source, playProject.sourceDir, "play.api.templates.Html", "play.api.templates.HtmlFormat", defaultTemplateImports + playProject.additionalTemplateImports(extension))
+      templateCompiler.compileVirtual(
+        content,
+        source,
+        playProject.sourceDir,
+        "play.api.templates.Html",
+        "play.api.templates.HtmlFormat",
+        defaultTemplateImports + playProject.additionalTemplateImports(extension),
+        inclusiveDot
+      )
     } recoverWith {
       case TemplateCompilationError(source, message, line, column) =>
         val offset = PositionHelper.convertLineColumnToOffset(content, line, column)
         Failure(TemplateToScalaCompilationError(source, message, offset, line, column))
+      case ex: Exception => {
+        val error = s"Caught unknown exception: '${ex.getMessage()}'\n${ex.getStackTraceString}"
+        Failure(TemplateToScalaCompilationError(source, error, 0, 0, 0))
+      }
     }
   }
 

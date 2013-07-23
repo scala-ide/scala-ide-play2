@@ -23,8 +23,8 @@ import org.eclipse.ui.editors.text.TextEditor
 trait AbstractTemplateEditor extends SourceCodeEditor { self: TextEditor =>
   
   override protected type UnderlyingCompilationUnit = TemplateCompilationUnit
-
-  override val compilationUnitProvider: CompilationUnitProvider[UnderlyingCompilationUnit] = TemplateCompilationUnit
+  
+  override val compilationUnitProvider: CompilationUnitProvider[UnderlyingCompilationUnit] = TemplateCompilationUnitProvider(false)
 }
 
 class TemplateEditor extends TextEditor with AbstractTemplateEditor {

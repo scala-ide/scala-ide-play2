@@ -46,7 +46,7 @@ class PlayProject private (val scalaProject: ScalaProject) {
   def initialize() {
     val templateCompilationUnits = for (
       r <- scalaProject.underlying.members() if r.isInstanceOf[IFile] && r.getFullPath().toString().endsWith("." + PlayPlugin.TemplateExtension)
-    ) yield TemplateCompilationUnit(r.asInstanceOf[IFile])
+    ) yield TemplateCompilationUnit(r.asInstanceOf[IFile], false)
     templateCompilationUnits foreach (_.askReload())
     // TODO: Why was there a second round of ask reload here?
     // templateCompilationUnits.reverse foreach (_.askReload())
