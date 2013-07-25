@@ -13,7 +13,34 @@ object PartitionHelpers {
   
   def isBrace(token: ITypedRegion, codeString: String) = {
     val s = codeString.substring(token.getOffset(), token.getOffset() + token.getLength()).trim
-    token.getType() == TemplatePartitions.TEMPLATE_DEFAULT && s.length == 1 && (s == "}" || s == "{")
+    token.getType() == TemplatePartitions.TEMPLATE_DEFAULT && s.length > 0 && s.foldLeft(true)((r, c) => r && (c == '{' || c == '}' || c.isWhitespace))
+  }
+
+  /**
+   * Check if the given token has the following characteristics:
+   *  - Represents a "Template default" partition.
+   *  - Corresponding text matches the following pseudo-regex: (spaceOrTab?)('{' | '}')(spaceOrTab?)('@')(spaceOrTab?)
+   */
+  def isCombinedBraceMagicAt(token: ITypedRegion, codeString: String): Boolean = {
+    val s = codeString.substring(token.getOffset(), token.getOffset() + token.getLength())
+    if(token.getType() == TemplatePartitions.TEMPLATE_DEFAULT) {
+      var seenBrace = false
+      var seenAt = false
+      var seenBadChar = false
+      for (c <- s) {
+        if (!seenBrace) {
+          if (c == '{' || c == '}') seenBrace = true
+          else if (!(c == ' ' || c == '\t')) seenBadChar = true
+        }
+        else if (seenBrace) {
+          if (c == '@') seenAt = true
+          else if (!(c == ' ' || c == '\t')) seenBadChar = true
+        }
+        else if (!(c == ' ' || c == '\t')) seenBadChar = true
+      }
+      seenBrace && seenAt && !seenBadChar
+    }
+    else false
   }
 
   /* Combines neighbouring regions based on some user provided criteria */

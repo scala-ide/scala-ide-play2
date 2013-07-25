@@ -122,7 +122,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Abstrac
 
   override def getTextHover(sv: ISourceViewer, contentType: String, stateMask: Int): ITextHover = {
     if (templateEditor != null && contentType.equals(TemplatePartitions.TEMPLATE_SCALA)) {
-      val cu = TemplateCompilationUnit.fromEditor(templateEditor)
+      val cu = TemplateCompilationUnitProvider(false).fromEditor(templateEditor)
       new TemplateHover(cu)
     } 
     else new DefaultTextHover(sv)

@@ -119,7 +119,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
     })()
 
   def destroy() = {
-    CompilerUsing.templateCompiler.TemplateAsFunctionCompiler.CompilerInstance.compiler.askShutdown()
+    CompilerUsing.templateCompiler.TemplateAsFunctionCompiler.shutdownPresentationCompiler()
   }
 }
 
