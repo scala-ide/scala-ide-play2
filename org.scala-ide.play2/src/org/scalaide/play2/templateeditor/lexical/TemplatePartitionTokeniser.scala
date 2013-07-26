@@ -13,23 +13,18 @@ import org.scalaide.play2.lexical.PlayPartitionTokeniser
 import scala.collection.mutable.ArrayBuffer
 import org.scalaide.editor.util.RegionHelper._
 
-object TemplatePartitionTokeniser extends PlayPartitionTokeniser {
+class TemplatePartitionTokeniser extends PlayPartitionTokeniser {
 
-  /**
-   * calculates XML tag regions by using scala partition tokensier
-   */
-  def getXMLTagRegions(templateCode: String): List[TypedRegion] = {
-    val toks = ScalaPartitionTokeniser.tokenise(templateCode)
-    val newToks = toks.filter(_.contentType == ScalaPartitions.XML_TAG).map(t => {
+  /** Calculates XML tag regions by using scala partition tokensier. */
+  private def getXMLTagRegions(templateCode: String): List[TypedRegion] = {
+    val tokens = ScalaPartitionTokeniser.tokenise(templateCode)
+    tokens.filter(_.contentType == ScalaPartitions.XML_TAG).map(t => {
       new TypedRegion(t.start, t.length, TemplatePartitions.TEMPLATE_TAG)
     })
-    newToks
   }
 
-  /**
-   * calculates scala, comment, and plain regions using template parser
-   */
-  def getScalaCommentAndPlainRegions(templateCode: String): (List[TypedRegion], List[TypedRegion]) = {
+  /** Calculates scala, comment, and plain regions using template parser. */
+  private def getScalaCommentAndPlainRegions(templateCode: String): (List[TypedRegion], List[TypedRegion]) = {
     val parts = TemplateParsing.handleTemplateCode(templateCode)
     import TemplateParsing._
     val tokens: List[TypedRegion] = parts.map(t => {
@@ -40,21 +35,21 @@ object TemplatePartitionTokeniser extends PlayPartitionTokeniser {
       }
       new TypedRegion(t.offset, t.length, contentType)
     })
-    val sortedUsefulRegions = tokens.filter(e => (e.getOffset() != -1)&&(e.getLength() > 0)).sortWith((a, b) => a.getOffset() < b.getOffset())
+    val sortedUsefulRegions = tokens.filter(e => (e.getOffset() != -1) && (e.getLength() > 0)).sortWith((a, b) => a.getOffset() < b.getOffset())
     val plainRegions = sortedUsefulRegions.filter(e => e.getType() == TemplatePartitions.TEMPLATE_PLAIN)
     val scalaCommentRegions = sortedUsefulRegions.filter(e => e.getType() != TemplatePartitions.TEMPLATE_PLAIN)
     (scalaCommentRegions, plainRegions)
   }
 
-  /**
-   * calculates the template partitions.
+  /** 
+   * Calculates the template partitions.
    * 
    * @param xmlTagPlainRegions 			tags which are plain text, which means are represented to user
    * @param scalaCommentRegions			scala and comment regions
    * @param plainWithoutXmlTagRegions 	plain texts which are not part of tag
    * @param templateCode				template code which we'd like to tokenise
    */
-  def calculateAllRegions(xmlTagPlainRegions: List[TypedRegion], scalaCommentRegions: List[TypedRegion], plainWithoutXmlTagRegions: List[TypedRegion], templateCode: String): List[TypedRegion] = {
+  private def calculateAllRegions(xmlTagPlainRegions: List[TypedRegion], scalaCommentRegions: List[TypedRegion], plainWithoutXmlTagRegions: List[TypedRegion], templateCode: String): List[TypedRegion] = {
     def defaultRegion(start: Int, offset: Int) =
       new TypedRegion(start, offset, TemplatePartitions.TEMPLATE_DEFAULT)
     val allRegions = (xmlTagPlainRegions U scalaCommentRegions) U plainWithoutXmlTagRegions
@@ -63,7 +58,7 @@ object TemplatePartitionTokeniser extends PlayPartitionTokeniser {
     allRegions U defaultRegions
   }
 
-  def tokenise(template: IDocument): List[TypedRegion] = 
+  override final def tokenise(template: IDocument): List[TypedRegion] = 
     tokenise(template.get)
 
   def tokenise(templateCode: String): List[TypedRegion] = {
