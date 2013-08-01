@@ -50,11 +50,11 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Abstrac
 
   private val defaultScanner = new TemplateDefaultScanner(prefStore)
 
-  private val plainScanner = new SingleTokenScanner(TemplateSyntaxClasses.PLAIN, prefStore)
+  private val plainScanner = new SingleTokenScanner(prefStore, TemplateSyntaxClasses.PLAIN)
 
   private val scalaScanner = new ScalaCodeScanner(prefStore, ScalaVersions.Scala_2_10)
 
-  private val commentScanner = new SingleTokenScanner(TemplateSyntaxClasses.COMMENT, prefStore)
+  private val commentScanner = new SingleTokenScanner(prefStore, TemplateSyntaxClasses.COMMENT)
 
   private val tagScanner = new HtmlTagScanner(prefStore)
 
