@@ -36,14 +36,14 @@ class TemplateRegionParserTest {
     textRegions.toList
   }
   
-  private def comment(length: Int) = new ScalaTextRegion(COMMENT, 0, length, length)
-  private def at = new ScalaTextRegion(MAGIC_AT, 0, 1, 1)
-  private def bk = new ScalaTextRegion(ScalaSyntaxClasses.BRACKET, 0, 1, 1)
-  private def bc = new ScalaTextRegion(BRACE, 0, 1, 1)
-  private def op(length: Int = 1) = new ScalaTextRegion(ScalaSyntaxClasses.OPERATOR, 0, length, length)
-  private def kw(length: Int) = new ScalaTextRegion(ScalaSyntaxClasses.KEYWORD, 0, length, length)
-  private def oth(length: Int) = new ScalaTextRegion(ScalaSyntaxClasses.DEFAULT, 0, length, length)
-  private def str(length: Int) = new ScalaTextRegion(ScalaSyntaxClasses.STRING, 0, length, length)
+  private def comment(length: Int) = new TemplateTextRegion(COMMENT, 0, length, length)
+  private def at = new TemplateTextRegion(MAGIC_AT, 0, 1, 1)
+  private def bk = new TemplateTextRegion(ScalaSyntaxClasses.BRACKET, 0, 1, 1)
+  private def bc = new TemplateTextRegion(BRACE, 0, 1, 1)
+  private def op(length: Int = 1) = new TemplateTextRegion(ScalaSyntaxClasses.OPERATOR, 0, length, length)
+  private def kw(length: Int) = new TemplateTextRegion(ScalaSyntaxClasses.KEYWORD, 0, length, length)
+  private def oth(length: Int) = new TemplateTextRegion(ScalaSyntaxClasses.DEFAULT, 0, length, length)
+  private def str(length: Int) = new TemplateTextRegion(ScalaSyntaxClasses.STRING, 0, length, length)
     
   private def xmlcontent(length: Int) = new XMLContentRegion(0, length)
   private def xmlto(length: Int) = new TagOpenRegion(0, length, length)
@@ -57,6 +57,30 @@ class TemplateRegionParserTest {
 
   private def addTextRegions(doc: IStructuredDocumentRegion, textRegions: Seq[ITextRegion]): Unit =
     textRegions.foreach(doc.addRegion(_))
+    
+  @Test
+  def reuseableCodeBlock() = {
+    val p = "@foo = {\n}"
+    val e = tr(docR(10, oth(1).getType(), tr(at, oth(3), xmlcontent(3), bc, xmlcontent(1), bc)))
+    performChecks(e, p)
+  }
+  
+  @Test
+  def pureReuseableCodeBlock() = {
+    val p = "@foo = @{\n}"
+    val e = tr(docR(11, oth(1).getType(), tr(at, oth(3), xmlcontent(3), at, bk, oth(1), bk)))
+    performChecks(e, p)
+  }
+  
+  @Test
+  def multipleSpannedDocRegions() = {
+    val p = "foo@{true && false} "
+    val e = 
+      tr(docR(10, at.getType(), tr(xmlcontent(3), at, bk, kw(4), oth(1))),
+         docR(1, op().getType(), tr(op())),
+         docR(9, oth(1).getType(), tr(op(), oth(1), kw(5), bk, xmlcontent(1))))
+    performChecks(e, p)
+  }
     
   @Test
   def commentTest() = {
@@ -124,7 +148,7 @@ class TemplateRegionParserTest {
   private def performChecks(expected: List[IStructuredDocumentRegion], code: String, pureHTML: Boolean = false) = {
     val parser = new TemplateRegionParser
     parser.reset(code)
-    val actual = parser.computeRegions(code).toList
+    val actual = parser.templateRegions.structuredRegions.toList
     
     @tailrec
     def noOverlap(list: List[ITextRegion]): Boolean = {

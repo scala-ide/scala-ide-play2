@@ -4,7 +4,6 @@ import org.junit.Test
 import org.junit.Assert._
 import scala.tools.eclipse.testsetup.TestProjectSetup
 import org.eclipse.jdt.core.IJavaElement
-import TemplatePartitionTokeniser._
 import org.eclipse.jdt.core.IMethod
 import org.eclipse.jdt.core.Signature
 import org.eclipse.jface.text.TypedRegion
@@ -12,9 +11,9 @@ import org.eclipse.jface.text.TypedRegion
 import org.junit.AfterClass
 import scala.tools.eclipse.testsetup.SDTTestUtils
 import org.eclipse.jface.text.IDocument
-import org.eclipse.jface.text.Document
 import org.scalaide.editor.util.RegionHelper._
 import scala.annotation.tailrec
+import org.eclipse.jdt.internal.core.util.SimpleDocument
 
 class TemplatePartitionTokeniserTest {
 
@@ -69,7 +68,8 @@ val x = "x string"
   }
 
   private def testForTokenise(expected: List[TypedRegion], program: String) = {
-    val actual = tokenise(new Document(program))
+    val tokeniser = new TemplatePartitionTokeniser
+    val actual = tokeniser.tokenise(new SimpleDocument(program))
 
     @tailrec
     def noOverlap(list: List[TypedRegion]): Boolean = {
