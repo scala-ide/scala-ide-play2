@@ -41,7 +41,7 @@ class TemplateStructuredTextPartitioner extends StructuredTextPartitioner with I
   
   override def getPartitionType(region: ITextRegion, offset: Int) = {
     region match {
-      case scalaRegion: ScalaTextRegion => scalaRegion.syntaxClass match {
+      case scalaRegion: TemplateTextRegion => scalaRegion.syntaxClass match {
         case TemplateSyntaxClasses.COMMENT => TemplatePartitions.TEMPLATE_COMMENT
         case TemplateSyntaxClasses.MAGIC_AT => TemplatePartitions.TEMPLATE_PLAIN
         case TemplateSyntaxClasses.BRACE => TemplatePartitions.TEMPLATE_PLAIN

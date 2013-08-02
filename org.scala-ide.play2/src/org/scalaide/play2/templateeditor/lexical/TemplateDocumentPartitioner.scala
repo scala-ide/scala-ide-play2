@@ -6,7 +6,7 @@ import TemplatePartitions.TEMPLATE_DEFAULT
 import TemplatePartitions.TEMPLATE_SCALA
 import org.eclipse.jface.text.ITypedRegion
 
-class TemplateDocumentPartitioner(conservative: Boolean = false) extends PlayDocumentPartitioner(TemplatePartitionTokeniser, TemplatePartitions.TEMPLATE_DEFAULT, conservative) {
+class TemplateDocumentPartitioner(conservative: Boolean = false) extends PlayDocumentPartitioner(new TemplatePartitionTokeniser, TemplatePartitions.TEMPLATE_DEFAULT, conservative) {
 
   import TemplateDocumentPartitioner._
 
