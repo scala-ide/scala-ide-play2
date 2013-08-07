@@ -57,6 +57,16 @@ class TemplateRegionParserTest {
 
   private def addTextRegions(doc: IStructuredDocumentRegion, textRegions: Seq[ITextRegion]): Unit =
     textRegions.foreach(doc.addRegion(_))
+
+  @Test
+  def negativeStyleRange() = {
+    import scala.collection.JavaConverters._
+    val p = "@a() {\n\t<f\n\t@b.c()\n}"
+    val parser = new TemplateRegionParser
+    parser.reset(p)
+    for (region <- parser.templateRegions.textRegions.asScala)
+      assertTrue(s"ITextRegion found with negative text length: $region", region.getTextLength >= 0)
+  }
     
   @Test
   def reuseableCodeBlock() = {
