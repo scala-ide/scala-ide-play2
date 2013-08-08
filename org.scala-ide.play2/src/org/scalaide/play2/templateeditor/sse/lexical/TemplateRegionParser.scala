@@ -161,6 +161,7 @@ class TemplateTextRegionsComputer(documentContent: String) extends HasLogger {
       }
     }
 
+    resultRegions.setPrevious(null)
     val ab = new ArrayBuffer[IStructuredDocumentRegion]
     var current = resultRegions
     while (current != null) {
@@ -254,6 +255,11 @@ class TemplateTextRegionsComputer(documentContent: String) extends HasLogger {
 
     // add text regions up to leftTextRegion
     val regionsBefore = textRegions.takeWhile(_ != leftTextRegion)
+    
+    // `originalAdjustment` is calculated via the region.getLength, but it's possible that getLength > getTextLength
+    // which can cause the text length to be negative if `originalAdjustment` is applied to it. This prevents that from happening.
+    def textLengthAdjustment(region: ITextRegion, originalAdjustment: Int) =
+      Math.max(originalAdjustment, -region.getTextLength())
 
     // split left text region if necessary
     val leftSplit = (effectedDocRegion.getStartOffset(leftTextRegion) < startEffectedOffset) match {
@@ -261,7 +267,7 @@ class TemplateTextRegionsComputer(documentContent: String) extends HasLogger {
         val split = copyXMLTextRegion(leftTextRegion)
         val adjustment = -(effectedDocRegion.getEndOffset(leftTextRegion) - startEffectedOffset)
         split.adjustLength(adjustment)
-        split.adjustTextLength(adjustment)
+        split.adjustTextLength(textLengthAdjustment(split, adjustment))
         Some(split)
       }
       case false => None
@@ -284,7 +290,7 @@ class TemplateTextRegionsComputer(documentContent: String) extends HasLogger {
         val adjustment = endEffectedOffset - effectedDocRegion.getStartOffset(rightTextRegion)
         split.adjustStart(adjustment)
         split.adjustLength(-adjustment)
-        split.adjustTextLength(-adjustment)
+        split.adjustTextLength(textLengthAdjustment(split, -adjustment))
         Some(split)
       }
       case false => None
@@ -388,7 +394,7 @@ class TemplateTextRegionsComputer(documentContent: String) extends HasLogger {
         val ((l, lstart, lend), (r, rstart, _)) = result(i) -> result(i + 1)
         if (lend != rstart) {
           val newRegion = new BasicStructuredDocumentRegion
-          newRegion.addRegion(new ContextRegion("UNDEFINED", 0, rstart - lend, rstart - lend))
+          newRegion.addRegion(new ContextRegion(TemplateDocumentRegions.UNDEFINED, 0, rstart - lend, rstart - lend))
           newRegion.setStart(lend)
           newRegion.setLength(rstart - lend)
           l.setNext(newRegion)
