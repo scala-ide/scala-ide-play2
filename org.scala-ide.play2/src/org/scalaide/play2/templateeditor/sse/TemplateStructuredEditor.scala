@@ -23,10 +23,8 @@ class TemplateStructuredEditor extends StructuredTextEditor with AbstractTemplat
    */
   override def setSourceViewerConfiguration(config: SourceViewerConfiguration) = {
     config match {
-      case templateConfig: TemplateStructuredTextViewerConfiguration => {
-        templateConfig.editor = this
-        templateConfig.prefStore = preferenceStore
-      }
+      case templateConfig: TemplateStructuredTextViewerConfiguration =>
+        templateConfig.initialize(preferenceStore, this)
       case _ =>
     }
     super.setSourceViewerConfiguration(config)
