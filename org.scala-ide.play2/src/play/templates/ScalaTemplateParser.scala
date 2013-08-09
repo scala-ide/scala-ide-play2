@@ -8,7 +8,6 @@ import scala.collection.mutable.Buffer
 import scala.collection.mutable.BufferLike
 import scala.reflect.ClassTag
 import scala.util.parsing.input.OffsetPosition
-import scala.tools.eclipse.logging.HasLogger
 import scala.annotation.elidable
 import scala.annotation.elidable._
 
@@ -91,9 +90,9 @@ import scala.annotation.elidable._
  *   - Invalid ("alone") '@' symbols. 
  */
 
-class ScalaTemplateParser(val shouldParseInclusiveDot: Boolean) extends HasLogger {
+class ScalaTemplateParser(val shouldParseInclusiveDot: Boolean) {
   
-  import ScalaTemplateCompiler._
+  import play.templates.TreeNodes._
   import scala.util.parsing.input.Positional
 
   sealed abstract class ParseResult
@@ -812,12 +811,6 @@ class ScalaTemplateParser(val shouldParseInclusiveDot: Boolean) extends HasLogge
     else
       Error(template, input, errorStack.toList)
 
-  }
-
-  @elidable(INFO)
-  def printRegressionStatistics() {
-    val a = input.regressionStatistics.toArray.sortBy { case (m, (c, a)) => c }
-    logger.debug("[START REGRESSION STATISTICS]:\n" + a.mkString("\n") + "\n[END REGRESSION STATISTICS]")
   }
 
   // TODO - only for debugging purposes, remove before release
