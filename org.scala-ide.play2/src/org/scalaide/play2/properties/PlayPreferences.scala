@@ -1,16 +1,8 @@
 package org.scalaide.play2.properties
 
-import scala.tools.eclipse.logging.HasLogger
-import scala.tools.eclipse.properties.EclipseSettings
-import scala.tools.eclipse.properties.ScalaPluginPreferencePage
-
-import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.swt.SWT
-import org.eclipse.swt.layout.GridData
-import org.eclipse.swt.layout.GridLayout
 import org.eclipse.swt.widgets.Composite
 import org.eclipse.swt.widgets.Control
-import org.eclipse.swt.widgets.Group
 import org.eclipse.ui.IWorkbench
 import org.eclipse.ui.IWorkbenchPreferencePage
 import org.eclipse.ui.dialogs.PropertyPage
@@ -51,70 +43,11 @@ object PlayPreferences {
 
 }
 
-class PlayPreferences extends PropertyPage with IWorkbenchPreferencePage with EclipseSettings
-  with ScalaPluginPreferencePage with HasLogger {
-
-  /** Pulls the preference store associated with this plugin */
-  override def doGetPreferenceStore(): IPreferenceStore = {
-    PlayPlugin.preferenceStore
+/** An empty preference page, used as an intermediary node under the Play page.  */
+class PlayPreferences extends PropertyPage with IWorkbenchPreferencePage {
+  override def createContents(parent: Composite): Control = {
+    new Composite(parent, SWT.NULL)
   }
 
-  override def init(wb: IWorkbench) {}
-
-  /** Returns the id of what preference page we use */
-  import EclipseSetting.toEclipseBox
-  override val eclipseBoxes: List[EclipseSetting.EclipseBox] = Nil
-
-  def createContents(parent: Composite): Control = {
-    val composite = {
-      //No Outer Composite
-      val tmp = new Composite(parent, SWT.NONE)
-      val layout = new GridLayout(1, false)
-      tmp.setLayout(layout)
-      val data = new GridData(GridData.FILL)
-      data.grabExcessHorizontalSpace = true
-      data.horizontalAlignment = GridData.FILL
-      tmp.setLayoutData(data)
-      tmp
-    }
-
-    eclipseBoxes.foreach(eBox => {
-      val group = new Group(composite, SWT.SHADOW_ETCHED_IN)
-      group.setText(eBox.name)
-      val layout = new GridLayout(3, false)
-      group.setLayout(layout)
-      val data = new GridData(GridData.FILL)
-      data.grabExcessHorizontalSpace = true
-      data.horizontalAlignment = GridData.FILL
-      group.setLayoutData(data)
-      eBox.eSettings.foreach(_.addTo(group))
-    })
-    composite
-  }
-
-  override def performOk = try {
-    eclipseBoxes.foreach(_.eSettings.foreach(_.apply()))
-    save()
-    true
-  } catch {
-    case ex: Throwable => eclipseLog.error(ex); false
-  }
-
-  def updateApply = updateApplyButton
-
-  /** Updates the apply button with the appropriate enablement. */
-  protected override def updateApplyButton(): Unit = {
-    if (getApplyButton != null) {
-      if (isValid) {
-        getApplyButton.setEnabled(isChanged)
-      } else {
-        getApplyButton.setEnabled(false)
-      }
-    }
-  }
-
-  def save(): Unit = {
-    //Don't let user click "apply" again until a change
-    updateApplyButton
-  }
+  override def init(workbench: IWorkbench) {}
 }
