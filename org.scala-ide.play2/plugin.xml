@@ -274,12 +274,11 @@
          point="org.eclipse.core.contenttype.contentTypes">
       <content-type
             base-type="org.eclipse.core.runtime.text"
+            describer="org.scalaide.play2.templateeditor.sse.TemplateContentDescriber"
             file-extensions="html"
-            file-names="*.scala.html"
             id="org.scalaide.play2.templateSource"
             name="Play Template File"
             priority="high">
-            <describer class="org.scalaide.play2.templateeditor.sse.TemplateContentDescriber"/>
       </content-type>
    </extension>
    <extension
