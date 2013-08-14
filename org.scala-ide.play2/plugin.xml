@@ -16,12 +16,15 @@
       <editor
             class="org.scalaide.play2.templateeditor.sse.TemplateStructuredEditor"
             contributorClass="org.scalaide.play2.templateeditor.sse.TemplateActionContributor"
-            default="true"
+            default="false"
             icon="icons/newtemplate.png"
             id="org.scalaide.play2.templateeditor.sse.TemplateStructuredEditor"
             name="New Template Editor">
          <contentTypeBinding
                contentTypeId="org.scalaide.play2.templateSource" />
+         <contentTypeBinding
+               contentTypeId="org.eclipse.wst.html.core.htmlsource">
+         </contentTypeBinding>
       </editor>
       <editor
             class="org.scalaide.play2.templateeditor.TemplateEditor"
