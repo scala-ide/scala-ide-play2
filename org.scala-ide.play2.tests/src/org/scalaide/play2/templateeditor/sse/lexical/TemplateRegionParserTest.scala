@@ -155,6 +155,16 @@ class TemplateRegionParserTest {
     performChecks(tr(docR(31, XML_TAG_NAME), docR(25, BLOCK_TEXT), docR(9, XML_TAG_NAME)), p, true)
   }
   
+  /** ticket github#186
+   *  `@importSomething` should not be parsed as an import statement.
+   */
+  @Test
+  def importIdentifierTest() = {
+    val p ="@importId text "
+    val e = tr(docR(15, oth(0).getType(), tr(at, oth(8), xmlcontent(1), xmlcontent(4), xmlcontent(1))))
+    performChecks(e, p)
+  }
+  
   private def performChecks(expected: List[IStructuredDocumentRegion], code: String, pureHTML: Boolean = false) = {
     val parser = new TemplateRegionParser
     parser.reset(code)
