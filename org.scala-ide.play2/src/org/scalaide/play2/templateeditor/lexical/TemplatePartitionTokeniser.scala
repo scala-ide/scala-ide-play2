@@ -15,7 +15,7 @@ import org.scalaide.editor.util.RegionHelper._
 
 class TemplatePartitionTokeniser extends PlayPartitionTokeniser {
 
-  /** Calculates XML tag regions by using scala partition tokensier. */
+  /** Calculates XML tag regions by using scala partition tokenizer. */
   private def getXMLTagRegions(templateCode: String): List[TypedRegion] = {
     val tokens = ScalaPartitionTokeniser.tokenise(templateCode)
     tokens.filter(_.contentType == ScalaPartitions.XML_TAG).map(t => {

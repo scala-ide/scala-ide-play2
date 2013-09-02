@@ -49,7 +49,6 @@ import PartitionHelpers._
 import org.eclipse.jface.text.ITypedRegion
 import java.util.{ List => JList }
 import java.util.{ ArrayList => JArrayList }
-import org.eclipse.jdt.internal.core.util.SimpleDocument
 
 object TemplateDocumentRegions {
   final val SCALA_DOC_REGION = "SCALA_CONTENT"
@@ -422,7 +421,6 @@ private class TemplateTextRegionConverter(documentContent: String, tokens: Seq[I
 
   private val tokenIndexLookup: Map[Int, ITypedRegion] = (tokens map (reg => (reg.getOffset(), reg))).toMap
   private val scanner = new ScalaCodeScanner(TemplateTextRegionConverter.preferenceStore, ScalaVersions.Scala_2_10)
-  private val document = new SimpleDocument(documentContent)
 
   def apply(token: ITypedRegion): (Seq[TemplateTextRegion], String) = {
     if (token.getType == TemplatePartitions.TEMPLATE_SCALA)
@@ -451,7 +449,7 @@ private class TemplateTextRegionConverter(documentContent: String, tokens: Seq[I
         regions += new TemplateTextRegion(TemplateSyntaxClasses.MAGIC_AT, t.getOffset() - token.getOffset(), t.getLength(), t.getLength())
       // actual scala code
       else { //if (t.getType() == TemplatePartitions.TEMPLATE_SCALA) {
-        val tokens = scanner.tokenize(document, t.getOffset(), t.getLength())
+        val tokens = scanner.tokenize(documentContent.slice(t.getOffset(), t.getOffset() + t.getLength()), t.getOffset())
         tokens.foreach { v =>
           regions += new TemplateTextRegion(v.syntaxClass, v.start - token.getOffset(), v.length, v.length)
         }
