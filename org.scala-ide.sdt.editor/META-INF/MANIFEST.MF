@@ -14,8 +14,9 @@ Require-Bundle:
  org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.ide,
- org.scala-ide.scala.library,
- org.scala-ide.scala.compiler,
+ org.scala-lang.scala-library,
+ org.scala-lang.scala-compiler,
+ org.scala-lang.scala-reflect,
  org.scala-ide.sdt.core,
  org.eclipse.core.resources,
  org.eclipse.help,
@@ -27,4 +28,4 @@ Import-Package:
 Export-Package: 
  org.scalaide.editor,
  org.scalaide.editor.util
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
