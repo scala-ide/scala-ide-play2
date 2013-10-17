@@ -82,16 +82,14 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
     new BatchSourceFile(templateSourceFile, contents)
   }
 
-  /** Return contents of generated scala file
-   */
+  /** Return contents of generated scala file. */
   override def getContents: Array[Char] = {
     withSourceFile({ (sourceFile, compiler) =>
       sourceFile.content
-    })(null)
+    }).orNull
   }
 
-  /** Return contents of template file
-   */
+  /** Return contents of template file. */
   def getTemplateContents: String = document.map(_.get).getOrElse(scalax.file.Path(file.file).string())
 
   override def currentProblems: List[IProblem] = {
@@ -119,8 +117,8 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
     playProject.withSourceFile(this)(op)
   }
 
-  override def withSourceFile[T](op: (SourceFile, ScalaPresentationCompiler) => T)(orElse: => T = scalaProject.defaultOrElse): T = {
-    playProject.withSourceFile(this)(op) getOrElse (orElse)
+  override def withSourceFile[T](op: (SourceFile, ScalaPresentationCompiler) => T): Option[T] = {
+    playProject.withSourceFile(this)(op)
   }
 
   /** maps a region in template file into generated scala file
