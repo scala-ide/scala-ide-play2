@@ -1,21 +1,11 @@
 package org.scalaide.play2.templateeditor.lexical
 
 import scala.util.parsing.input.CharSequenceReader
-import play.templates.ScalaTemplateCompiler.Block
-import play.templates.ScalaTemplateCompiler.Comment
-import play.templates.ScalaTemplateCompiler.Def
-import play.templates.ScalaTemplateCompiler.Display
-import play.templates.ScalaTemplateCompiler.Plain
-import play.templates.ScalaTemplateCompiler.PosString
-import play.templates.ScalaTemplateCompiler.ScalaExp
-import play.templates.ScalaTemplateCompiler.ScalaExpPart
-import play.templates.ScalaTemplateCompiler.Simple
-import play.templates.ScalaTemplateCompiler.Template
-import play.templates.ScalaTemplateCompiler.TemplateTree
 import scala.util.parsing.input.Positional
 import scala.util.parsing.input.OffsetPosition
 import scala.util.parsing.input.NoPosition
 import play.templates.ScalaTemplateParser
+import play.templates.TreeNodes._
 
 /**
  * A helper for using tmeplate parser

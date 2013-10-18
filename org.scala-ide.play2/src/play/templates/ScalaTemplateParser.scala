@@ -6,9 +6,7 @@ import scala.collection.mutable.ListBuffer
 import scala.util.parsing.input.OffsetPosition
 import scala.collection.mutable.Buffer
 import scala.collection.mutable.BufferLike
-import scala.reflect.ClassTag
 import scala.util.parsing.input.OffsetPosition
-import scala.tools.eclipse.logging.HasLogger
 import scala.annotation.elidable
 import scala.annotation.elidable._
 
@@ -91,16 +89,16 @@ import scala.annotation.elidable._
  *   - Invalid ("alone") '@' symbols. 
  */
 
-class ScalaTemplateParser(val shouldParseInclusiveDot: Boolean) extends HasLogger {
+class ScalaTemplateParser(val shouldParseInclusiveDot: Boolean) {
   
-  import ScalaTemplateCompiler._
+  import play.templates.TreeNodes._
   import scala.util.parsing.input.Positional
 
   sealed abstract class ParseResult
   case class Success(template: Template, input: Input) extends ParseResult
   case class Error(template: Template, input: Input, errors: List[PosString]) extends ParseResult
   
-  case class Input {
+  case class Input() {
     private var offset_ = 0
     private var source_ = ""
     private var length_ = 1
@@ -183,7 +181,7 @@ class ScalaTemplateParser(val shouldParseInclusiveDot: Boolean) extends HasLogge
     if (!input.isPastEOF(len) && input.matches(str)) 
       input.advance(len)
     else
-      error(s"Expected '$str' but found: '${(if (input.isPastEOF(len)) "EOF" else input(len))}'")
+      error("Expected '" + str + "' but found: '" + (if (input.isPastEOF(len)) "EOF" else input(len)) + "'")
   } 
   
   /** 
@@ -216,7 +214,7 @@ class ScalaTemplateParser(val shouldParseInclusiveDot: Boolean) extends HasLogge
   }
   
   def error(str: String): Unit = {
-    val error = PosString(s"[ERROR] $str.")
+    val error = PosString("[ERROR] " + str + ".")
     error.pos = input.pos
     errorStack += error
   }
@@ -301,8 +299,8 @@ class ScalaTemplateParser(val shouldParseInclusiveDot: Boolean) extends HasLogge
   }
   
   /** Match zero or more `parser` */
-  def several[T, BufferType <: Buffer[T]](parser: () => T, provided: BufferType = null)(implicit typetag: ClassTag[BufferType]): BufferType = {
-    val ab = if (provided != null) provided else typetag.runtimeClass.newInstance().asInstanceOf[BufferType]
+  def several[T, BufferType <: Buffer[T]](parser: () => T, provided: BufferType = null)(implicit manifest: Manifest[BufferType]): BufferType = {
+    val ab = if (provided != null) provided else manifest.erasure.newInstance().asInstanceOf[BufferType]
     var parsed = parser()
     while (parsed != null) {
       ab += parsed
@@ -814,10 +812,9 @@ class ScalaTemplateParser(val shouldParseInclusiveDot: Boolean) extends HasLogge
 
   }
 
-  @elidable(INFO)
-  def printRegressionStatistics() {
+  def mkRegressionStatisticsString() {
     val a = input.regressionStatistics.toArray.sortBy { case (m, (c, a)) => c }
-    logger.debug("[START REGRESSION STATISTICS]:\n" + a.mkString("\n") + "\n[END REGRESSION STATISTICS]")
+    a.mkString("\n")
   }
 
   // TODO - only for debugging purposes, remove before release

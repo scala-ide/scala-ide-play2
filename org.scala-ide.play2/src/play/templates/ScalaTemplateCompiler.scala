@@ -160,26 +160,9 @@ package play.templates {
   
   object ScalaTemplateCompiler {
 
-    import scala.util.parsing.input.Positional
+    import play.templates.TreeNodes._
     import scala.util.parsing.input.CharSequenceReader
     import scala.util.parsing.combinator.JavaTokenParsers
-
-    abstract class TemplateTree
-    abstract class ScalaExpPart
-
-    case class Params(code: String) extends Positional
-    case class Template(name: PosString, comment: Option[Comment], params: PosString, imports: Seq[Simple], defs: Seq[Def], sub: Seq[Template], content: Seq[TemplateTree]) extends Positional
-    case class PosString(str: String) extends Positional {
-      override def toString = str
-    }
-    case class Def(name: PosString, params: PosString, code: Simple) extends Positional
-    case class Plain(text: String) extends TemplateTree with Positional
-    case class Display(exp: ScalaExp) extends TemplateTree with Positional
-    case class Comment(msg: String) extends TemplateTree with Positional
-    case class ScalaExp(parts: Seq[ScalaExpPart]) extends TemplateTree with Positional
-    case class Simple(code: String) extends ScalaExpPart with Positional
-    case class Block(whitespace: String, args: Option[PosString], content: Seq[TemplateTree]) extends ScalaExpPart with Positional
-    case class Value(ident: PosString, block: Block) extends Positional
 
     def compile(source: File, sourceDirectory: File, generatedDirectory: File, resultType: String, formatterType: String, additionalImports: String = "", inclusiveDot: Boolean) = {
       val (templateName, generatedSource) = generatedFile(source, sourceDirectory, generatedDirectory, inclusiveDot)
