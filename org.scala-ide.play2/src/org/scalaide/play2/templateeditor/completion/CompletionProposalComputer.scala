@@ -73,7 +73,8 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
       case Some(tcu) => {
         // FIXME: askReload doesn't (always) trigger a recompile
         tcu.askReload()
-        tcu.withSourceFile { findCompletions(viewer, offset, tcu) }(List[ICompletionProposal]()).toArray
+        val completions = tcu.withSourceFile { findCompletions(viewer, offset, tcu) } getOrElse Nil
+        completions.toArray
       }
       case _ => Array()
     }
