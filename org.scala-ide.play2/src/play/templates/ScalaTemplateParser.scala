@@ -100,7 +100,7 @@ class ScalaTemplateParser(val shouldParseInclusiveDot: Boolean) extends HasLogge
   case class Success(template: Template, input: Input) extends ParseResult
   case class Error(template: Template, input: Input, errors: List[PosString]) extends ParseResult
   
-  case class Input {
+  class Input {
     private var offset_ = 0
     private var source_ = ""
     private var length_ = 1
