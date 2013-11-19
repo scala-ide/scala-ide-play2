@@ -18,12 +18,11 @@ import org.scalaide.play2.templateeditor.sse.style.ScalaLineStyleProvider
 class TemplateStructuredTextViewerConfiguration extends StructuredTextViewerConfiguration {
 
   // public and mutable so that the TemplateStructuredEditor can inject the values
-  @volatile var prefStore: IPreferenceStore = null
-  @volatile var editor: AbstractTemplateEditor = null
+  @volatile private var prefStore: IPreferenceStore = null
   private val htmlConfiguration = new StructuredTextViewerConfigurationHTML
   private val xmlConfiguration = new StructuredTextViewerConfigurationXML
   // must be lazy because creation depends on injected prefStore and editor fields
-  private lazy val scalaConfiguration: TemplateConfiguration = new TemplateConfiguration(prefStore, editor)
+  private var scalaConfiguration: Option[TemplateConfiguration] = None
 
   private sealed trait ContentType
   private case object HTMLContent extends ContentType
@@ -36,7 +35,7 @@ class TemplateStructuredTextViewerConfiguration extends StructuredTextViewerConf
       var htmlContentTypes = htmlConfiguration.getConfiguredContentTypes(sourceViewer).toSet
       val xmlContentTypes = xmlConfiguration.getConfiguredContentTypes(sourceViewer).toSet
       htmlContentTypes = htmlContentTypes -- xmlContentTypes
-      val scalaPartitions = (scalaConfiguration.getConfiguredContentTypes(sourceViewer)).toSet
+      val scalaPartitions = (scalaConfiguration.map(_.getConfiguredContentTypes(sourceViewer)) getOrElse (Array[String]())).toSet
       if (htmlContentTypes contains contentType) HTMLContent
       else if (xmlContentTypes contains contentType) XMLContent
       else if (scalaPartitions contains contentType) ScalaContent
@@ -44,12 +43,18 @@ class TemplateStructuredTextViewerConfiguration extends StructuredTextViewerConf
     }
   }
   
+  def initialize(prefStore: IPreferenceStore, editor: AbstractTemplateEditor) = {
+    this.prefStore = prefStore
+    scalaConfiguration = Some(new TemplateConfiguration(prefStore, editor))
+  }
+  
   override def getDoubleClickStrategy(sourceViewer: ISourceViewer, contentType: String) = {
+    lazy val default = super.getDoubleClickStrategy(sourceViewer, contentType)
     ContentType(sourceViewer, contentType) match {
       case HTMLContent => htmlConfiguration.getDoubleClickStrategy(sourceViewer, contentType)
       case XMLContent => xmlConfiguration.getDoubleClickStrategy(sourceViewer, contentType)
-      case ScalaContent => scalaConfiguration.getDoubleClickStrategy(sourceViewer, contentType)
-      case _ => super.getDoubleClickStrategy(sourceViewer, contentType)
+      case ScalaContent => scalaConfiguration.map(_.getDoubleClickStrategy(sourceViewer, contentType)) getOrElse default 
+      case _ => default
     }
   }
 
@@ -74,14 +79,17 @@ class TemplateStructuredTextViewerConfiguration extends StructuredTextViewerConf
   override def getConfiguredContentTypes(sourceViewer: ISourceViewer): Array[String] = {
     (htmlConfiguration.getConfiguredContentTypes(sourceViewer) ++
      xmlConfiguration.getConfiguredContentTypes(sourceViewer) ++
-     scalaConfiguration.getConfiguredContentTypes(sourceViewer)).toSet.toArray
+     scalaConfiguration.map(_.getConfiguredContentTypes(sourceViewer)).getOrElse(Array[String]())).toSet.toArray
   }
 
-  override def getAutoEditStrategies(sourceViewer: ISourceViewer, contentType: String) = ContentType(sourceViewer, contentType) match {
-    case HTMLContent  => htmlConfiguration.getAutoEditStrategies(sourceViewer, contentType)
-    case XMLContent   => xmlConfiguration.getAutoEditStrategies(sourceViewer, contentType)
-    case ScalaContent => scalaConfiguration.getAutoEditStrategies(sourceViewer, contentType)
-    case _              => super.getAutoEditStrategies(sourceViewer, contentType)
+  override def getAutoEditStrategies(sourceViewer: ISourceViewer, contentType: String) = {
+    lazy val default = super.getAutoEditStrategies(sourceViewer, contentType)
+    ContentType(sourceViewer, contentType) match {
+      case HTMLContent => htmlConfiguration.getAutoEditStrategies(sourceViewer, contentType)
+      case XMLContent => xmlConfiguration.getAutoEditStrategies(sourceViewer, contentType)
+      case ScalaContent => scalaConfiguration.map(_.getAutoEditStrategies(sourceViewer, contentType)) getOrElse default
+      case _ => default
+    }
   }
 
   override protected def getHyperlinkDetectorTargets(sourceViewer: ISourceViewer) = {
