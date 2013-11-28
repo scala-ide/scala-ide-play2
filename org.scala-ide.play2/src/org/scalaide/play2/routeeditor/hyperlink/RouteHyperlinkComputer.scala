@@ -18,7 +18,7 @@ object RouteHyperlinkComputer {
     RouteAction.routeActionAt(document, region.getOffset()).flatMap {
       routeAction =>
         val routeActionParamTypes= routeAction.params.map(_._2)
-        scalaProject.withPresentationCompiler { compiler =>
+        val scalaHyperlink: Option[Option[IHyperlink]] = scalaProject.presentationCompiler { compiler =>
           import compiler._
           askOption { () =>
 
@@ -61,16 +61,12 @@ object RouteHyperlinkComputer {
               } else {
                 Some(method).find(parametersMatch(_))
               }
-              // generate the IHyperlink for the method
-              val res = filteredMethod.flatMap {
+              // generate the IHyperlink if it is a Scala method.
+              // For Java method, the computation is delayed outside of the presentation compiler thread. 
+              val res: Option[Option[IHyperlink]] = filteredMethod.map {
                 method =>
                   if (method.isJavaDefined) {
-                    val elems =
-                      (new MethodFinder(scalaProject.javaProject)).searchMethod(routeAction.fullName, routeAction.params.map(_._2).toArray)
-
-                    elems.headOption.map {
-                      createJavaHyperlink(routeAction, _)
-                    }
+                    None
                   } else {
                     locate(method, new FakeInteractiveCompilationUnitForProject(scalaProject)).map {
                       unitAndOffset =>
@@ -80,8 +76,25 @@ object RouteHyperlinkComputer {
               }
               res
             }
+          }.flatten
+        }.flatten
+
+        scalaHyperlink.flatMap {
+          _ match {
+            case None =>
+              // a result but in Java, not in Scala
+              val javaElements=
+                (new MethodFinder(scalaProject.javaProject)).searchMethod(routeAction.fullName, routeAction.params.map(_._2).toArray)
+
+              javaElements.headOption.map {
+                createJavaHyperlink(routeAction, _)
+              }
+            case Some(hyperlink) =>
+              // the scala hyperlink
+              Some(hyperlink)
           }
-        }().flatten
+        }
+
     }
 
   }
