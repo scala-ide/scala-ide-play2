@@ -1,7 +1,7 @@
 package org.scalaide.play2.templateeditor
 
 import org.eclipse.jface.text.DefaultIndentLineAutoEditStrategy
-import scala.tools.eclipse.logging.HasLogger
+import org.scalaide.logging.HasLogger
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.DocumentCommand
 import org.eclipse.jface.text.TextUtilities

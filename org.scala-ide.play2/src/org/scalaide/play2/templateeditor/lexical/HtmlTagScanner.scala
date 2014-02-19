@@ -1,11 +1,11 @@
 package org.scalaide.play2.templateeditor.lexical
 
-import scala.tools.eclipse.lexical.XmlTagScanner
+import org.scalaide.core.internal.lexical.XmlTagScanner
 import org.eclipse.jdt.ui.text.IColorManager
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.rules.IToken
-import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClasses._
+import org.scalaide.ui.syntax.ScalaSyntaxClasses._
 
 class HtmlTagScanner(preferenceStore: IPreferenceStore) extends XmlTagScanner(preferenceStore) {
   import XmlTagScanner._

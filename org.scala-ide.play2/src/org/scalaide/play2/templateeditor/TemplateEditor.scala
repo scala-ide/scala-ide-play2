@@ -1,9 +1,6 @@
 package org.scalaide.play2.templateeditor
 
 import scala.collection.JavaConverters
-import scala.tools.eclipse.ISourceViewerEditor
-import scala.tools.eclipse.InteractiveCompilationUnit
-import scala.tools.eclipse.ui.InteractiveCompilationUnitEditor
 import org.eclipse.jdt.core.compiler.IProblem
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitDocumentProvider.ProblemAnnotation
 import org.eclipse.jface.text.Position

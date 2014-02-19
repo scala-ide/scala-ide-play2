@@ -4,10 +4,8 @@ import org.eclipse.jdt.core.ICodeAssist
 import org.eclipse.jface.text.{ ITextViewer, IRegion, ITextHover }
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import scala.tools.nsc.symtab.Flags
-import scala.tools.eclipse.util.EclipseUtils._
-import scala.tools.eclipse.ScalaWordFinder
 import org.eclipse.jface.text.Region
-import scala.tools.eclipse.ScalaHover
+import org.scalaide.ui.internal.editor.ScalaHover
 
 class TemplateHover(tcu: TemplateCompilationUnit) extends ScalaHover(tcu) {
 

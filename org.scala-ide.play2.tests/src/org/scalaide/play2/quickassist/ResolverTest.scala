@@ -2,8 +2,8 @@ package org.scalaide.play2.quickassist
 
 import org.junit.Test
 import org.junit.AfterClass
-import scala.tools.eclipse.testsetup.SDTTestUtils
-import scala.tools.eclipse.testsetup.TestProjectSetup
+import org.scalaide.core.testsetup.SDTTestUtils
+import org.scalaide.core.testsetup.TestProjectSetup
 import org.junit.Assert
 
 object ResolverTest extends TestProjectSetup("resolver", srcRoot = "/%s/app/", bundleName = "org.scala-ide.play2.tests") {

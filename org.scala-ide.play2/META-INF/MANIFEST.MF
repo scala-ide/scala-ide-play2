@@ -43,7 +43,6 @@ Require-Bundle:
  org.eclipse.wst.jsdt.core;bundle-version="1.1.102"
 Import-Package: 
  com.ibm.icu.text;apply-aspects:=false;org.eclipse.swt.graphics;apply-aspects:=false,
- scala.tools.eclipse;apply-aspects:=false,
  scala.tools.eclipse.contribution.weaving.jdt.ui.javaeditor.formatter;apply-aspects:=false
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Activator: org.scalaide.play2.PlayPlugin

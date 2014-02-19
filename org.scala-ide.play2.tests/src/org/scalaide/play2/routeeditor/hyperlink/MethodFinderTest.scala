@@ -2,7 +2,7 @@ package org.scalaide.play2.routeeditor.hyperlink
 
 import org.junit.Test
 import org.junit.Assert._
-import scala.tools.eclipse.testsetup.TestProjectSetup
+import org.scalaide.core.testsetup.TestProjectSetup
 import org.eclipse.jdt.core.IJavaElement
 import org.eclipse.jdt.core.IMethod
 import org.eclipse.jdt.core.Signature
@@ -10,7 +10,7 @@ import org.junit.Test
 import scala.Array.apply
 import scala.Array.canBuildFrom
 import org.junit.AfterClass
-import scala.tools.eclipse.testsetup.SDTTestUtils
+import org.scalaide.core.testsetup.SDTTestUtils
 
 object MethodFinderTest extends TestProjectSetup("aProject", bundleName = "org.scala-ide.play2.tests") {
   @AfterClass

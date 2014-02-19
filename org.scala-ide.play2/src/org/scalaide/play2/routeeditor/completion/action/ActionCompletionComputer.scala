@@ -1,7 +1,7 @@
 package org.scalaide.play2.routeeditor.completion.action
 
-import scala.tools.eclipse.ScalaPresentationCompiler
-import scala.tools.eclipse.completion.MemberKind
+import org.scalaide.core.compiler.ScalaPresentationCompiler
+import org.scalaide.core.completion.MemberKind
 
 import org.eclipse.jdt.core.IMethod
 import org.eclipse.jface.text.IDocument

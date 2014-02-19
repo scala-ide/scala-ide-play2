@@ -1,7 +1,7 @@
 package org.scalaide.play2.templateeditor.properties
 
-import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
-import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClasses
+import org.scalaide.ui.syntax.ScalaSyntaxClass
+import org.scalaide.ui.syntax.ScalaSyntaxClasses
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.resource.StringConverter

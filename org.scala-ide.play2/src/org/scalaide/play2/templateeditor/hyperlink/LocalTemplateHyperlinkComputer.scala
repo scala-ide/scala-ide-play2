@@ -1,13 +1,12 @@
 package org.scalaide.play2.templateeditor.hyperlink
 
 import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector
-import scala.tools.eclipse.util.EditorUtils
 import org.eclipse.jface.text.hyperlink.IHyperlink
 import org.eclipse.jface.text.IRegion
 import org.scalaide.play2.templateeditor._
 import org.scalaide.play2.templateeditor.lexical.TemplatePartitions
-import scala.tools.eclipse.ScalaWordFinder
-import scala.tools.eclipse.hyperlink.text.Hyperlink
+import org.scalaide.util.internal.ScalaWordFinder
+import org.scalaide.core.hyperlink.Hyperlink
 import org.eclipse.jface.text.ITextViewer
 import org.eclipse.ui.texteditor.ITextEditor
 import org.scalaide.play2.templateeditor.compiler.PositionHelper

@@ -6,8 +6,8 @@ import scala.annotation.{ switch, tailrec }
 import scala.collection.mutable.{ Stack, ListBuffer }
 import scala.xml.parsing.TokenTests
 import org.eclipse.jface.text.TypedRegion
-import scala.tools.eclipse.lexical.ScalaPartitionTokeniser
-import scala.tools.eclipse.lexical.ScalaPartitions
+import org.scalaide.core.internal.lexical.ScalaPartitionTokeniser
+import org.scalaide.core.internal.lexical.ScalaPartitions
 import scala.util.parsing.input.OffsetPosition
 import org.scalaide.play2.lexical.PlayPartitionTokeniser
 import scala.collection.mutable.ArrayBuffer

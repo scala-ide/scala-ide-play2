@@ -1,7 +1,6 @@
 package org.scalaide.play2.templateeditor
 
-import scala.tools.eclipse.lexical.ScalaCodeScanner
-import scala.tools.eclipse.lexical.SingleTokenScanner
+import org.scalaide.core.internal.lexical.SingleTokenScanner
 import org.eclipse.jdt.internal.ui.text.JavaColorManager
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.presentation.PresentationReconciler
@@ -21,7 +20,6 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration
 import org.eclipse.jface.text.source.IAnnotationHover
 import org.eclipse.jface.text.source.DefaultAnnotationHover
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector
-import scala.tools.eclipse.hyperlink.text.detector.DeclarationHyperlinkDetector
 import org.scalaide.play2.templateeditor.hyperlink.TemplateDeclarationHyperlinkDetector
 import org.scalaide.play2.templateeditor.hover.TemplateHover
 import org.eclipse.jface.text.DefaultTextHover
@@ -35,13 +33,13 @@ import org.scalaide.play2.templateeditor.lexical.TemplateDefaultScanner
 import org.scalaide.play2.templateeditor.hyperlink.LocalTemplateHyperlinkComputer
 import org.eclipse.jface.text.ITextHover
 import org.eclipse.jface.text.IAutoEditStrategy
-import scala.tools.eclipse.lexical.ScalaPartitions
 import org.eclipse.jdt.ui.text.IJavaPartitions
-import scala.tools.eclipse.ui.BracketAutoEditStrategy
+import org.scalaide.core.internal.lexical.ScalaCodeScanner
 import org.eclipse.jdt.internal.ui.text.java.SmartSemicolonAutoEditStrategy
 import org.eclipse.jface.text.source.Annotation
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants
 import org.scalaide.editor.EditorUI
+import org.scalaide.ui.internal.editor.autoedits.BracketAutoEditStrategy
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: AbstractTemplateEditor) extends TextSourceViewerConfiguration(prefStore) with PropertyChangeHandler {
 

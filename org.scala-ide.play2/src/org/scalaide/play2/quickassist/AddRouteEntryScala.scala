@@ -1,7 +1,6 @@
 package org.scalaide.play2.quickassist
 
-import scala.tools.eclipse.javaelements.ScalaCompilationUnit
-
+import org.scalaide.core.internal.jdt.model.ScalaCompilationUnit
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IProject
 import org.eclipse.jdt.ui.text.java.IInvocationContext

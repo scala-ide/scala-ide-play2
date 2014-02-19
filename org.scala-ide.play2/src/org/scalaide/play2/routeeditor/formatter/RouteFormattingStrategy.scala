@@ -1,8 +1,7 @@
 package org.scalaide.play2.routeeditor.formatter
 
 import scala.collection.mutable.ArrayBuffer
-import scala.tools.eclipse.util.EclipseUtils
-
+import org.scalaide.util.internal.eclipse.EclipseUtils
 import org.eclipse.core.resources.IResource
 import org.eclipse.core.runtime.IAdaptable
 import org.eclipse.jface.text.IDocument

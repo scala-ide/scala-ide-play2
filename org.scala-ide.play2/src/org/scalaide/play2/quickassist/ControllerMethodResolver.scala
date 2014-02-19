@@ -1,7 +1,7 @@
 package org.scalaide.play2.quickassist
 
 import org.eclipse.jdt.core.ICompilationUnit
-import scala.tools.eclipse.javaelements.ScalaCompilationUnit
+import org.scalaide.core.internal.jdt.model.ScalaCompilationUnit
 import org.eclipse.jdt.core.IMethod
 import org.eclipse.jdt.core.dom.CompilationUnit
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil

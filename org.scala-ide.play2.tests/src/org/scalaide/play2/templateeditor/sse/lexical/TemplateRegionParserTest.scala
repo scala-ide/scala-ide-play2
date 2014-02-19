@@ -9,7 +9,7 @@ import org.eclipse.wst.sse.core.internal.text.BasicStructuredDocumentRegion
 import org.eclipse.wst.xml.core.internal.regions.DOMRegionContext._
 import org.scalaide.play2.templateeditor.sse.lexical.TemplateDocumentRegions._
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses._
-import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClasses
+import org.scalaide.ui.syntax.ScalaSyntaxClasses
 import org.eclipse.wst.xml.core.internal.parser.regions.XMLContentRegion
 import org.eclipse.wst.xml.core.internal.parser.regions.TagOpenRegion
 import org.eclipse.wst.xml.core.internal.parser.regions.TagNameRegion

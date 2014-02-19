@@ -3,7 +3,7 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.resource.StringConverter
 import org.eclipse.swt.graphics.RGB
-import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
+import org.scalaide.ui.syntax.ScalaSyntaxClass
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.routeeditor.RouteSyntaxClasses._
 

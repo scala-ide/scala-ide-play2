@@ -4,8 +4,8 @@ import java.io.Reader
 import java.io.StringReader
 import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
-import scala.tools.eclipse.lexical.ScalaCodeScanner
-import scala.tools.eclipse.logging.HasLogger
+import org.scalaide.core.internal.lexical.ScalaCodeScanner
+import org.scalaide.logging.HasLogger
 import org.eclipse.jface.text.IDocument
 import org.eclipse.ui.editors.text.EditorsUI
 import org.eclipse.ui.texteditor.ChainedPreferenceStore

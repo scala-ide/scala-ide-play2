@@ -1,10 +1,9 @@
 package org.scalaide.play2.routeeditor.completion
 
-import scala.tools.eclipse.ScalaProject
-import scala.tools.eclipse.completion.MemberKind
-import scala.tools.eclipse.testsetup.SDTTestUtils
-import scala.tools.eclipse.testsetup.TestProjectSetup
-
+import org.scalaide.core.internal.project.ScalaProject
+import org.scalaide.core.completion.MemberKind
+import org.scalaide.core.testsetup.SDTTestUtils
+import org.scalaide.core.testsetup.TestProjectSetup
 import org.eclipse.jface.text.contentassist.ICompletionProposal
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor
 import org.junit.AfterClass

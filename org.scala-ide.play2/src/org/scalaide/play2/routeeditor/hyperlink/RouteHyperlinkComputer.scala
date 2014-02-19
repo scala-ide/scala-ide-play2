@@ -1,14 +1,13 @@
 package org.scalaide.play2.routeeditor.hyperlink
 
-import scala.tools.eclipse.InteractiveCompilationUnit
-import scala.tools.eclipse.ScalaProject
-import scala.tools.eclipse.hyperlink.text.Hyperlink
+import org.scalaide.core.compiler.InteractiveCompilationUnit
+import org.scalaide.core.internal.project.ScalaProject
+import org.scalaide.core.hyperlink.Hyperlink
 import org.eclipse.jdt.core.IJavaElement
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.hyperlink.IHyperlink
 import org.scalaide.play2.routeeditor.RouteAction
-import scala.tools.eclipse.util.Utils
 
 object RouteHyperlinkComputer {
 

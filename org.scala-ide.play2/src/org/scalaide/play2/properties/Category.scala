@@ -1,6 +1,6 @@
 package org.scalaide.play2.properties
 
-import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
+import org.scalaide.ui.syntax.ScalaSyntaxClass
 /**
  * Category of syntax classes
  */

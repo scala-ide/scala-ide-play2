@@ -2,14 +2,12 @@ package org.scalaide.play2.templateeditor.lexical
 
 import org.junit.Test
 import org.junit.Assert._
-import scala.tools.eclipse.testsetup.TestProjectSetup
 import org.eclipse.jdt.core.IJavaElement
 import org.eclipse.jdt.core.IMethod
 import org.eclipse.jdt.core.Signature
 import org.eclipse.jface.text.TypedRegion
 import org.eclipse.jface.text.TypedRegion
 import org.junit.AfterClass
-import scala.tools.eclipse.testsetup.SDTTestUtils
 import org.eclipse.jface.text.IDocument
 import org.scalaide.editor.util.RegionHelper._
 import scala.annotation.tailrec

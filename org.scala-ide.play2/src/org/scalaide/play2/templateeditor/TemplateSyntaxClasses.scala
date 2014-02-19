@@ -1,8 +1,8 @@
 package org.scalaide.play2.templateeditor
 
-import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
+import org.scalaide.ui.syntax.ScalaSyntaxClass
 import org.scalaide.play2.properties.Category
-import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClasses
+import org.scalaide.ui.syntax.ScalaSyntaxClasses
 
 object TemplateSyntaxClasses {
   val DEFAULT = ScalaSyntaxClass("Default", "template.default")

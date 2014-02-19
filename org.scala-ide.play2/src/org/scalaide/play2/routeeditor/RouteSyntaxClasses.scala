@@ -1,6 +1,6 @@
 package org.scalaide.play2.routeeditor
 
-import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
+import org.scalaide.ui.syntax.ScalaSyntaxClass
 import org.scalaide.play2.properties.Category
 
 object RouteSyntaxClasses {

@@ -3,10 +3,10 @@ package org.scalaide.play2.templateeditor.compiler
 import org.eclipse.jdt.core.compiler.IProblem
 import org.scalaide.play2.PlayProject
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
-import scala.tools.eclipse.javaelements.ScalaSourceFile
+//import scala.tools.eclipse.javaelements.ScalaSourceFile
 import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblem
-import scala.tools.eclipse.javaelements.ScalaCompilationUnit
+//import scala.tools.eclipse.javaelements.ScalaCompilationUnit
 import scalax.file.Path
 import scala.tools.nsc.util.SourceFile
 import scala.tools.nsc.util.BatchSourceFile
@@ -15,15 +15,14 @@ import scala.tools.nsc.io.AbstractFile
 import scala.tools.nsc.io.VirtualFile
 import scala.tools.nsc.io.PlainFile
 import java.io.File
-import scala.tools.eclipse.util.EclipseFile
-import scala.tools.eclipse.util.EclipseResource
-import scala.tools.eclipse.ScalaPresentationCompiler
+//import scala.tools.eclipse.util.EclipseFile
+//import scala.tools.eclipse.util.EclipseResource
+import org.scalaide.core.compiler.ScalaPresentationCompiler
 import play.templates.GeneratedSourceVirtual
-import scala.tools.eclipse.logging.HasLogger
+import org.scalaide.logging.HasLogger
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
-
 import scala.collection.mutable
 
 /**

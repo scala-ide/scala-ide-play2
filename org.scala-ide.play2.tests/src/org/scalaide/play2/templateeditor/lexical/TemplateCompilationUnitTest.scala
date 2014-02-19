@@ -1,13 +1,13 @@
 package org.scalaide.play2.templateeditor.lexical
 
-import scala.tools.eclipse.testsetup.SDTTestUtils
-import scala.tools.eclipse.testsetup.TestProjectSetup
-
+import org.scalaide.core.testsetup.SDTTestUtils
+import org.scalaide.core.testsetup.TestProjectSetup
 import org.eclipse.jdt.internal.core.util.SimpleDocument
 import org.junit.AfterClass
 import org.junit.Assert._
 import org.junit.Test
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
+import org.scalaide.ui.internal.actions.ToggleScalaNatureAction
 
 object TemplateCompilationUnitTest extends TestProjectSetup("aProject", bundleName = "org.scala-ide.play2.tests") {
   @AfterClass
@@ -87,7 +87,6 @@ class TemplateCompilationUnitTest {
     assertTrue(project.hasScalaNature)
 
     // remove the Scala nature
-    import scala.tools.eclipse.actions.ToggleScalaNatureAction
     val toggleScalaNature = new ToggleScalaNatureAction()
     toggleScalaNature.performAction(project.underlying)
 

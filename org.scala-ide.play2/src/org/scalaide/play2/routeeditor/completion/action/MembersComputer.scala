@@ -1,7 +1,7 @@
 package org.scalaide.play2.routeeditor.completion.action
 
-import scala.tools.eclipse.ScalaPresentationCompiler
-import scala.tools.eclipse.logging.HasLogger
+import org.scalaide.core.compiler.ScalaPresentationCompiler
+import org.scalaide.logging.HasLogger
 
 import org.scalaide.play2.JavaPlayClassNames
 import org.scalaide.play2.PlayClassNames
