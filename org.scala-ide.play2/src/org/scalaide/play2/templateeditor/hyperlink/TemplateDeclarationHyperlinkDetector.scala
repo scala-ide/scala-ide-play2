@@ -7,21 +7,17 @@ import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector
 import org.eclipse.jface.text.hyperlink.IHyperlink
 import org.eclipse.ui.texteditor.ITextEditor
-import scala.tools.eclipse.ScalaWordFinder
-import scala.tools.eclipse.javaelements.ScalaCompilationUnit
-import scala.tools.eclipse.javaelements.ScalaSelectionEngine
-import scala.tools.eclipse.javaelements.ScalaSelectionRequestor
-import scala.tools.eclipse.logging.HasLogger
-import scala.tools.eclipse.InteractiveCompilationUnit
+import org.scalaide.util.internal.ScalaWordFinder
+import org.scalaide.core.compiler.InteractiveCompilationUnit
 import org.eclipse.jdt.internal.core.JavaProject
 import org.eclipse.jdt.internal.core.DefaultWorkingCopyOwner
-import scala.tools.eclipse.hyperlink.text.detector.BaseHyperlinkDetector
+import org.scalaide.core.hyperlink.detector.BaseHyperlinkDetector
 import org.scalaide.play2.templateeditor.lexical.TemplatePartitions
 import org.eclipse.jface.text.Region
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
-import scala.tools.eclipse.hyperlink.text.detector.DeclarationHyperlinkDetector
-import scala.tools.eclipse.util.Utils
+import org.scalaide.core.hyperlink.detector.DeclarationHyperlinkDetector
+import org.scalaide.util.internal.Utils
 
 
 class TemplateDeclarationHyperlinkDetector extends DeclarationHyperlinkDetector {

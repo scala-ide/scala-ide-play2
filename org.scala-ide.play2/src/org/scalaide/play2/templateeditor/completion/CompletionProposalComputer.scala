@@ -1,10 +1,9 @@
 package org.scalaide.play2.templateeditor.completion
 
-import scala.tools.eclipse.ScalaPresentationCompiler
-import scala.tools.eclipse.ScalaWordFinder
-import scala.tools.eclipse.completion.ScalaCompletions
-import scala.tools.eclipse.ui.ScalaCompletionProposal
-import scala.tools.eclipse.util.EditorUtils
+import org.scalaide.core.compiler.ScalaPresentationCompiler
+import org.scalaide.util.internal.ScalaWordFinder
+import org.scalaide.core.completion.ScalaCompletions
+import org.scalaide.ui.internal.completion.ScalaCompletionProposal
 import scala.tools.nsc.util.SourceFile
 import org.eclipse.jface.text.ITextViewer
 import org.eclipse.jface.text.contentassist.ICompletionProposal
@@ -13,11 +12,9 @@ import org.eclipse.jface.text.contentassist.IContextInformation
 import org.eclipse.ui.texteditor.ITextEditor
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import org.eclipse.jface.text.Region
-import scala.tools.eclipse.completion.CompletionProposal
 import org.scalaide.editor.util.EditorHelper
 import org.eclipse.wst.sse.ui.contentassist.{ICompletionProposalComputer, CompletionProposalInvocationContext}
 import org.eclipse.core.runtime.IProgressMonitor
-import scala.tools.eclipse.InteractiveCompilationUnit
 import play.templates.ScalaTemplateParser
 import org.scalaide.play2.templateeditor.AbstractTemplateEditor
 import org.scalaide.play2.templateeditor.TemplateEditor
@@ -93,7 +90,7 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
         val actualPosition = if (region.getLength() == 0) mappedRegion.getOffset() else realPosition 
         findCompletions(mappedRegion)(realPosition, tcu)(sourceFile, compiler).sortBy(prop => -(prop.relevance)) map { prop =>
           val newProp = prop.copy(startPos = prop.startPos - actualPosition + position)
-          ScalaCompletionProposal(viewer.getSelectionProvider)(newProp)  
+          ScalaCompletionProposal(viewer.getSelectionProvider)(newProp)
         }
       }
     }

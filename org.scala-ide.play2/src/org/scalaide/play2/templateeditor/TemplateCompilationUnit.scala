@@ -1,12 +1,10 @@
 package org.scalaide.play2.templateeditor
 
 import java.io.PrintStream
-import scala.tools.eclipse.InteractiveCompilationUnit
-import scala.tools.eclipse.ScalaPlugin
-import scala.tools.eclipse.ScalaPresentationCompiler
-import scala.tools.eclipse.ScalaProject
-import scala.tools.eclipse.logging.HasLogger
-import scala.tools.eclipse.util.EclipseResource
+import org.scalaide.core.ScalaPlugin
+import org.scalaide.core.compiler.ScalaPresentationCompiler
+import org.scalaide.core.internal.project.ScalaProject
+import org.scalaide.logging.HasLogger
 import scala.tools.nsc.interactive.Response
 import scala.tools.nsc.io.AbstractFile
 import scala.tools.nsc.io.VirtualFile
@@ -29,6 +27,7 @@ import org.scalaide.play2.templateeditor.compiler.PositionHelper
 import play.templates.GeneratedSourceVirtual
 import org.scalaide.editor.CompilationUnit
 import org.scalaide.editor.CompilationUnitProvider
+import org.scalaide.ui.internal.actions.ToggleScalaNatureAction
 
 /** A Template compilation unit connects the presentation compiler
  *  view of a tmeplate with the Eclipse IDE view of the underlying
@@ -51,7 +50,6 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
         case Some(scalaProject) => scalaProject
         case None =>
           def programmaticallyAddScalaNature(project: IProject): Unit = {
-            import scala.tools.eclipse.actions.ToggleScalaNatureAction
             val toggleScalaNature = new ToggleScalaNatureAction()
             toggleScalaNature.performAction(project)  
           }

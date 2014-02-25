@@ -1,7 +1,7 @@
 package org.scalaide.play2.routeeditor.completion.action
 
-import scala.tools.eclipse.completion.MemberKind
-import scala.tools.eclipse.ui.ScalaCompletionProposal
+import org.scalaide.core.completion.MemberKind
+import org.scalaide.ui.internal.completion.ScalaCompletionProposal
 
 import org.eclipse.jdt.internal.ui.JavaPluginImages
 import org.eclipse.jface.text.IDocument

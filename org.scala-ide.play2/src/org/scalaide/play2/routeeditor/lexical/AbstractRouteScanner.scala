@@ -1,7 +1,7 @@
 package org.scalaide.play2.routeeditor.lexical
 
-import scala.tools.eclipse.lexical.AbstractScalaScanner
-import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
+import org.scalaide.core.internal.lexical.AbstractScalaScanner
+import org.scalaide.ui.syntax.ScalaSyntaxClass
 
 import org.eclipse.jdt.ui.text.IColorManager
 import org.eclipse.jface.preference.IPreferenceStore

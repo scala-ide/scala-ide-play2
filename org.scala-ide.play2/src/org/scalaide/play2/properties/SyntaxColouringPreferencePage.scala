@@ -1,14 +1,14 @@
 package org.scalaide.play2.properties
 
 import scala.PartialFunction.condOpt
-import scala.tools.eclipse.properties.syntaxcolouring.GridDataHelper.gridData
-import scala.tools.eclipse.properties.syntaxcolouring.ScalaSyntaxClass
-import scala.tools.eclipse.util.EclipseUtils
-import scala.tools.eclipse.util.SWTUtils.fnToDoubleClickListener
-import scala.tools.eclipse.util.SWTUtils.fnToPropertyChangeListener
-import scala.tools.eclipse.util.SWTUtils.fnToSelectionAdapter
-import scala.tools.eclipse.util.SWTUtils.noArgFnToSelectionAdapter
-import scala.tools.eclipse.util.SWTUtils.noArgFnToSelectionChangedListener
+import org.scalaide.ui.internal.preferences.GridDataHelper.gridData
+import org.scalaide.ui.syntax.ScalaSyntaxClass
+import org.scalaide.util.internal.eclipse.EclipseUtils
+import org.scalaide.util.internal.eclipse.SWTUtils.fnToDoubleClickListener
+import org.scalaide.util.internal.eclipse.SWTUtils.fnToPropertyChangeListener
+import org.scalaide.util.internal.eclipse.SWTUtils.fnToSelectionAdapter
+import org.scalaide.util.internal.eclipse.SWTUtils.noArgFnToSelectionAdapter
+import org.scalaide.util.internal.eclipse.SWTUtils.noArgFnToSelectionChangedListener
 import org.eclipse.jdt.internal.ui.preferences.OverlayPreferenceStore
 import org.eclipse.jdt.internal.ui.preferences.OverlayPreferenceStore.BOOLEAN
 import org.eclipse.jdt.internal.ui.preferences.OverlayPreferenceStore.OverlayKey

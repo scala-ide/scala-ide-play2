@@ -1,6 +1,6 @@
 package org.scalaide.editor
 
-import scala.tools.eclipse.ScalaPresentationCompiler
+import org.scalaide.core.compiler.ScalaPresentationCompiler
 import scala.reflect.internal.util.SourceFile
 
 /** A few convenience methods on top of the presentation compiler

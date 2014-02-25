@@ -1,7 +1,7 @@
 package org.scalaide.play2.routeeditor.completion
 
-import scala.tools.eclipse.ScalaProject
-import scala.tools.eclipse.logging.HasLogger
+import org.scalaide.core.internal.project.ScalaProject
+import org.scalaide.logging.HasLogger
 
 import org.eclipse.jface.text.ITextViewer
 import org.eclipse.jface.text.contentassist.ICompletionProposal

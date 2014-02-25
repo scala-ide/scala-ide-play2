@@ -6,7 +6,7 @@ Bundle-Version: 0.4.3.qualifier
 Bundle-Vendor:  scala-ide.org
 Fragment-Host: org.scala-ide.sdt.editor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: scala.tools.eclipse.testsetup,
+Import-Package: org.scalaide.core.testsetup,
  org.aspectj.weaver.loadtime.definition
 Require-Bundle: 
  org.junit

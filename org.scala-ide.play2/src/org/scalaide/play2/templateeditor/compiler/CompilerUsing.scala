@@ -10,7 +10,7 @@ import play.templates.ScalaTemplateCompiler._
 import play.templates.TemplateCompilationError
 import scalax.file.Path
 import org.scalaide.play2.properties.PlayPreferences
-import scala.tools.eclipse.logging.HasLogger
+import org.scalaide.logging.HasLogger
 /**
  * a helper for using template compiler
  */

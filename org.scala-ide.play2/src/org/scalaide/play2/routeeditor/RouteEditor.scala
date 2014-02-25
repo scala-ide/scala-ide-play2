@@ -1,10 +1,9 @@
 package org.scalaide.play2.routeeditor
 
-import scala.tools.eclipse.ISourceViewerEditor
-import scala.tools.eclipse.ScalaPlugin
-import scala.tools.eclipse.ScalaProject
-import scala.tools.eclipse.logging.HasLogger
-
+import org.scalaide.ui.internal.editor.ISourceViewerEditor
+import org.scalaide.core.ScalaPlugin
+import org.scalaide.core.internal.project.ScalaProject
+import org.scalaide.logging.HasLogger
 import org.eclipse.core.commands.ExecutionEvent
 import org.eclipse.core.commands.ExecutionException
 import org.eclipse.core.commands.IExecutionListener
