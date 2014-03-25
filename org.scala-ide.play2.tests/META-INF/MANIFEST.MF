@@ -6,7 +6,7 @@ Bundle-Version: 0.4.3.qualifier
 Bundle-Vendor: scala-ide.org
 Fragment-Host: org.scala-ide.play2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.scala-lang.scala-library,
+Require-Bundle: org.scala-ide.scala.library,
  org.eclipse.equinox.weaving.aspectj,
  org.junit;bundle-version="4.5.0",
  org.scala-ide.sdt.core
