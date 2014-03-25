@@ -31,12 +31,12 @@ class ActionContentAssistProcessor(routeEditor: HasScalaProject) extends IConten
   private def computeCompletionProposals(project: ScalaProject, viewer: ITextViewer, offset: Int): Array[ICompletionProposal] = {
     val document = viewer.getDocument
 
-    val completions = project.presentationCompiler { compiler =>
+    val completions = project.withPresentationCompiler { compiler =>
       compiler.askOption { () =>
         val computer = new ActionCompletionComputer(compiler)
         computer.computeCompletionProposals(document, offset)
       } getOrElse Nil
-    } getOrElse Nil
+    }()
 
     completions.sorted.toArray
   }

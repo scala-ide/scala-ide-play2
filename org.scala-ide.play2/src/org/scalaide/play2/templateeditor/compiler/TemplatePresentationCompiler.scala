@@ -104,19 +104,19 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
     for (generatedSource <- tcu.generatedSource()) {
       val src = scalaFileFromGen(generatedSource)
       val sourceList = List(src)
-      scalaProject.presentationCompiler (pc => {
+      scalaProject.withPresentationCompiler(pc => {
         pc.withResponse((response: pc.Response[Unit]) => {
           pc.askReload(sourceList, response)
           response.get
         })
-      })
+      })()
     }
   }
 
   def withSourceFile[T](tcu: TemplateCompilationUnit)(op: (SourceFile, ScalaPresentationCompiler) => T): Option[T] =
-    scalaProject.presentationCompiler(pc => {
+    scalaProject.withPresentationCompiler(pc => {
       scalaFileFromTCU(tcu).map(op(_, pc)).toOption
-    }).flatten
+    })()
 
   def destroy() = {
     CompilerUsing.templateCompiler.TemplateAsFunctionCompiler.shutdownPresentationCompiler()
