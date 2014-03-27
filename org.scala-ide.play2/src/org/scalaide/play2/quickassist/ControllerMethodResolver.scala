@@ -63,14 +63,13 @@ class ScalaControllerMethodResolver extends ControllerMethodResolver with ScalaP
 
         val response = new Response[Tree]
         comp.askTypeAt(pos, response)
-        val controller = for {
+        for {
           tree <- response.get.left.toOption
           sym = tree.symbol
           if isControllerMethod(sym)
         } yield ControllerMethod(sym.fullName, sym.paramss.flatten.map(param => (param.name.toString, param.tpe.toString)))
 
-        controller.orNull
-      }
+      }(None)
 
     case _ => None
   }

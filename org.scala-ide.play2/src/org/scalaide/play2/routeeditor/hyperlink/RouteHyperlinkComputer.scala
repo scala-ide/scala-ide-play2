@@ -18,7 +18,7 @@ object RouteHyperlinkComputer {
     RouteAction.routeActionAt(document, region.getOffset()).flatMap {
       routeAction =>
         val routeActionParamTypes= routeAction.params.map(_._2)
-        val scalaHyperlink: Option[Option[IHyperlink]] = scalaProject.presentationCompiler { compiler =>
+        val scalaHyperlink: Option[Option[IHyperlink]] = scalaProject.withPresentationCompiler { compiler =>
           import compiler._
           askOption { () =>
 
@@ -77,7 +77,7 @@ object RouteHyperlinkComputer {
               res
             }
           }.flatten
-        }.flatten
+        }()
 
         scalaHyperlink.flatMap {
           _ match {

@@ -61,7 +61,7 @@ class LocalTemplateHyperlinkComputer extends AbstractHyperlinkDetector {
                 }
               case _ => Nil
             }
-          } getOrElse Nil
+          }(Nil)
 
         case None => Nil
       }
