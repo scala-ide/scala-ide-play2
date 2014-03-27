@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Scala Plugin (Test)
 Bundle-SymbolicName: org.scala-ide.play2.tests
-Bundle-Version: 0.4.3.qualifier
+Bundle-Version: 0.4.4.qualifier
 Bundle-Vendor: scala-ide.org
 Fragment-Host: org.scala-ide.play2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
