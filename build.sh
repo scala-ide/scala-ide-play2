@@ -1,3 +1,3 @@
 #!/bin/bash
 
-mvn -Peclipse-juno -Pscala-ide-dev -Pscala-2.10.x clean verify
+mvn -Peclipse-kepler -Pscala-ide-nightly -Pscala-2.11.x clean verify

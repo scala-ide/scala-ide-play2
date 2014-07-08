@@ -40,7 +40,9 @@ Require-Bundle:
  org.eclipse.wst.validation;bundle-version="1.2.303",
  org.eclipse.wst.jsdt.web.ui;bundle-version="1.0.401",
  org.eclipse.wst.jsdt.web.core;bundle-version="1.0.401",
- org.eclipse.wst.jsdt.core;bundle-version="1.1.102"
+ org.eclipse.wst.jsdt.core;bundle-version="1.1.102",
+ org.scala-lang.modules.scala-xml,
+ org.scala-lang.modules.scala-parser-combinators
 Import-Package: 
  com.ibm.icu.text;apply-aspects:=false;org.eclipse.swt.graphics;apply-aspects:=false,
  scala.tools.eclipse.contribution.weaving.jdt.ui.javaeditor.formatter;apply-aspects:=false
