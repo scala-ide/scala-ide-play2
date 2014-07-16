@@ -1,8 +1,6 @@
 package org.scalaide.play2.routeeditor.lexical
 
 import org.eclipse.jface.text.Document
-import org.eclipse.jface.text.rules.IToken
-import org.eclipse.jface.text.rules.Token
 import org.junit.Test
 
 class RouteURIScannerTest extends AbstractRouteScannerTest {

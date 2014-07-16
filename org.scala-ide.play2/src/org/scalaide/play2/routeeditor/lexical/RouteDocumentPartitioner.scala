@@ -9,8 +9,6 @@ import RoutePartitions.ROUTE_URI
 
 class RouteDocumentPartitioner(conservative: Boolean = false) extends PlayDocumentPartitioner(new RoutePartitionTokeniser, ROUTE_DEFAULT, conservative) {
 
-  import RouteDocumentPartitioner._
-
   override def getLegalContentTypes: Array[String] = RoutePartitions.getTypes
   
   def uriPartitions: List[TypedRegion] = partitionRegions.filter(_.getType == ROUTE_URI) 

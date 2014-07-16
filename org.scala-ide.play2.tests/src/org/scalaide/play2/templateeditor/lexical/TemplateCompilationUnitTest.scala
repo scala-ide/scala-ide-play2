@@ -70,7 +70,7 @@ class TemplateCompilationUnitTest {
   def error_on_position_zero_no_crash() {
     val tFile = file("app/views/template_unclosed_comment.scala.html")
     val tu = TemplateCompilationUnit(tFile, false)
-    val errors = tu.reconcile(tu.getTemplateContents.toString)
+    val errors = tu.reconcile(tu.getTemplateContents)
     assertEquals("Unexpected errors", 1, errors.size)
     assertTrue("Negative offset", errors.head.getSourceStart() >= 0)
   }

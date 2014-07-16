@@ -1,10 +1,8 @@
 package org.scalaide.play2.templateeditor.hover
 
-import org.eclipse.jdt.core.ICodeAssist
-import org.eclipse.jface.text.{ ITextViewer, IRegion, ITextHover }
+import org.eclipse.jface.text.IRegion
+import org.eclipse.jface.text.ITextViewer
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
-import scala.tools.nsc.symtab.Flags
-import org.eclipse.jface.text.Region
 import org.scalaide.ui.internal.editor.ScalaHover
 
 class TemplateHover(tcu: TemplateCompilationUnit) extends ScalaHover(tcu) {

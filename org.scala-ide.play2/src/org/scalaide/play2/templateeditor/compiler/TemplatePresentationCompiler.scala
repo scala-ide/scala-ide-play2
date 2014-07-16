@@ -51,7 +51,7 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
         val problems = scalaProject.withPresentationCompiler(pc => pc.problemsOf(src.file))()
         def mapOffset(offset: Int) = generatedSource.mapPosition(offset)
         def mapLine(line: Int) = generatedSource.mapLine(line)
-        problems map (p => p match {
+        problems map {
           // problems of the generated scala file
           case problem: DefaultProblem => new DefaultProblem(
             tcu.getTemplateFullPath.toCharArray(),
@@ -63,12 +63,12 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
             mapOffset(problem.getSourceEnd()),
             mapLine(problem.getSourceLineNumber()),
             1)
-        })
+        }
 
-      case Failure(parseError: TemplateToScalaCompilationError) => 
+      case Failure(parseError: TemplateToScalaCompilationError) =>
         List(parseError.toProblem)
 
-      case Failure(error) => 
+      case Failure(error) =>
         logger.error(s"Unexpected error while parsing template ${tcu.file.name}", error)
         List(unknownError(tcu, error))
     }

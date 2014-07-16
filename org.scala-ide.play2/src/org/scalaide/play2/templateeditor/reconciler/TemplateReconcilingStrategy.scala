@@ -4,9 +4,7 @@ import org.eclipse.jface.text.DocumentEvent
 import org.eclipse.jface.text.IDocumentListener
 import org.scalaide.editor.ReconcilingStrategy
 import org.scalaide.editor.SourceCodeEditor
-import org.scalaide.play2.templateeditor.TemplateEditor
 import org.scalaide.play2.templateeditor.AbstractTemplateEditor
-import scala.util.Try
 
 private class TemplateReconcilingStrategy(templateEditor: SourceCodeEditor, documentListener: IDocumentListener) extends ReconcilingStrategy(templateEditor, documentListener)
 

@@ -165,11 +165,6 @@ class RouteFormattingStrategy(val editor: ITextEditor) extends IFormattingStrate
     this.regionOpt = None
   }
 
-  private def getProject = {
-    import EclipseUtils._
-    editor.getEditorInput.asInstanceOf[IAdaptable].adaptTo[IResource].getProject
-  }
-
   def format(content: String, isLineStart: Boolean, indentation: String, positions: Array[Int]): String = null
 
   def formatterStarts(initialIndentation: String) {}

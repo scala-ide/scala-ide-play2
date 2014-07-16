@@ -1,7 +1,6 @@
 package org.scalaide.play2.templateeditor.sse.model
 
 import org.eclipse.wst.html.ui.internal.contentoutline.JFaceNodeAdapterFactoryForHTML
-import org.eclipse.wst.jsdt.web.core.javascript.IJsTranslation
 import org.eclipse.wst.jsdt.web.core.javascript.JsTranslationAdapterFactory
 import org.eclipse.wst.sse.core.internal.ltk.modelhandler.IDocumentTypeHandler
 import org.eclipse.wst.sse.core.internal.provisional.IStructuredModel

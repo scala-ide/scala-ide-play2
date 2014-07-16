@@ -389,7 +389,7 @@ class TemplateTextRegionsComputer(documentContent: String) extends HasLogger {
     // there can be gaps.. so create new doc regions for the gaps
     if (fillGaps) {
       for (i <- 0 to (result.length - 2)) {
-        val ((l, lstart, lend), (r, rstart, _)) = result(i) -> result(i + 1)
+        val ((l, _, lend), (r, rstart, _)) = result(i) -> result(i + 1)
         if (lend != rstart) {
           val newRegion = new BasicStructuredDocumentRegion
           newRegion.addRegion(new ContextRegion(TemplateDocumentRegions.UNDEFINED, 0, rstart - lend, rstart - lend))
