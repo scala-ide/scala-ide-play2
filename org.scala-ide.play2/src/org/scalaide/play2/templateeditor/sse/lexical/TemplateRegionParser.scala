@@ -41,7 +41,6 @@ import org.eclipse.wst.sse.core.internal.provisional.events.RegionChangedEvent
 import org.eclipse.wst.sse.core.internal.util.Debug
 import org.eclipse.wst.xml.core.internal.parser.regions.RegionUpdateRule
 import org.eclipse.wst.sse.core.internal.util.Utilities
-import play.templates.ScalaTemplateParser
 import org.eclipse.jface.text.TypedRegion
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer

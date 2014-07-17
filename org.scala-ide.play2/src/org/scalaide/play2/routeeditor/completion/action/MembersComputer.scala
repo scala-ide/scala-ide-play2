@@ -51,6 +51,7 @@ private[action] object MembersComputer {
       // if it's a class name, then we need to use a typeName
       val typeName = compiler.newTypeName(name)
       val sym = compiler.rootMirror.findMemberFromRoot(typeName)
+      sym.initialize
       sym
     }
 
@@ -58,6 +59,7 @@ private[action] object MembersComputer {
       // module have term name
       val termName = compiler.newTermName(name)
       val sym = compiler.rootMirror.findMemberFromRoot(termName)
+      sym.initialize
       sym
     }
 

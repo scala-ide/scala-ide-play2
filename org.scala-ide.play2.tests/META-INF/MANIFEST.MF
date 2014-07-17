@@ -13,4 +13,6 @@ Require-Bundle: org.scala-lang.scala-library,
 Import-Package: org.scalaide.core.testsetup,
  org.aspectj.weaver.loadtime.definition
 Bundle-ClassPath: .,
- target/lib/mockito-all-1.9.0.jar
+ target/lib/mockito-all-1.9.0.jar,
+ target/lib/twirl-compiler.jar,
+ target/lib/twirl-parser.jar

@@ -15,7 +15,6 @@ import org.eclipse.jface.text.Region
 import org.scalaide.editor.util.EditorHelper
 import org.eclipse.wst.sse.ui.contentassist.{ICompletionProposalComputer, CompletionProposalInvocationContext}
 import org.eclipse.core.runtime.IProgressMonitor
-import play.templates.ScalaTemplateParser
 import org.scalaide.play2.templateeditor.AbstractTemplateEditor
 import org.scalaide.play2.templateeditor.TemplateEditor
 import org.scalaide.play2.templateeditor.TemplateCompilationUnitProvider

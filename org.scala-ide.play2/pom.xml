@@ -12,24 +12,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>play</groupId>
-      <artifactId>${play.artifactId}</artifactId>
+      <groupId>com.typesafe.play</groupId>
+      <artifactId>${twirl-compiler.artifactId}</artifactId>
     </dependency>
     <dependency>
-      <groupId>play</groupId>
-      <artifactId>${templates.artifactId}</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.github.scala-incubator.io</groupId>
-      <artifactId>${scala.io.core.artifactId}</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.github.scala-incubator.io</groupId>
-      <artifactId>${scala.io.file.artifactId}</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${scala.arm.groupId}</groupId>
-      <artifactId>${scala.arm.artifactId}</artifactId>
+      <groupId>com.typesafe.play</groupId>
+      <artifactId>${twirl-parser.artifactId}</artifactId>
     </dependency>
   </dependencies>
 
@@ -49,29 +37,14 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>play</groupId>
-                  <artifactId>${play.artifactId}</artifactId>
-                  <destFileName>play.jar</destFileName>
+                  <groupId>com.typesafe.play</groupId>
+                  <artifactId>${twirl-compiler.artifactId}</artifactId>
+                  <destFileName>twirl-compiler.jar</destFileName>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>play</groupId>
-                  <artifactId>${templates.artifactId}</artifactId>
-                  <destFileName>templates.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.github.scala-incubator.io</groupId>
-                  <artifactId>${scala.io.core.artifactId}</artifactId>
-                  <destFileName>scala-io-core.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.github.scala-incubator.io</groupId>
-                  <artifactId>${scala.io.file.artifactId}</artifactId>
-                  <destFileName>scala-io-file.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>${scala.arm.groupId}</groupId>
-                  <artifactId>${scala.arm.artifactId}</artifactId>
-                  <destFileName>scala-arm.jar</destFileName>
+                  <groupId>com.typesafe.play</groupId>
+                  <artifactId>${twirl-parser.artifactId}</artifactId>
+                  <destFileName>twirl-parser.jar</destFileName>
                 </artifactItem>
               </artifactItems>
               <stripVersion>true</stripVersion>

@@ -1,3 +1,3 @@
 package play.mvc;
 
-abstract class Result {}
+abstract public class Result {}

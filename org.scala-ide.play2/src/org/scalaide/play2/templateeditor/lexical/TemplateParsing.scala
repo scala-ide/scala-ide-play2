@@ -4,8 +4,8 @@ import scala.util.parsing.input.CharSequenceReader
 import scala.util.parsing.input.Positional
 import scala.util.parsing.input.OffsetPosition
 import scala.util.parsing.input.NoPosition
-import play.templates.ScalaTemplateParser
-import play.templates.TreeNodes._
+import play.twirl.parser.TwirlParser
+import play.twirl.parser.TreeNodes._
 
 /**
  * A helper for using tmeplate parser
@@ -13,7 +13,7 @@ import play.templates.TreeNodes._
 object TemplateParsing {
   implicit def stringToCharSeq(str: String) = new CharSequenceReader(str)
 
-  val parser = new ScalaTemplateParser(true)
+  val parser = new TwirlParser(true)
 
   sealed abstract class PlayTemplate(input: Positional, kind: String) {
     val offset = input.pos match {
@@ -78,11 +78,11 @@ object TemplateParsing {
   }
 
   def handleTemplate(template: Template): List[PlayTemplate] = template match {
-    case Template(name, comment, params, imports, defs, sub, content) =>
+    case Template(name, comment, params, topImports, imports, defs, sub, content) =>
       val namePart = if (name != null && name.str.length != 0) List(ScalaCode(name)) else List()
       val commentPart = comment.map(CommentCode(_)).toList
       val paramsPart = if (params.pos != NoPosition) List(ScalaCode(params)) else List()
-      val importsPart = imports.map(ScalaCode(_)).toList
+      val importsPart = (topImports ++ imports).map(ScalaCode(_)).toList
       val defsPart = defs.flatMap(handleDef).toList
       val subsPart = sub.flatMap(handleTemplate).toList
       val contentPart = content.flatMap(handleTemplateTree).toList

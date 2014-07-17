@@ -198,7 +198,7 @@ class TemplateRegionParserTest {
     assertTrue("Document regions are not complete", complete(actual, code.length()))
     if (actual.size == expected.size) {
       for ((actualDocRegion, expectedDocRegion) <- (actual zip expected)) {
-        assertTrue(s"Document region: '$actualDocRegion' does not match expected: '$expectedDocRegion'", regionsAreSame(actualDocRegion, expectedDocRegion))
+        assertTrue(s"Document region: '$actualDocRegion/${actualDocRegion.getType()}' does not match expected: '$expectedDocRegion'/${expectedDocRegion.getType}", regionsAreSame(actualDocRegion, expectedDocRegion))
 
         val actualTextRegions = actualDocRegion.getRegions().toArray().toList
         assertTrue(s"Document region, $actualDocRegion, has overlap in child text regions", noOverlap(actualTextRegions))
