@@ -45,7 +45,7 @@ class ActionCompletionComputer(compiler: ScalaPresentationCompiler) {
     val name = member.decodedName
     member match {
       case m: compiler.MethodSymbol =>
-        lazy val defaultFormattedParamss = m.paramss.flatten.map(param => (param.decodedName.toString, param.tpe.toString))
+        lazy val defaultFormattedParamss = m.paramss.flatten.map(param => (param.decodedName, param.tpe.toString))
         val formattedParamss = m.isJava match {
           case true  => {
             val paramNames = compiler.getJavaElement(m) map {

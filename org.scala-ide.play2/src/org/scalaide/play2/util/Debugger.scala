@@ -4,7 +4,7 @@ import javax.swing.JFrame
 
 object Debugger {
   def show(message: String) {
-    val frame = new JFrame(message){
+    new JFrame(message){
       setVisible(true)
       setSize(800, 100)
     }
