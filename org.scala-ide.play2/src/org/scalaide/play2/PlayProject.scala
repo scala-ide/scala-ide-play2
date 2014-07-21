@@ -2,7 +2,7 @@ package org.scalaide.play2
 
 import java.io.File
 import org.scalaide.core.compiler.ScalaPresentationCompiler
-import org.scalaide.core.internal.project.ScalaProject
+import org.scalaide.core.api.ScalaProject
 import scala.tools.nsc.util.SourceFile
 import org.eclipse.core.resources.IFile
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
