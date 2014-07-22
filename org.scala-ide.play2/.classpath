@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="target/classes" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="target/lib/play.jar"/>
-	<classpathentry kind="lib" path="target/lib/scala-arm.jar"/>
-	<classpathentry kind="lib" path="target/lib/scala-io-core.jar"/>
-	<classpathentry kind="lib" path="target/lib/scala-io-file.jar"/>
-	<classpathentry kind="lib" path="target/lib/templates.jar"/>
+	<classpathentry exported="true" kind="lib" path="target/lib/twirl-compiler.jar"/>
+	<classpathentry exported="true" kind="lib" path="target/lib/twirl-parser.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

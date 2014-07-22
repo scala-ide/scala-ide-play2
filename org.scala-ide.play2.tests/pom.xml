@@ -13,6 +13,14 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.typesafe.play</groupId>
+      <artifactId>${twirl-compiler.artifactId}</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.typesafe.play</groupId>
+      <artifactId>${twirl-parser.artifactId}</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -42,6 +50,18 @@
                 <artifactItem>
                   <groupId>org.mockito</groupId>
                   <artifactId>mockito-all</artifactId>
+                  <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.typesafe.play</groupId>
+                  <artifactId>${twirl-compiler.artifactId}</artifactId>
+                  <destFileName>twirl-compiler.jar</destFileName>
+                  <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.typesafe.play</groupId>
+                  <artifactId>${twirl-parser.artifactId}</artifactId>
+                  <destFileName>twirl-parser.jar</destFileName>
                   <outputDirectory>${project.build.directory}/lib</outputDirectory>
                 </artifactItem>
               </artifactItems>

@@ -24,7 +24,7 @@ import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.PlayProject
 import org.scalaide.play2.templateeditor.compiler.CompilerUsing
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
-import play.templates.GeneratedSourceVirtual
+import play.twirl.compiler.GeneratedSourceVirtual
 import org.scalaide.editor.CompilationUnit
 import org.scalaide.editor.CompilationUnitProvider
 import org.scalaide.ui.internal.actions.ToggleScalaNatureAction
@@ -88,7 +88,7 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
   }
 
   /** Return contents of template file. */
-  def getTemplateContents: String = document.map(_.get).getOrElse(scalax.file.Path(file.file).string())
+  def getTemplateContents: String = document.map(_.get).getOrElse(scala.io.Source.fromFile(file.file).mkString)
 
   override def currentProblems: List[IProblem] = {
     playProject.withPresentationCompiler { pc =>
