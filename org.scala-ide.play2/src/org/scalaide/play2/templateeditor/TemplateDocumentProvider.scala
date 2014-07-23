@@ -1,9 +1,6 @@
 package org.scalaide.play2.templateeditor
 
-import org.eclipse.core.filebuffers.IAnnotationModelFactory
-import org.eclipse.core.runtime.IPath
 import org.eclipse.jface.text.IDocument
-import org.eclipse.ui.IFileEditorInput
 import org.eclipse.ui.editors.text.FileDocumentProvider
 import org.scalaide.play2.templateeditor.lexical.TemplateDocumentPartitioner
 

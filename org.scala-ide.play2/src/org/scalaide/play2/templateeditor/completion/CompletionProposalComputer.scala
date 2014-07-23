@@ -1,23 +1,26 @@
 package org.scalaide.play2.templateeditor.completion
 
-import org.scalaide.core.compiler.ScalaPresentationCompiler
-import org.scalaide.util.internal.ScalaWordFinder
-import org.scalaide.core.completion.ScalaCompletions
-import org.scalaide.ui.internal.completion.ScalaCompletionProposal
+import scala.collection.JavaConversions.seqAsJavaList
 import scala.tools.nsc.util.SourceFile
+
+import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.jface.text.ITextViewer
 import org.eclipse.jface.text.contentassist.ICompletionProposal
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor
 import org.eclipse.jface.text.contentassist.IContextInformation
 import org.eclipse.ui.texteditor.ITextEditor
-import org.scalaide.play2.templateeditor.TemplateCompilationUnit
-import org.eclipse.jface.text.Region
+import org.eclipse.wst.sse.ui.contentassist.CompletionProposalInvocationContext
+import org.eclipse.wst.sse.ui.contentassist.ICompletionProposalComputer
+import org.scalaide.core.compiler.ScalaPresentationCompiler
+import org.scalaide.core.completion.ScalaCompletions
 import org.scalaide.editor.util.EditorHelper
 import org.eclipse.wst.sse.ui.contentassist.{ICompletionProposalComputer, CompletionProposalInvocationContext}
 import org.eclipse.core.runtime.IProgressMonitor
 import org.scalaide.play2.templateeditor.AbstractTemplateEditor
-import org.scalaide.play2.templateeditor.TemplateEditor
+import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import org.scalaide.play2.templateeditor.TemplateCompilationUnitProvider
+import org.scalaide.ui.internal.completion.ScalaCompletionProposal
+import org.scalaide.util.internal.ScalaWordFinder
 
 class CompletionProposalComputer extends ScalaCompletions with IContentAssistProcessor with ICompletionProposalComputer {
 

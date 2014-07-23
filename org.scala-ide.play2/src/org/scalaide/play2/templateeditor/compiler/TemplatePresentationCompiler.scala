@@ -9,7 +9,6 @@ import scala.tools.nsc.util.BatchSourceFile
 import play.twirl.compiler.GeneratedSource
 import scala.tools.nsc.io.AbstractFile
 import scala.tools.nsc.io.VirtualFile
-import scala.tools.nsc.io.PlainFile
 import java.io.File
 import org.scalaide.core.compiler.ScalaPresentationCompiler
 import play.twirl.compiler.GeneratedSourceVirtual
@@ -48,10 +47,10 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
     tcu.generatedSource() match {
       case Success(generatedSource) =>
         val src = scalaFileFromGen(generatedSource)
-        val problems = scalaProject.withPresentationCompiler(pc => pc.problemsOf(src.file))()
+        val problems = scalaProject.presentationCompiler(pc => pc.problemsOf(src.file)).getOrElse(Nil)
         def mapOffset(offset: Int) = generatedSource.mapPosition(offset)
         def mapLine(line: Int) = generatedSource.mapLine(line)
-        problems map (p => p match {
+        problems map {
           // problems of the generated scala file
           case problem: DefaultProblem => new DefaultProblem(
             tcu.getTemplateFullPath.toCharArray(),
@@ -63,12 +62,12 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
             mapOffset(problem.getSourceEnd()),
             mapLine(problem.getSourceLineNumber()),
             1)
-        })
+        }
 
-      case Failure(parseError: TemplateToScalaCompilationError) => 
+      case Failure(parseError: TemplateToScalaCompilationError) =>
         List(parseError.toProblem)
 
-      case Failure(error) => 
+      case Failure(error) =>
         logger.error(s"Unexpected error while parsing template ${tcu.file.name}", error)
         List(unknownError(tcu, error))
     }

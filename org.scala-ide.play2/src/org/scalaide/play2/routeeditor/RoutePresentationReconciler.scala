@@ -2,7 +2,6 @@ package org.scalaide.play2.routeeditor
 
 import org.scalaide.core.internal.lexical.SingleTokenScanner
 
-import org.eclipse.jdt.internal.ui.text.JavaColorManager
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.presentation.PresentationReconciler
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer

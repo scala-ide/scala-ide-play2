@@ -3,7 +3,6 @@ package org.scalaide.play2.routeeditor.lexical
 import org.scalaide.core.internal.lexical.AbstractScalaScanner
 import org.scalaide.ui.syntax.ScalaSyntaxClass
 
-import org.eclipse.jdt.ui.text.IColorManager
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.rules.RuleBasedScanner
 

@@ -1,17 +1,14 @@
 package org.scalaide.play2.wizards
 
-import org.scalaide.logging.HasLogger
-import org.scalaide.util.internal.eclipse.SWTUtils
-
 import org.eclipse.jface.viewers.IStructuredSelection
-
 import org.eclipse.jface.wizard.Wizard
 import org.eclipse.ui.INewWizard
 import org.eclipse.ui.IWorkbench
 import org.eclipse.ui.PartInitException
 import org.eclipse.ui.PlatformUI
 import org.eclipse.ui.ide.IDE
-import org.scalaide.play2.templateeditor.TemplateEditor
+import org.scalaide.logging.HasLogger
+import org.scalaide.util.internal.ui.DisplayThread
 
 /**
  * A wizard to create a new Play template file.
@@ -22,13 +19,13 @@ class NewTemplateWizard extends Wizard with INewWizard with HasLogger {
 
   override def performFinish(): Boolean = {
     val file = newFileWizardPage.createNewFile()
-    
+
     if (file != null) {
       // if it worked, open the file
-      SWTUtils.asyncExec {
+      DisplayThread.asyncExec {
         val page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
         try {
-          val editor = IDE.openEditor(page, file, true)
+          IDE.openEditor(page, file, true)
         } catch {
           case e: PartInitException => eclipseLog.error("Failed to initialize editor for file "+ file.getName())
         }

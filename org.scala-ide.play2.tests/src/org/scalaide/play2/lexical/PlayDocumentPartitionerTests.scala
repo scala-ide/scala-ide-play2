@@ -1,14 +1,10 @@
 package org.scalaide.play2.lexical
 
-import org.junit.Test
-import org.junit.Before
-import org.junit.Assert._
-import org.eclipse.jface.text.IDocument
-import org.eclipse.jface.text.Document
 import org.eclipse.jface.text.TypedRegion
+import org.junit.Assert.assertEquals
+import org.junit.Test
 import org.scalaide.play2.routeeditor.RouteTest
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions
-import com.sun.org.apache.xalan.internal.xsltc.compiler.RoundCall
 
 class PlayDocumentPartitionerTests extends RouteTest {
   

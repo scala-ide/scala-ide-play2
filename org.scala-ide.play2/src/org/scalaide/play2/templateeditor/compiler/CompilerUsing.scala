@@ -3,6 +3,11 @@ package org.scalaide.play2.templateeditor.compiler
 import java.io.File
 import scala.util.Failure
 import scala.util.Try
+
+import org.eclipse.jdt.core.compiler.IProblem
+import org.eclipse.jdt.internal.compiler.problem.DefaultProblem
+import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities
+import org.scalaide.logging.HasLogger
 import org.scalaide.play2.PlayProject
 import play.twirl.compiler.GeneratedSourceVirtual
 import play.twirl.compiler.TwirlCompiler

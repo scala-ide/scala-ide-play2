@@ -5,9 +5,6 @@ import org.eclipse.wst.html.core.internal.encoding.HTMLModelLoader
 import org.eclipse.wst.sse.core.internal.document.IDocumentLoader
 import org.eclipse.wst.sse.core.internal.provisional.IModelLoader
 import org.eclipse.wst.sse.core.internal.provisional.IStructuredModel
-import org.eclipse.wst.xml.core.internal.document.DOMModelImpl
-import org.eclipse.wst.xml.core.internal.document.XMLModelParser
-import org.eclipse.wst.xml.core.internal.document.XMLModelUpdater
 
 // This class (and the inner classes) will need to be overhauled when adding HTMLValidator support
 class TemplateStructuredModel extends DOMStyleModelImpl {
