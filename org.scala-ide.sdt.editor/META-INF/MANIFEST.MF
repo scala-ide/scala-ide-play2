@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name:  %pluginName
 Bundle-SymbolicName: org.scala-ide.sdt.editor
-Bundle-Version: 0.4.4.qualifier
+Bundle-Version: 0.4.5.qualifier
 Bundle-Vendor:  %providerName
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
@@ -24,7 +24,5 @@ Require-Bundle:
 Import-Package: 
  com.ibm.icu.text;apply-aspects:=false;org.eclipse.swt.graphics;apply-aspects:=false,
  scala.tools.eclipse.contribution.weaving.jdt.ui.javaeditor.formatter;apply-aspects:=false
-Export-Package: 
- org.scalaide.editor,
- org.scalaide.editor.util
+Export-Package: org.scalaide.editor,org.scalaide.editor.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
