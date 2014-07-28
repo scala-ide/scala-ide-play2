@@ -1,6 +1,6 @@
 package org.scalaide.play2.routeeditor.completion
 
-import org.scalaide.core.internal.project.ScalaProject
+import org.scalaide.core.api.ScalaProject
 import org.scalaide.core.completion.MemberKind
 import org.scalaide.core.testsetup.SDTTestUtils
 import org.scalaide.core.testsetup.TestProjectSetup

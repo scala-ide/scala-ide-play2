@@ -2,7 +2,7 @@ package org.scalaide.play2.routeeditor
 
 import org.scalaide.ui.internal.editor.ISourceViewerEditor
 import org.scalaide.core.ScalaPlugin
-import org.scalaide.core.internal.project.ScalaProject
+import org.scalaide.core.api.ScalaProject
 import org.scalaide.logging.HasLogger
 import org.eclipse.core.commands.ExecutionEvent
 import org.eclipse.core.commands.ExecutionException

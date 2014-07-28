@@ -1,7 +1,7 @@
 package org.scalaide.play2.routeeditor.hyperlink
 
 import org.scalaide.core.compiler.InteractiveCompilationUnit
-import org.scalaide.core.internal.project.ScalaProject
+import org.scalaide.core.api.ScalaProject
 import org.scalaide.core.hyperlink.Hyperlink
 import org.eclipse.jdt.core.IJavaElement
 import org.eclipse.jface.text.IDocument

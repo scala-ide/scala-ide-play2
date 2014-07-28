@@ -3,7 +3,7 @@ package org.scalaide.play2.templateeditor
 import java.io.PrintStream
 import org.scalaide.core.ScalaPlugin
 import org.scalaide.core.compiler.ScalaPresentationCompiler
-import org.scalaide.core.internal.project.ScalaProject
+import org.scalaide.core.api.ScalaProject
 import org.scalaide.logging.HasLogger
 import scala.tools.nsc.interactive.Response
 import scala.tools.nsc.io.AbstractFile

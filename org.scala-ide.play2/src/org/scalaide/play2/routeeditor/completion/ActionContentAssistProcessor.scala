@@ -1,6 +1,6 @@
 package org.scalaide.play2.routeeditor.completion
 
-import org.scalaide.core.internal.project.ScalaProject
+import org.scalaide.core.api.ScalaProject
 import org.scalaide.logging.HasLogger
 
 import org.eclipse.jface.text.ITextViewer
