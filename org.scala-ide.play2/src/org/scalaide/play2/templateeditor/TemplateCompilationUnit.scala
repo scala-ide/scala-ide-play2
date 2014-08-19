@@ -1,7 +1,7 @@
 package org.scalaide.play2.templateeditor
 
 import java.io.PrintStream
-import org.scalaide.core.ScalaPlugin
+import org.scalaide.core.IScalaPlugin
 import org.scalaide.core.compiler.ScalaPresentationCompiler
 import org.scalaide.core.api.ScalaProject
 import org.scalaide.logging.HasLogger
@@ -46,7 +46,7 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
 
   override val scalaProject: ScalaProject = {
     def obtainScalaProject(project: IProject): ScalaProject = {
-      ScalaPlugin.plugin.asScalaProject(project) match {
+      IScalaPlugin().asScalaProject(project) match {
         case Some(scalaProject) => scalaProject
         case None =>
           def programmaticallyAddScalaNature(project: IProject): Unit = {
@@ -54,7 +54,7 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
             toggleScalaNature.performAction(project)  
           }
           programmaticallyAddScalaNature(project)
-          ScalaPlugin.plugin.asScalaProject(project) getOrElse {
+          IScalaPlugin().asScalaProject(project) getOrElse {
             val message = s"Failed to create a ScalaProject instance for Play template ${workspaceFile.getFullPath().toOSString()}. ${IssueTracker.createATicketMessage}"
             throw new IllegalStateException(message)
           }

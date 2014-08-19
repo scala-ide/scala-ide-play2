@@ -1,6 +1,6 @@
 package org.scalaide.play2
 
-import org.scalaide.core.ScalaPlugin
+import org.scalaide.core.IScalaPlugin
 import org.eclipse.core.resources.IProject
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.Status
@@ -48,7 +48,7 @@ class PlayPlugin extends AbstractUIPlugin {
   }
 
   def asPlayProject(project: IProject): Option[PlayProject] = {
-    val scalaProject = ScalaPlugin.plugin.asScalaProject(project)
+    val scalaProject = IScalaPlugin().asScalaProject(project)
     scalaProject map (PlayProject(_))
   }
 
