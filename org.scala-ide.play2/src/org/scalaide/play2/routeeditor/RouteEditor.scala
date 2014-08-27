@@ -1,7 +1,7 @@
 package org.scalaide.play2.routeeditor
 
 import org.scalaide.ui.internal.editor.ISourceViewerEditor
-import org.scalaide.core.ScalaPlugin
+import org.scalaide.core.IScalaPlugin
 import org.scalaide.core.api.ScalaProject
 import org.scalaide.logging.HasLogger
 import org.eclipse.core.commands.ExecutionEvent
@@ -86,7 +86,7 @@ class RouteEditor extends TextEditor with ISourceViewerEditor with HasLogger wit
   override def getScalaProject: Option[ScalaProject] = {
     getEditorInput() match {
       case fileEditorInput: FileEditorInput =>
-        ScalaPlugin.plugin.asScalaProject(fileEditorInput.getFile().getProject())
+        IScalaPlugin().asScalaProject(fileEditorInput.getFile().getProject())
       case _ =>
         logger.info("Attempted to find a Scala project for %s".format(getEditorInput()))
         None
