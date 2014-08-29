@@ -1,7 +1,7 @@
 package org.scalaide.play2.routeeditor.hyperlink
 
 import org.scalaide.core.compiler.InteractiveCompilationUnit
-import org.scalaide.core.api.ScalaProject
+import org.scalaide.core.IScalaProject
 import org.scalaide.core.hyperlink.Hyperlink
 import org.eclipse.jdt.core.IJavaElement
 import org.eclipse.jface.text.IDocument
@@ -13,7 +13,7 @@ object RouteHyperlinkComputer {
 
   /** Return the hyperlink to controller referenced in this route, if it exists.
    */  
-  def detectHyperlinks(scalaProject: ScalaProject, document: IDocument, region: IRegion, createJavaHyperlink: (RouteAction, IJavaElement) => IHyperlink): Option[IHyperlink] = {
+  def detectHyperlinks(scalaProject: IScalaProject, document: IDocument, region: IRegion, createJavaHyperlink: (RouteAction, IJavaElement) => IHyperlink): Option[IHyperlink] = {
     RouteAction.routeActionAt(document, region.getOffset()).flatMap {
       routeAction =>
         val routeActionParamTypes= routeAction.params.map(_._2)
@@ -103,7 +103,7 @@ object RouteHyperlinkComputer {
    *
    *  This won't be needed anymore after a fix for https://scala-ide-portfolio.assembla.com/spaces/scala-ide/tickets/1001672
    */
-  private class FakeInteractiveCompilationUnitForProject(override val scalaProject: ScalaProject) extends InteractiveCompilationUnit {
+  private class FakeInteractiveCompilationUnitForProject(override val scalaProject: IScalaProject) extends InteractiveCompilationUnit {
     override def currentProblems(): List[org.eclipse.jdt.core.compiler.IProblem] = throw new UnsupportedOperationException
     override def exists(): Boolean = throw new UnsupportedOperationException
     override def file: tools.nsc.io.AbstractFile = throw new UnsupportedOperationException

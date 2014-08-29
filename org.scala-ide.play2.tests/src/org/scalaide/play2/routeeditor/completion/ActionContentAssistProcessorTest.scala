@@ -1,6 +1,6 @@
 package org.scalaide.play2.routeeditor.completion
 
-import org.scalaide.core.api.ScalaProject
+import org.scalaide.core.IScalaProject
 import org.scalaide.core.completion.MemberKind
 import org.scalaide.core.testsetup.SDTTestUtils
 import org.scalaide.core.testsetup.TestProjectSetup
@@ -19,7 +19,7 @@ object ActionContentAssistProcessorTest extends TestProjectSetup("routeActionCom
   }
 
   private object ScalaProjectHolder extends HasScalaProject {
-    def getScalaProject: Option[ScalaProject] = Some(project)
+    def getScalaProject: Option[IScalaProject] = Some(project)
   }
 }
 

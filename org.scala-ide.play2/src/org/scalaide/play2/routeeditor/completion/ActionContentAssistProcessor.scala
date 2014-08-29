@@ -1,6 +1,6 @@
 package org.scalaide.play2.routeeditor.completion
 
-import org.scalaide.core.api.ScalaProject
+import org.scalaide.core.IScalaProject
 import org.scalaide.logging.HasLogger
 
 import org.eclipse.jface.text.ITextViewer
@@ -28,7 +28,7 @@ class ActionContentAssistProcessor(routeEditor: HasScalaProject) extends IConten
     proposals getOrElse null
   }
 
-  private def computeCompletionProposals(project: ScalaProject, viewer: ITextViewer, offset: Int): Array[ICompletionProposal] = {
+  private def computeCompletionProposals(project: IScalaProject, viewer: ITextViewer, offset: Int): Array[ICompletionProposal] = {
     val document = viewer.getDocument
 
     val completions = project.presentationCompiler { compiler =>

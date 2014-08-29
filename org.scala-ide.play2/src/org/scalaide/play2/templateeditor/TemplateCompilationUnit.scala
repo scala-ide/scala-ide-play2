@@ -3,7 +3,7 @@ package org.scalaide.play2.templateeditor
 import java.io.PrintStream
 import org.scalaide.core.IScalaPlugin
 import org.scalaide.core.compiler.ScalaPresentationCompiler
-import org.scalaide.core.api.ScalaProject
+import org.scalaide.core.IScalaProject
 import org.scalaide.logging.HasLogger
 import scala.tools.nsc.interactive.Response
 import scala.tools.nsc.io.AbstractFile
@@ -44,8 +44,8 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
     new VirtualFile(getTemplateFullPath)
   }
 
-  override val scalaProject: ScalaProject = {
-    def obtainScalaProject(project: IProject): ScalaProject = {
+  override val scalaProject: IScalaProject = {
+    def obtainScalaProject(project: IProject): IScalaProject = {
       IScalaPlugin().asScalaProject(project) match {
         case Some(scalaProject) => scalaProject
         case None =>

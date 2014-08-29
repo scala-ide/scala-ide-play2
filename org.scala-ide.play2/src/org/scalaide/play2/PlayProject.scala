@@ -2,7 +2,7 @@ package org.scalaide.play2
 
 import java.io.File
 import org.scalaide.core.compiler.ScalaPresentationCompiler
-import org.scalaide.core.api.ScalaProject
+import org.scalaide.core.IScalaProject
 import scala.tools.nsc.util.SourceFile
 import org.eclipse.core.resources.IFile
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
@@ -15,7 +15,7 @@ import org.scalaide.play2.properties.PlayPreferences
 
 import scala.collection.mutable
 
-class PlayProject private (val scalaProject: ScalaProject) {
+class PlayProject private (val scalaProject: IScalaProject) {
   private val presentationCompiler = new TemplatePresentationCompiler(this)
 
   val cachedPreferenceStore = new SyncedScopedPreferenceStore(scalaProject.underlying, PlayPlugin.PluginId)
@@ -61,8 +61,8 @@ class PlayProject private (val scalaProject: ScalaProject) {
 }
 
 object PlayProject {
-  private val projects = (new mutable.HashMap) withDefault {(scalaProject: ScalaProject) => new PlayProject(scalaProject)}
-  def apply(scalaProject: ScalaProject): PlayProject = {
+  private val projects = (new mutable.HashMap) withDefault {(scalaProject: IScalaProject) => new PlayProject(scalaProject)}
+  def apply(scalaProject: IScalaProject): PlayProject = {
     projects(scalaProject)
   }
 }
