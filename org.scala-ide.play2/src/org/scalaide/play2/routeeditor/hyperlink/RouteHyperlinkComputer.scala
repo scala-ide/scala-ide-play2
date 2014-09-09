@@ -19,7 +19,8 @@ object RouteHyperlinkComputer {
         val routeActionParamTypes= routeAction.params.map(_._2)
         val scalaHyperlink: Option[Option[IHyperlink]] = scalaProject.presentationCompiler { compiler =>
           import compiler._
-          askOption { () =>
+          import org.scalaide.core.compiler.IScalaPresentationCompiler.Implicits._
+          asyncExec {
 
             // label for the hyperlink
             def methodLabel(method: Symbol): String = {
@@ -67,7 +68,7 @@ object RouteHyperlinkComputer {
                   if (method.isJavaDefined) {
                     None
                   } else {
-                    locate(method, new FakeInteractiveCompilationUnitForProject(scalaProject)).map {
+                    findDeclaration(method, scalaProject.javaProject).map {
                       unitAndOffset =>
                         Hyperlink.withText("Open Declaration")(unitAndOffset._1, unitAndOffset._2, routeAction.methodName.length, methodLabel(method), routeAction.region)
                     }
@@ -75,7 +76,7 @@ object RouteHyperlinkComputer {
               }
               res
             }
-          }.flatten
+          }.getOption().flatten
         }.flatten
 
         scalaHyperlink.flatMap {
@@ -96,22 +97,6 @@ object RouteHyperlinkComputer {
 
     }
 
-  }
-
-  /** Fake InteractiveCompilationUnit class, used to provide a Scala project to scala.tools.eclipse.LocateSymbol.locate().
-   *  All methods except scalaProject throw UnsupportOperationException.
-   *
-   *  This won't be needed anymore after a fix for https://scala-ide-portfolio.assembla.com/spaces/scala-ide/tickets/1001672
-   */
-  private class FakeInteractiveCompilationUnitForProject(override val scalaProject: IScalaProject) extends InteractiveCompilationUnit {
-    override def currentProblems(): List[org.eclipse.jdt.core.compiler.IProblem] = throw new UnsupportedOperationException
-    override def exists(): Boolean = throw new UnsupportedOperationException
-    override def file: tools.nsc.io.AbstractFile = throw new UnsupportedOperationException
-    override def getContents(): Array[Char] = throw new UnsupportedOperationException
-    override def reconcile(newContents: String): List[org.eclipse.jdt.core.compiler.IProblem] = throw new UnsupportedOperationException
-    override def scheduleReconcile(): scala.tools.nsc.interactive.Response[Unit] = throw new UnsupportedOperationException
-    override def sourceFile(contents: Array[Char]): tools.nsc.util.SourceFile = throw new UnsupportedOperationException
-    override def workspaceFile: org.eclipse.core.resources.IFile = throw new UnsupportedOperationException
   }
 
 }

@@ -1,6 +1,6 @@
 package org.scalaide.play2.routeeditor.completion.action
 
-import org.scalaide.core.compiler.ScalaPresentationCompiler
+import org.scalaide.core.compiler.IScalaPresentationCompiler
 import org.scalaide.core.completion.MemberKind
 
 import org.eclipse.jdt.core.IMethod
@@ -10,7 +10,7 @@ import org.eclipse.jface.text.Region
 import org.scalaide.editor.WordFinder
 import org.scalaide.play2.quickassist.ControllerMethod
 
-class ActionCompletionComputer(compiler: ScalaPresentationCompiler) {
+class ActionCompletionComputer(compiler: IScalaPresentationCompiler) {
 
   def computeCompletionProposals(document: IDocument, offset: Int): List[ActionCompletionProposal] = {
     val inputRegion = WordFinder.findWord(document, offset)

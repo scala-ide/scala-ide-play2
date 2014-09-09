@@ -1,14 +1,14 @@
 package org.scalaide.editor
 
-import org.scalaide.core.compiler.ScalaPresentationCompiler
 import scala.reflect.internal.util.SourceFile
+import org.scalaide.core.compiler.IScalaPresentationCompiler
 
 /** A few convenience methods on top of the presentation compiler
  *
  *  This should migrate to sdt.core/interactive compiler as needed.
  */
 abstract class PresentationCompilerExtensions {
-  val compiler: ScalaPresentationCompiler
+  val compiler: IScalaPresentationCompiler
 
   import compiler._
 

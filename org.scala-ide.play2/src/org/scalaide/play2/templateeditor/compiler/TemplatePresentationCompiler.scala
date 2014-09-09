@@ -10,7 +10,7 @@ import play.twirl.compiler.GeneratedSource
 import scala.tools.nsc.io.AbstractFile
 import scala.tools.nsc.io.VirtualFile
 import java.io.File
-import org.scalaide.core.compiler.ScalaPresentationCompiler
+import org.scalaide.core.compiler.IScalaPresentationCompiler
 import play.twirl.compiler.GeneratedSourceVirtual
 import org.scalaide.logging.HasLogger
 import scala.util.Failure
@@ -18,36 +18,23 @@ import scala.util.Success
 import scala.util.Try
 import scala.collection.mutable
 import org.scalaide.play2.PlayProject
+import org.scalaide.core.compiler.InteractiveCompilationUnit
+import org.scalaide.core.IScalaProject
 
 /**
  * presentation compiler for template files
  */
 class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
-  /**
-   * Returns scala batch source file (which is a virtual file) associated to
-   * the given generated source.
-   */
-  def scalaFileFromGen(gen: GeneratedSourceVirtual): BatchSourceFile = {
-    val fileName = gen.path
-    val file = ScalaFileManager.scalaFile(fileName)
-    new BatchSourceFile(file, gen.content)
-  }
 
-  /**
-   * Returns scala batch source file (which is a virtual file) which is 
-   * the result of compiling the given template compilation unit
-   */
-  def scalaFileFromTCU(tcu: TemplateCompilationUnit): Try[BatchSourceFile] = {
-    tcu.generatedSource() map scalaFileFromGen
-  }
+  import TemplatePresentationCompiler._
 
   private val scalaProject = playProject.scalaProject
 
   def problemsOf(tcu: TemplateCompilationUnit): List[IProblem] = {
     tcu.generatedSource() match {
       case Success(generatedSource) =>
-        val src = scalaFileFromGen(generatedSource)
-        val problems = scalaProject.presentationCompiler(pc => pc.problemsOf(src.file)).getOrElse(Nil)
+        val icu = new TranslatedTemplateInteractiveCompilationUnit(generatedSource, scalaProject)
+        val problems = scalaProject.presentationCompiler(pc => pc.problemsOf(icu)).getOrElse(Nil)
         def mapOffset(offset: Int) = generatedSource.mapPosition(offset)
         def mapLine(line: Int) = generatedSource.mapLine(line)
         problems map {
@@ -90,34 +77,43 @@ class TemplatePresentationCompiler(playProject: PlayProject) extends HasLogger {
 
   /**
    * Reload the template compilation unit
-   *
-   * FIXME: `content` seems to be ignored
    */
-  def askReload(tcu: TemplateCompilationUnit, content: Array[Char]) {
+  def askReload(tcu: TemplateCompilationUnit) {
+    import org.scalaide.core.compiler.IScalaPresentationCompiler.Implicits._
     for (generatedSource <- tcu.generatedSource()) {
-      val src = scalaFileFromGen(generatedSource)
-      val sourceList = List(src)
-      scalaProject.presentationCompiler (pc => {
-        pc.withResponse((response: pc.Response[Unit]) => {
-          pc.askReload(sourceList, response)
-          response.get
-        })
-      })
+      scalaProject.presentationCompiler { pc =>
+        val icu = new TranslatedTemplateInteractiveCompilationUnit(generatedSource, scalaProject)
+        pc.askReload(icu, icu.getContents()).getOption()
+      }
     }
   }
-
-  def withSourceFile[T](tcu: TemplateCompilationUnit)(op: (SourceFile, ScalaPresentationCompiler) => T): Option[T] =
-    scalaProject.presentationCompiler(pc => {
-      scalaFileFromTCU(tcu).map(op(_, pc)).toOption
-    }).flatten
 
   def destroy() = {
     CompilerUsing.templateCompiler.TemplateAsFunctionCompiler.PresentationCompiler.shutdown()
   }
 }
 
-object ScalaFileManager {
-  val scalaFile = new mutable.HashMap[String, AbstractFile] withDefault (fileName => {
-    new VirtualFile(fileName)
-  })
+object TemplatePresentationCompiler {
+
+  private class TranslatedTemplateInteractiveCompilationUnit(gen: GeneratedSourceVirtual, override val scalaProject: IScalaProject) extends InteractiveCompilationUnit {
+    override def currentProblems(): List[org.eclipse.jdt.core.compiler.IProblem] = throw new UnsupportedOperationException
+    override def exists(): Boolean = throw new UnsupportedOperationException
+    override def reconcile(newContents: String): List[org.eclipse.jdt.core.compiler.IProblem] = throw new UnsupportedOperationException
+    override def initialReconcile(): scala.tools.nsc.interactive.Response[Unit] = throw new UnsupportedOperationException
+    override def workspaceFile: org.eclipse.core.resources.IFile = throw new UnsupportedOperationException
+
+    override def file: tools.nsc.io.AbstractFile = {
+      new VirtualFile(gen.path)
+    }
+
+    override def getContents(): Array[Char] = {
+      gen.content.toArray
+    }
+
+    override def sourceFile(contents: Array[Char]): tools.nsc.util.SourceFile = {
+      new BatchSourceFile(file, contents)
+    }
+  }
+
 }
+

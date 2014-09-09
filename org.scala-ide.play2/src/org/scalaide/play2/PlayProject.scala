@@ -1,7 +1,7 @@
 package org.scalaide.play2
 
 import java.io.File
-import org.scalaide.core.compiler.ScalaPresentationCompiler
+import org.scalaide.core.compiler.IScalaPresentationCompiler
 import org.scalaide.core.IScalaProject
 import scala.tools.nsc.util.SourceFile
 import org.eclipse.core.resources.IFile
@@ -33,12 +33,6 @@ class PlayProject private (val scalaProject: IScalaProject) {
 
   def withPresentationCompiler[T](op: TemplatePresentationCompiler => T): T = {
     op(presentationCompiler)
-  }
-
-  def withSourceFile[T](tcu: TemplateCompilationUnit)(op: (SourceFile, ScalaPresentationCompiler) => T): Option[T] = {
-    withPresentationCompiler { compiler =>
-      compiler.withSourceFile(tcu)(op)
-    }
   }
 
   /** Tries to load the scala template files

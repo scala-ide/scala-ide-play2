@@ -1,6 +1,6 @@
 package org.scalaide.play2.routeeditor.completion.action
 
-import org.scalaide.core.compiler.ScalaPresentationCompiler
+import org.scalaide.core.compiler.IScalaPresentationCompiler
 import org.scalaide.logging.HasLogger
 
 import org.scalaide.play2.JavaPlayClassNames
@@ -17,7 +17,7 @@ import org.scalaide.play2.ScalaPlayClassNames
   */
 private[action] object MembersComputer {
 
-  def apply(compiler: ScalaPresentationCompiler, input: ActionRouteInput): MembersComputer = {
+  def apply(compiler: IScalaPresentationCompiler, input: ActionRouteInput): MembersComputer = {
     val provider = {
       if (input.isControllerClassInstantiation) new InstanceMembersLocator(compiler)
       else new ModuleMembersLocator(compiler)
@@ -25,7 +25,7 @@ private[action] object MembersComputer {
     provider.createMembersComputer(input)
   }
 
-  private abstract class MembersLocator(protected val compiler: ScalaPresentationCompiler) extends HasLogger {
+  private abstract class MembersLocator(protected val compiler: IScalaPresentationCompiler) extends HasLogger {
 
     def createMembersComputer(input: ActionRouteInput): MembersComputer = {
       val prefix = {
@@ -74,7 +74,7 @@ private[action] object MembersComputer {
     }
   }
 
-  private class InstanceMembersLocator(_compiler: ScalaPresentationCompiler) extends MembersLocator(_compiler) { self =>
+  private class InstanceMembersLocator(_compiler: IScalaPresentationCompiler) extends MembersLocator(_compiler) { self =>
 
     override protected def prefixSymbol(input: ActionRouteInput): compiler.Symbol = {
       val sym = findPackageFromRoot(input.prefix) orElse findClassFromRoot(input.prefix)
@@ -111,7 +111,7 @@ private[action] object MembersComputer {
     }
   }
 
-  private class ModuleMembersLocator(_compiler: ScalaPresentationCompiler) extends MembersLocator(_compiler) { self =>
+  private class ModuleMembersLocator(_compiler: IScalaPresentationCompiler) extends MembersLocator(_compiler) { self =>
 
     override protected def prefixSymbol(input: ActionRouteInput): compiler.Symbol =
       findPackageFromRoot(input.prefix) orElse findModuleFromRoot(input.prefix)
@@ -147,7 +147,7 @@ private[action] object MembersComputer {
   * @note This class is not instantiated directly. It contains common behavior used by the subclasses.
   */
 private[action] abstract class MembersComputer protected () extends HasLogger {
-  protected val compiler: ScalaPresentationCompiler
+  protected val compiler: IScalaPresentationCompiler
   protected val prefix: compiler.Symbol
 
   final def members: List[compiler.Symbol] = {
@@ -175,7 +175,7 @@ private[action] abstract class MembersComputer protected () extends HasLogger {
 
 /** A member compute that always returns an empty list of members.*/
 object EmptyMembersComputer extends MembersComputer {
-  override protected val compiler: ScalaPresentationCompiler = null
+  override protected val compiler: IScalaPresentationCompiler = null
   override protected val prefix: compiler.Symbol = null
 
   protected def allMembers: List[compiler.Symbol] = Nil
