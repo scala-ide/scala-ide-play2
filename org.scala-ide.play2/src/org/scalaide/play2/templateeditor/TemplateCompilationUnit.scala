@@ -2,7 +2,7 @@ package org.scalaide.play2.templateeditor
 
 import java.io.PrintStream
 import org.scalaide.core.IScalaPlugin
-import org.scalaide.core.compiler.ScalaPresentationCompiler
+import org.scalaide.core.compiler.IScalaPresentationCompiler
 import org.scalaide.core.IScalaProject
 import org.scalaide.logging.HasLogger
 import scala.tools.nsc.interactive.Response
@@ -82,9 +82,7 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
 
   /** Return contents of generated scala file. */
   override def getContents: Array[Char] = {
-    withSourceFile({ (sourceFile, compiler) =>
-      sourceFile.content
-    }).orNull
+    generatedSource().map(_.content).getOrElse("").toArray
   }
 
   /** Return contents of template file. */
@@ -101,23 +99,15 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
    */
   override def reconcile(newContents: String): List[IProblem] = {
     playProject.withPresentationCompiler { pc =>
-      askReload(newContents.toCharArray)
+      askReload()
       pc.problemsOf(this)
     }
   }
 
-  def askReload(newContents: Array[Char] = getTemplateContents.toCharArray): Unit =
+  def askReload(): Unit =
     playProject.withPresentationCompiler { pc =>
-      pc.askReload(this, newContents)
+      pc.askReload(this)
     }
-
-  override def doWithSourceFile(op: (SourceFile, ScalaPresentationCompiler) => Unit) {
-    playProject.withSourceFile(this)(op)
-  }
-
-  override def withSourceFile[T](op: (SourceFile, ScalaPresentationCompiler) => T): Option[T] = {
-    playProject.withSourceFile(this)(op)
-  }
 
   /** maps a region in template file into generated scala file
    */

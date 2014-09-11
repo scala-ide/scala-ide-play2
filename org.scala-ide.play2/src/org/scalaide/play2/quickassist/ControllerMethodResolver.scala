@@ -52,11 +52,17 @@ class ScalaControllerMethodResolver extends ControllerMethodResolver with ScalaP
         }
 
         /* Is the symbol a method returning `play.api.mvc.EssentialAction`. */
-        def isControllerMethod(sym: comp.Symbol) = (sym ne null) && (sym ne NoSymbol) && (comp.askOption { () =>
-          lazy val returnsAction = sym.info.finalResultType.typeSymbol.isSubClass(actionClass)
+        def isControllerMethod(sym: comp.Symbol) = {
+          import org.scalaide.core.compiler.IScalaPresentationCompiler.Implicits._
 
-          (sym.isMethod && sym.owner.isModuleOrModuleClass && returnsAction)
-        } getOrElse false)
+          (sym ne null) &&
+            (sym ne NoSymbol) &&
+            (comp.asyncExec {
+              lazy val returnsAction = sym.info.finalResultType.typeSymbol.isSubClass(actionClass)
+
+              (sym.isMethod && sym.owner.isModuleOrModuleClass && returnsAction)
+            }.getOrElse(false)())
+        }
 
         val enclMeth = extensions.getEnclosingMethd(src, offset)
         val pos = if (enclMeth == EmptyTree) rangePos(src, offset, offset, offset) else enclMeth.pos

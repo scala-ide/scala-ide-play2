@@ -11,7 +11,7 @@ import org.eclipse.jface.text.contentassist.IContextInformation
 import org.eclipse.ui.texteditor.ITextEditor
 import org.eclipse.wst.sse.ui.contentassist.CompletionProposalInvocationContext
 import org.eclipse.wst.sse.ui.contentassist.ICompletionProposalComputer
-import org.scalaide.core.compiler.ScalaPresentationCompiler
+import org.scalaide.core.compiler.IScalaPresentationCompiler
 import org.scalaide.core.completion.ScalaCompletions
 import org.scalaide.editor.util.EditorHelper
 import org.eclipse.wst.sse.ui.contentassist.{ICompletionProposalComputer, CompletionProposalInvocationContext}
@@ -79,7 +79,7 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
     }
   }
 
-  private def findCompletions(viewer: ITextViewer, position: Int, tcu: TemplateCompilationUnit)(sourceFile: SourceFile, compiler: ScalaPresentationCompiler): List[ICompletionProposal] = {
+  private def findCompletions(viewer: ITextViewer, position: Int, tcu: TemplateCompilationUnit)(sourceFile: SourceFile, compiler: IScalaPresentationCompiler): List[ICompletionProposal] = {
     val region = ScalaWordFinder.findCompletionPoint(tcu.getTemplateContents, position)
     
     val completions = {
