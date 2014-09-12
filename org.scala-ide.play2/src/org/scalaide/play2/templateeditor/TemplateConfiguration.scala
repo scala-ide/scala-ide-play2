@@ -68,9 +68,9 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Abstrac
   override def getContentAssistant(sourceViewer: ISourceViewer): IContentAssistant = {
     val assistant = new ContentAssistant
     assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer))
-    assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), TemplatePartitions.TEMPLATE_SCALA)
-    assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), TemplatePartitions.TEMPLATE_PLAIN)
-    assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), IDocument.DEFAULT_CONTENT_TYPE)
+    assistant.setContentAssistProcessor(new CompletionProposalComputer(), TemplatePartitions.TEMPLATE_SCALA)
+    assistant.setContentAssistProcessor(new CompletionProposalComputer(), TemplatePartitions.TEMPLATE_PLAIN)
+    assistant.setContentAssistProcessor(new CompletionProposalComputer(), IDocument.DEFAULT_CONTENT_TYPE)
     assistant
   }
 

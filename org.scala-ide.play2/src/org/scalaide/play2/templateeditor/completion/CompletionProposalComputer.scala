@@ -2,7 +2,6 @@ package org.scalaide.play2.templateeditor.completion
 
 import scala.collection.JavaConversions.seqAsJavaList
 import scala.tools.nsc.util.SourceFile
-
 import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.jface.text.ITextViewer
 import org.eclipse.jface.text.contentassist.ICompletionProposal
@@ -13,7 +12,6 @@ import org.eclipse.wst.sse.ui.contentassist.CompletionProposalInvocationContext
 import org.eclipse.wst.sse.ui.contentassist.ICompletionProposalComputer
 import org.scalaide.core.compiler.IScalaPresentationCompiler
 import org.scalaide.core.completion.ScalaCompletions
-import org.scalaide.editor.util.EditorHelper
 import org.eclipse.wst.sse.ui.contentassist.{ICompletionProposalComputer, CompletionProposalInvocationContext}
 import org.eclipse.core.runtime.IProgressMonitor
 import org.scalaide.play2.templateeditor.AbstractTemplateEditor
@@ -21,16 +19,10 @@ import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import org.scalaide.play2.templateeditor.TemplateCompilationUnitProvider
 import org.scalaide.ui.internal.completion.ScalaCompletionProposal
 import org.scalaide.util.internal.ScalaWordFinder
+import org.scalaide.play2.util.StoredEditorUtils
 
 class CompletionProposalComputer extends ScalaCompletions with IContentAssistProcessor with ICompletionProposalComputer {
 
-  var textEditor: Option[ITextEditor] = None
-  
-  def this(textEditor: ITextEditor) = {
-    this()
-    this.textEditor = Some(textEditor)
-  }
-  
   /* ICompletionProposalComputer methods */
   
   def sessionStarted() : Unit = { }
@@ -59,7 +51,8 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
 
   override def computeCompletionProposals(viewer: ITextViewer, offset: Int): Array[ICompletionProposal] = {
     val editorFilter: PartialFunction[ITextEditor, AbstractTemplateEditor] = { case e: AbstractTemplateEditor => e }
-    val editor = (textEditor collect editorFilter) orElse (EditorHelper.findEditorOfDocument(viewer.getDocument()) collect editorFilter)
+
+    val editor = StoredEditorUtils.getEditorOfViewer(viewer)
 
     val compileUnit: Option[TemplateCompilationUnit] = editor map { templateEditor =>
       templateEditor.compilationUnitProvider match {
