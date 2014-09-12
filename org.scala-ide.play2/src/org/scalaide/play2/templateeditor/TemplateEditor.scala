@@ -12,8 +12,8 @@ import org.eclipse.jface.util.PropertyChangeEvent
 import org.eclipse.ui.editors.text.EditorsUI
 import org.eclipse.ui.texteditor.ChainedPreferenceStore
 import org.scalaide.play2.PlayPlugin
-import org.scalaide.editor.SourceCodeEditor
-import org.scalaide.editor.CompilationUnitProvider
+import org.scalaide.ui.editor.SourceCodeEditor
+import org.scalaide.ui.editor.CompilationUnitProvider
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.ui.editors.text.TextEditor
 

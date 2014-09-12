@@ -10,7 +10,6 @@ import org.eclipse.jdt.core.Signature
 import org.eclipse.jdt.core.Flags
 import java.util.Arrays
 import org.eclipse.jdt.core.JavaModelException
-import org.scalaide.editor.PresentationCompilerExtensions
 import org.scalaide.play2.ScalaPlayClassNames
 import org.scalaide.play2.PlayClassNames
 import org.scalaide.play2.JavaPlayClassNames
@@ -44,8 +43,6 @@ class ScalaControllerMethodResolver extends ControllerMethodResolver with ScalaP
       scu.withSourceFile { (src, comp) =>
         import comp._
 
-        val extensions = new PresentationCompilerExtensions { val compiler: comp.type = comp }
-
         /** Should only be called inside an `askOption`. */
         def actionClass = {
           comp.rootMirror.getClassIfDefined(actionClassFullName)
@@ -64,7 +61,7 @@ class ScalaControllerMethodResolver extends ControllerMethodResolver with ScalaP
             }.getOrElse(false)())
         }
 
-        val enclMeth = extensions.getEnclosingMethd(src, offset)
+        val enclMeth = enclosingMethd(src, offset)
         val pos = if (enclMeth == EmptyTree) rangePos(src, offset, offset, offset) else enclMeth.pos
 
         val response = new Response[Tree]

@@ -7,7 +7,7 @@ import org.eclipse.jdt.core.IMethod
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.Region
-import org.scalaide.editor.WordFinder
+import org.scalaide.ui.editor.WordFinder
 import org.scalaide.play2.quickassist.ControllerMethod
 
 class ActionCompletionComputer(compiler: IScalaPresentationCompiler) {

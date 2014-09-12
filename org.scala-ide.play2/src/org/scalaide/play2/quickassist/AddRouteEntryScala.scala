@@ -17,12 +17,12 @@ import org.eclipse.swt.graphics.Image
 import org.eclipse.ui.PartInitException
 import org.eclipse.ui.PlatformUI
 import org.eclipse.ui.ide.IDE
-import org.scalaide.editor.Editor
-import org.scalaide.editor.EditorUI
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.routeeditor.RouteEditor
 import org.scalaide.play2.routeeditor.formatter.RouteFormattingStrategy
 import org.scalaide.play2.util.Images
+import org.scalaide.util.internal.eclipse.EditorUtils
+import org.eclipse.jface.text.TextUtilities
 
 class AddRouteEntryScala extends IQuickAssistProcessor {
   private lazy val scalaResolver = new ScalaControllerMethodResolver
@@ -86,11 +86,10 @@ class AddRouteEntryScala extends IQuickAssistProcessor {
       part <- Option(IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), routeFile))
     } part match {
       case routeEditor: RouteEditor =>
-        Editor.getEditorDocument(routeEditor) foreach { routeDoc =>
-          ensureNewLine(routeDoc)
-          val template = newTemplateProposal(routeDoc, /* image = */ null, routeCall)
-          template.apply(routeEditor.getViewer, ' ', 0, routeDoc.getLength())
-        }
+        val routeDoc = routeEditor.getViewer().getDocument
+        ensureNewLine(routeDoc)
+        val template = newTemplateProposal(routeDoc, /* image = */ null, routeCall)
+        template.apply(routeEditor.getViewer, ' ', 0, routeDoc.getLength())
       case _ => // do nothing in case we're not in the route editor
     }
   } catch {
@@ -100,7 +99,7 @@ class AddRouteEntryScala extends IQuickAssistProcessor {
 
   /** Ensure a fresh new line at the end of the document. */
   private def ensureNewLine(doc: IDocument) {
-    val lineSep = Option(doc.getLineDelimiter(0)).getOrElse(EditorUI.defaultLineSeparator)
+    val lineSep = TextUtilities.getDefaultLineDelimiter(doc)
     val lastLineRegion = doc.getLineInformationOfOffset(doc.getLength())
     val lastLine = doc.get(lastLineRegion.getOffset(), lastLineRegion.getLength())
     if (lastLine.trim != "")

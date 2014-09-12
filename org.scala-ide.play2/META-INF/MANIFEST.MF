@@ -25,7 +25,6 @@ Require-Bundle:
  org.scala-lang.scala-compiler,
  org.scala-lang.scala-reflect,
  org.scala-ide.sdt.core,
- org.scala-ide.sdt.editor,
  org.eclipse.core.resources,
  scalariform,
  org.eclipse.core.filesystem,

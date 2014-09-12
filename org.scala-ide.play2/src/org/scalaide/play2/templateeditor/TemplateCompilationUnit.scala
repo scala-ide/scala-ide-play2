@@ -25,8 +25,8 @@ import org.scalaide.play2.PlayProject
 import org.scalaide.play2.templateeditor.compiler.CompilerUsing
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
 import play.twirl.compiler.GeneratedSourceVirtual
-import org.scalaide.editor.CompilationUnit
-import org.scalaide.editor.CompilationUnitProvider
+import org.scalaide.ui.editor.CompilationUnit
+import org.scalaide.ui.editor.CompilationUnitProvider
 import org.scalaide.ui.internal.actions.ToggleScalaNatureAction
 
 /** A Template compilation unit connects the presentation compiler
