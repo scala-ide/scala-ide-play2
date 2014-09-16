@@ -1,10 +1,10 @@
 package org.scalaide.play2.properties
 
 import org.scalaide.ui.syntax.ScalaSyntaxClass
-
 import org.eclipse.jface.viewers.ITreeContentProvider
 import org.eclipse.jface.viewers.LabelProvider
 import org.eclipse.jface.viewers.Viewer
+import org.scalaide.ui.syntax.ScalaSyntaxClasses.Category
 /**
  * Provides the tree structure for syntax coloring according to given
  * list of categories and associated syntax classes to each one.

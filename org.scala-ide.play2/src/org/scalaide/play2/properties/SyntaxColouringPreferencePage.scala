@@ -43,6 +43,7 @@ import org.eclipse.ui.texteditor.ChainedPreferenceStore
 import org.eclipse.ui.editors.text.EditorsUI
 import org.eclipse.jface.viewers.ITreeContentProvider
 import org.eclipse.jface.viewers.LabelProvider
+import org.scalaide.ui.syntax.ScalaSyntaxClasses.Category
 
 /**
  * @see org.eclipse.jdt.internal.ui.preferences.JavaEditorColoringConfigurationBlock

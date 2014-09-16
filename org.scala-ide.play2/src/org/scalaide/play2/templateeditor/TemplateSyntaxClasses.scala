@@ -1,7 +1,7 @@
 package org.scalaide.play2.templateeditor
 
 import org.scalaide.ui.syntax.ScalaSyntaxClass
-import org.scalaide.play2.properties.Category
+import org.scalaide.ui.syntax.ScalaSyntaxClasses.Category
 import org.scalaide.ui.syntax.ScalaSyntaxClasses
 
 object TemplateSyntaxClasses {

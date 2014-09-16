@@ -1,7 +1,7 @@
 package org.scalaide.play2.routeeditor
 
 import org.scalaide.ui.syntax.ScalaSyntaxClass
-import org.scalaide.play2.properties.Category
+import org.scalaide.ui.syntax.ScalaSyntaxClasses.Category
 
 object RouteSyntaxClasses {
   val DEFAULT = ScalaSyntaxClass("Default", "route.default")
