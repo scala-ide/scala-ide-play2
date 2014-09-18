@@ -38,7 +38,7 @@ class TemplateEditor extends TextEditor with AbstractTemplateEditor {
   setDocumentProvider(documentProvider);
 
   override def handlePreferenceStoreChanged(event: PropertyChangeEvent) = {
-    sourceViewConfiguration.handlePropertyChangeEvent(event)
+    sourceViewConfiguration.propertyChange(event)
     super.handlePreferenceStoreChanged(event)
   }
 

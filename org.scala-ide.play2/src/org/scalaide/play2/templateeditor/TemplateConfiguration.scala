@@ -28,7 +28,6 @@ import org.eclipse.jface.text.contentassist.IContentAssistant
 import org.eclipse.jface.text.contentassist.ContentAssistant
 import org.scalaide.play2.templateeditor.completion.CompletionProposalComputer
 import org.eclipse.jface.text.IDocument
-import org.scalaide.play2.properties.PropertyChangeHandler
 import org.scalaide.play2.templateeditor.lexical.TemplateDefaultScanner
 import org.scalaide.play2.templateeditor.hyperlink.LocalTemplateHyperlinkComputer
 import org.eclipse.jface.text.ITextHover
@@ -39,8 +38,11 @@ import org.eclipse.jdt.internal.ui.text.java.SmartSemicolonAutoEditStrategy
 import org.eclipse.jface.text.source.Annotation
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants
 import org.scalaide.ui.internal.editor.autoedits.BracketAutoEditStrategy
+import org.eclipse.jface.util.IPropertyChangeListener
 
-class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: AbstractTemplateEditor) extends TextSourceViewerConfiguration(prefStore) with PropertyChangeHandler {
+class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: AbstractTemplateEditor)
+  extends TextSourceViewerConfiguration(prefStore)
+  with IPropertyChangeListener {
 
   private val templateDoubleClickStrategy =
     new RouteDoubleClickStrategy()
@@ -151,7 +153,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Abstrac
     prefStore != null && prefStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS)
   }
 
-  def handlePropertyChangeEvent(event: PropertyChangeEvent) {
+  def propertyChange(event: PropertyChangeEvent) {
     defaultScanner.adaptToPreferenceChange(event)
     tagScanner.adaptToPreferenceChange(event)
     plainScanner.adaptToPreferenceChange(event)

@@ -238,8 +238,8 @@
       </page>
       <page
             category="org.scala-ide.play2.preferences.route"
-            class="org.scalaide.play2.routeeditor.properties.RouteSyntaxColouringPreferencePage"
-            id="org.scala-ide.play2.preferences.route.syntaxColouring"
+            class="org.scalaide.play2.routeeditor.properties.RouteSyntaxColoringPreferencePage"
+            id="org.scala-ide.play2.preferences.route.syntaxColoring"
             name="Syntax Coloring">
       </page>
       <page
@@ -250,8 +250,8 @@
       </page>
       <page
             category="org.scala-ide.play2.preferences.template"
-            class="org.scalaide.play2.templateeditor.properties.TemplateSyntaxColouringPreferencePage"
-            id="org.scala-ide.play2.preferences.template.syntaxColouring"
+            class="org.scalaide.play2.templateeditor.properties.TemplateSyntaxColoringPreferencePage"
+            id="org.scala-ide.play2.preferences.template.syntaxColuring"
             name="Syntax Coloring">
       </page>
       <page
@@ -264,10 +264,10 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="org.scalaide.play2.routeeditor.properties.RouteColourPreferenceInitializer">
+            class="org.scalaide.play2.routeeditor.properties.RouteColorPreferenceInitializer">
       </initializer>
       <initializer
-            class="org.scalaide.play2.templateeditor.properties.TemplateColourPreferenceInitializer">
+            class="org.scalaide.play2.templateeditor.properties.TemplateColorPreferenceInitializer">
       </initializer>
       <initializer
             class="org.scalaide.play2.properties.PreferenceInitializer">

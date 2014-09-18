@@ -1,7 +1,7 @@
 package org.scalaide.play2.routeeditor
 
 import org.scalaide.ui.syntax.ScalaSyntaxClass
-import org.scalaide.ui.syntax.ScalaSyntaxClasses.Category
+import org.scalaide.ui.syntax.ScalaSyntaxClass.Category
 
 object RouteSyntaxClasses {
   val DEFAULT = ScalaSyntaxClass("Default", "route.default")
@@ -24,23 +24,4 @@ object RouteSyntaxClasses {
     DEFAULT, COMMENT, HTTP_KEYWORD))
 
   val categories = List(routeURICategory, routeActionCategory, routeOtherCategory)
-
-  val ALL_SYNTAX_CLASSES = categories.flatMap(_.children)
-
-  val ENABLED_SUFFIX = ".enabled"
-  val FOREGROUND_COLOUR_SUFFIX = ".colour"
-  val BACKGROUND_COLOUR_SUFFIX = ".backgroundColour"
-  val BACKGROUND_COLOUR_ENABLED_SUFFIX = ".backgroundColourEnabled"
-  val BOLD_SUFFIX = ".bold"
-  val ITALIC_SUFFIX = ".italic"
-  val UNDERLINE_SUFFIX = ".underline"
-
-  val ALL_SUFFIXES = List(ENABLED_SUFFIX, FOREGROUND_COLOUR_SUFFIX, BACKGROUND_COLOUR_SUFFIX,
-    BACKGROUND_COLOUR_ENABLED_SUFFIX, BOLD_SUFFIX, ITALIC_SUFFIX, UNDERLINE_SUFFIX)
-
-  val ALL_KEYS = (for {
-    syntaxClass <- ALL_SYNTAX_CLASSES
-    suffix <- ALL_SUFFIXES
-  } yield syntaxClass.baseName + suffix).toSet
-
 }

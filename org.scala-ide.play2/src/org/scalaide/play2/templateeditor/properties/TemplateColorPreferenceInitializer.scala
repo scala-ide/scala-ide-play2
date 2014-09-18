@@ -13,7 +13,7 @@ import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.DEFAULT
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.PLAIN
 import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.BRACE
 
-class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer {
+class TemplateColorPreferenceInitializer extends AbstractPreferenceInitializer {
 
   override def initializeDefaultPreferences() {
     doInitializeDefaultPreferences()
@@ -36,8 +36,8 @@ class TemplateColourPreferenceInitializer extends AbstractPreferenceInitializer 
       lazy val WHITE = new RGB(255, 255, 255)
       scalaPrefStore.setDefault(syntaxClass.enabledKey, enabled)
       scalaPrefStore.setDefault(syntaxClass.foregroundColourKey, StringConverter.asString(foregroundRGB))
-      val defaultBackgroundColour = StringConverter.asString(backgroundRGBOpt getOrElse WHITE)
-      scalaPrefStore.setDefault(syntaxClass.backgroundColourKey, defaultBackgroundColour)
+      val defaultBackgroundColor = StringConverter.asString(backgroundRGBOpt getOrElse WHITE)
+      scalaPrefStore.setDefault(syntaxClass.backgroundColourKey, defaultBackgroundColor)
       scalaPrefStore.setDefault(syntaxClass.backgroundColourEnabledKey, backgroundRGBOpt.isDefined)
       scalaPrefStore.setDefault(syntaxClass.boldKey, bold)
       scalaPrefStore.setDefault(syntaxClass.italicKey, italic)
