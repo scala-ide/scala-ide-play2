@@ -85,7 +85,7 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
         val actualPosition = if (region.getLength() == 0) mappedRegion.getOffset() else realPosition 
         findCompletions(mappedRegion)(realPosition, tcu)(sourceFile, compiler).sortBy(prop => -(prop.relevance)) map { prop =>
           val newProp = prop.copy(startPos = prop.startPos - actualPosition + position)
-          ScalaCompletionProposal(viewer.getSelectionProvider)(newProp)
+          new ScalaCompletionProposal(newProp)
         }
       }
     }
