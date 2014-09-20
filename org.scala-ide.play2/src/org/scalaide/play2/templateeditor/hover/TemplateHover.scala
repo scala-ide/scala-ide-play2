@@ -7,10 +7,10 @@ import org.scalaide.ui.internal.editor.hover.ScalaHover
 
 class TemplateHover(tcu: TemplateCompilationUnit) extends ScalaHover(tcu) {
 
-  override def getHoverInfo(viewer: ITextViewer, region: IRegion): String = {
+  override def getHoverInfo2(viewer: ITextViewer, region: IRegion): AnyRef = {
     // maps the region to scala generated source
     tcu.mapTemplateToScalaRegion(region) match {
-      case Some(mappedRegion) => super.getHoverInfo(viewer, mappedRegion)
+      case Some(mappedRegion) => super.getHoverInfo2(viewer, mappedRegion)
       case None => null
     }
   }
