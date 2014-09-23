@@ -8,7 +8,7 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor
 import org.eclipse.jface.text.contentassist.IContextInformation
 import org.eclipse.swt.graphics.Image
 import org.eclipse.swt.graphics.Point
-import org.scalaide.editor.WordFinder
+import org.scalaide.ui.editor.WordFinder
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.routeeditor.lexical.HTTPKeywords
 import org.scalaide.play2.util.Images

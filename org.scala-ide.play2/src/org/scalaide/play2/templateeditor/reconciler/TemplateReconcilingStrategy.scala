@@ -2,8 +2,8 @@ package org.scalaide.play2.templateeditor.reconciler
 
 import org.eclipse.jface.text.DocumentEvent
 import org.eclipse.jface.text.IDocumentListener
-import org.scalaide.editor.ReconcilingStrategy
-import org.scalaide.editor.SourceCodeEditor
+import org.scalaide.ui.editor.ReconcilingStrategy
+import org.scalaide.ui.editor.SourceCodeEditor
 import org.scalaide.play2.templateeditor.AbstractTemplateEditor
 
 private class TemplateReconcilingStrategy(templateEditor: SourceCodeEditor, documentListener: IDocumentListener) extends ReconcilingStrategy(templateEditor, documentListener)

@@ -7,6 +7,7 @@ import org.junit.Assert._
 import org.scalaide.play2.templateeditor.TemplateAutoIndentStrategy
 import org.junit.ComparisonFailure
 import org.junit.Test
+import org.eclipse.jface.text.TextUtilities
 
 import org.eclipse.jface.text.DocumentCommand
 
@@ -40,14 +41,15 @@ class TemplateAutoIndentTest {
       new Document(rawInput)
     }
 
+    val doc = createDocument(input)
+    
     def createTestCommand(input: String): TestCommand = {
       val pos = input.indexOf('^')
-      new TestCommand(pos, 0, "\n", -1, false, true)
+      new TestCommand(pos, 0, TextUtilities.getDefaultLineDelimiter(doc), -1, false, true)
     }
 
-    val doc = createDocument(input)
     val cmd = createTestCommand(input)
-    val strategy = new TemplateAutoIndentStrategy(2, useSpacesForTabs = true, "\n")
+    val strategy = new TemplateAutoIndentStrategy(2, useSpacesForTabs = true)
 
     strategy.customizeDocumentCommand(doc, cmd)
 

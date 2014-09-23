@@ -12,10 +12,13 @@ import org.eclipse.jface.util.PropertyChangeEvent
 import org.eclipse.ui.editors.text.EditorsUI
 import org.eclipse.ui.texteditor.ChainedPreferenceStore
 import org.scalaide.play2.PlayPlugin
-import org.scalaide.editor.SourceCodeEditor
-import org.scalaide.editor.CompilationUnitProvider
+import org.scalaide.ui.editor.SourceCodeEditor
+import org.scalaide.ui.editor.CompilationUnitProvider
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.ui.editors.text.TextEditor
+import org.eclipse.jface.text.source.IVerticalRuler
+import org.eclipse.swt.widgets.Composite
+import org.scalaide.play2.util.StoredEditorUtils
 
 trait AbstractTemplateEditor extends SourceCodeEditor { self: TextEditor =>
   
@@ -47,6 +50,11 @@ class TemplateEditor extends TextEditor with AbstractTemplateEditor {
   override def editorSaved() = {
     super.editorSaved()
     sourceViewConfiguration.strategy.reconcile(null)
+  }
+  override def createSourceViewer(parent: Composite, verticalRuler: IVerticalRuler, styles: Int): ISourceViewer = {
+    val sourceViewer = super.createSourceViewer(parent, verticalRuler, styles)
+    StoredEditorUtils.storeEditorInViewer(sourceViewer, this)
+    sourceViewer
   }
 }
 

@@ -4,7 +4,7 @@ import scala.collection.mutable.ListBuffer
 import scala.math.max
 import scala.math.min
 import org.eclipse.jface.text._
-import org.scalaide.editor.util.RegionHelper._
+import org.scalaide.util.internal.eclipse.RegionUtils._
 
 /**
  * Partitions the document according to given tokeniser

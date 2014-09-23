@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.Platform
  *
  *  @note This class does not distinguish between `(' and `{', so a line like `(blah}` is considered balanced
  */
-class TemplateAutoIndentStrategy(tabSize: Int, useSpacesForTabs: Boolean, defaultLineSeparator: String) extends DefaultIndentLineAutoEditStrategy with HasLogger {
+class TemplateAutoIndentStrategy(tabSize: Int, useSpacesForTabs: Boolean) extends DefaultIndentLineAutoEditStrategy with HasLogger {
   private final val INDENT = if (useSpacesForTabs) " " * tabSize else "\t"
   private final val openParens = Set('(', '{')
   private final val closedParens = Set(')', '}')
@@ -40,7 +40,7 @@ class TemplateAutoIndentStrategy(tabSize: Int, useSpacesForTabs: Boolean, defaul
 
   private def autoIndent(doc: IDocument, cmd: DocumentCommand) {
     val LineInfo(indent, prefix, tail) = breakLine(doc, cmd.offset)
-    val newLine = Option(doc.getLineDelimiter(0)).getOrElse(defaultLineSeparator)
+    val newLine = TextUtilities.getDefaultLineDelimiter(doc)
 
     val buf = new StringBuilder(cmd.text)
 

@@ -7,14 +7,13 @@ import org.scalaide.play2.routeeditor.RouteEditor
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.viewers.ISelection
 import org.eclipse.jface.text.ITextSelection
-import org.scalaide.editor.WordFinder
 import org.scalaide.play2.routeeditor.RouteUri
 import org.scalaide.play2.routeeditor.RouteUriWithRegion
-import org.scalaide.editor.util.EditorHelper
 import org.eclipse.ui.ISelectionService
 import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.ITypedRegion
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions
+import org.scalaide.util.internal.eclipse.EditorUtils
 
 class LocalRename extends AbstractHandler {
 
@@ -24,7 +23,7 @@ class LocalRename extends AbstractHandler {
       selection <- getTextSelection(editor)
       regions <- matchingURIRegions(editor.getViewer.getDocument(), selection)
     } {
-        EditorHelper.enterLinkedModeUi(regions)
+        EditorUtils.enterLinkedModeUi(regions, false)
     }
 
     // always return null, as speced

@@ -7,6 +7,10 @@ import org.eclipse.ui.texteditor.ChainedPreferenceStore
 import org.eclipse.wst.sse.ui.StructuredTextEditor
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.templateeditor.AbstractTemplateEditor
+import org.eclipse.jface.text.source.IVerticalRuler
+import org.eclipse.swt.widgets.Composite
+import org.eclipse.jface.text.TextViewer
+import org.eclipse.jface.text.source.ISourceViewer
 
 
 class TemplateStructuredEditor extends StructuredTextEditor with AbstractTemplateEditor {
@@ -29,5 +33,16 @@ class TemplateStructuredEditor extends StructuredTextEditor with AbstractTemplat
     }
     super.setSourceViewerConfiguration(config)
   }
+
+  override def createSourceViewer(parent: Composite, verticalRuler: IVerticalRuler, styles: Int): ISourceViewer = {
+    val sourceViewer = super.createSourceViewer(parent, verticalRuler, styles)
+    sourceViewer match {
+      case tv: TextViewer =>
+        tv.setData("scalaide.play.editor", this)
+      case _ =>
+    }
+    sourceViewer
+  }
+
 }
 

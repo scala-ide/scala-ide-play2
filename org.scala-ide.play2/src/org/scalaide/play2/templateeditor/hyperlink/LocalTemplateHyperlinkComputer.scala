@@ -10,8 +10,8 @@ import org.scalaide.core.hyperlink.Hyperlink
 import org.eclipse.jface.text.ITextViewer
 import org.eclipse.ui.texteditor.ITextEditor
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
-import org.scalaide.editor.util.EditorHelper
 import org.eclipse.jface.text.IDocument
+import org.scalaide.play2.util.StoredEditorUtils
 
 /** A hyperlink detector that only looks for local definitions.
  *
@@ -22,10 +22,8 @@ import org.eclipse.jface.text.IDocument
  */
 class LocalTemplateHyperlinkComputer extends AbstractHyperlinkDetector {
   final override def detectHyperlinks(viewer: ITextViewer, currentSelection: IRegion, canShowMultipleHyperlinks: Boolean): Array[IHyperlink] = {
-    detectHyperlinks(viewer.getDocument(), currentSelection, canShowMultipleHyperlinks)
-  }
+    val doc: IDocument = viewer.getDocument()
 
-  final def detectHyperlinks(doc: IDocument, currentSelection: IRegion, canShowMultipleHyperlinks: Boolean): Array[IHyperlink] = {
     def findHyperlinks(icu: TemplateCompilationUnit): List[IHyperlink] = {
       if (doc.getPartition(currentSelection.getOffset()).getType() != TemplatePartitions.TEMPLATE_SCALA) {
         return Nil // should not be null, if it was null, it would throw an exception
@@ -68,7 +66,7 @@ class LocalTemplateHyperlinkComputer extends AbstractHyperlinkDetector {
 
     if (doc == null) null // can be null if generated through ScalaPreviewerFactory
     else {
-      val fileOption = EditorHelper.findFileOfDocument(doc)
+      val fileOption = StoredEditorUtils.getFileOfViewer(viewer)
       fileOption match {
         case Some(file) => {
           val scu = TemplateCompilationUnitProvider(false).fromFileAndDocument(file, doc)

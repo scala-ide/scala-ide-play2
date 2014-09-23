@@ -38,7 +38,6 @@ import org.scalaide.core.internal.lexical.ScalaCodeScanner
 import org.eclipse.jdt.internal.ui.text.java.SmartSemicolonAutoEditStrategy
 import org.eclipse.jface.text.source.Annotation
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants
-import org.scalaide.editor.EditorUI
 import org.scalaide.ui.internal.editor.autoedits.BracketAutoEditStrategy
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: AbstractTemplateEditor) extends TextSourceViewerConfiguration(prefStore) with PropertyChangeHandler {
@@ -69,9 +68,9 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Abstrac
   override def getContentAssistant(sourceViewer: ISourceViewer): IContentAssistant = {
     val assistant = new ContentAssistant
     assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer))
-    assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), TemplatePartitions.TEMPLATE_SCALA)
-    assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), TemplatePartitions.TEMPLATE_PLAIN)
-    assistant.setContentAssistProcessor(new CompletionProposalComputer(templateEditor), IDocument.DEFAULT_CONTENT_TYPE)
+    assistant.setContentAssistProcessor(new CompletionProposalComputer(), TemplatePartitions.TEMPLATE_SCALA)
+    assistant.setContentAssistProcessor(new CompletionProposalComputer(), TemplatePartitions.TEMPLATE_PLAIN)
+    assistant.setContentAssistProcessor(new CompletionProposalComputer(), IDocument.DEFAULT_CONTENT_TYPE)
     assistant
   }
 
@@ -142,9 +141,9 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Abstrac
         Array(
           new SmartSemicolonAutoEditStrategy(partitioning),
           new BracketAutoEditStrategy(prefStore),
-          new TemplateAutoIndentStrategy(getTabWidth(sourceViewer), useSpacesForTabs, EditorUI.defaultLineSeparator))
+          new TemplateAutoIndentStrategy(getTabWidth(sourceViewer), useSpacesForTabs))
       case _ =>
-        Array(new TemplateAutoIndentStrategy(getTabWidth(sourceViewer), useSpacesForTabs, EditorUI.defaultLineSeparator))
+        Array(new TemplateAutoIndentStrategy(getTabWidth(sourceViewer), useSpacesForTabs))
     }
   }
 
