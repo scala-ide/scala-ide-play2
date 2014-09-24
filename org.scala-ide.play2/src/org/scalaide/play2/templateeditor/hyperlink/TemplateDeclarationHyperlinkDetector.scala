@@ -17,7 +17,6 @@ import org.eclipse.jface.text.Region
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import org.scalaide.core.hyperlink.detector.DeclarationHyperlinkDetector
-import org.scalaide.util.internal.Utils
 
 
 class TemplateDeclarationHyperlinkDetector extends DeclarationHyperlinkDetector {
@@ -31,8 +30,8 @@ class TemplateDeclarationHyperlinkDetector extends DeclarationHyperlinkDetector 
     if (doc.getChar(currentSelection.getOffset()) == '.') // otherwise it will generate an error
       return Nil
     val wordRegion = ScalaWordFinder.findWord(doc.get, currentSelection.getOffset)
-    
-    import Utils._
+
+    import org.scalaide.util.internal.Utils.WithAsInstanceOfOpt
     val tu = icu.asInstanceOfOpt[TemplateCompilationUnit]
 
     tu.flatMap(_.mapTemplateToScalaRegion(wordRegion)) match {

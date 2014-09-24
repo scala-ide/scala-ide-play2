@@ -1,7 +1,6 @@
 package org.scalaide.play2.routeeditor
 
 import org.eclipse.jface.text.IDocument
-import org.scalaide.util.internal.Utils
 import org.scalaide.play2.routeeditor.lexical.RouteDocumentPartitioner
 import org.eclipse.jface.text.IRegion
 import scala.annotation.tailrec
@@ -16,20 +15,20 @@ case class RouteUri (rawUri: String) {
     }
     split(rawUri)
   }
-  
+
   def isValid: Boolean = rawUri.startsWith("/")
-  
+
   def prefixLength(prefixParts: List[String]): Int = {
     if (startsWith(prefixParts)) {
       val prefixString = partsToString(prefixParts, isValid)
       if (prefixParts == parts || prefixParts == Nil)
         prefixString.length
-      else 
-        prefixString.length + 1 
+      else
+        prefixString.length + 1
     }
     else -1
   }
-  
+
   def startsWith(prefix: String): Boolean = {
     val uriPrefix = RouteUri(prefix)
     partsToString(parts).startsWith(partsToString(uriPrefix.parts))
@@ -47,7 +46,7 @@ case class RouteUri (rawUri: String) {
         yield RouteUri(partsToString(common ::: additional.slice(0, i), isValid)))(collection.breakOut)
     } else Nil
   }
-  
+
   def append(part: String): RouteUri = RouteUri(partsToString(parts :+ part, isValid))
 
   def dynamicUris: List[RouteUri] = List(":", "*", "$") map (append(_))
@@ -82,18 +81,18 @@ case class RouteUri (rawUri: String) {
         }
       }
     }
-    
+
     // if it is just a caret position, search one character before, to manage the case
     // when the caret is before a slash. It should select the part before it
     val adjustedOffset = if (length == 0) offset - 1 else offset
     val prefix = computePrefixExclusive(parts, adjustedOffset, Nil)
-    
+
     val endOffsetInRemainder = offset + length - prefix.map(_.length + 1).sum
     val touchedParts = computePrefixInclusive(parts.drop(prefix.size), endOffsetInRemainder, Nil)
 
     (prefix, touchedParts)
   }
-  
+
   private def partsToString(parts: List[String], isValid: Boolean = true) = parts.mkString(if (isValid) "/" else "", "/", "")
 
   override def toString(): String = rawUri
@@ -117,10 +116,10 @@ object RouteUriWithRegion {
   def existingUrisInDocument(document: IDocument): Set[RouteUri] = {
     allUrisInDocument(document).toSet
   }
-  
+
   /** Returns all the regions with URI in the passed `document`. */
   def allUrisInDocument(document: IDocument): List[RouteUriWithRegion] = {
-    import Utils._
+    import org.scalaide.util.internal.Utils.WithAsInstanceOfOpt
     (for {
       partitioner <- document.getDocumentPartitioner().asInstanceOfOpt[RouteDocumentPartitioner].toList
       partition <- partitioner.uriPartitions
