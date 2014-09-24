@@ -11,6 +11,8 @@ import org.scalaide.core.lexical.ScalaPartitions
 import scala.util.parsing.input.OffsetPosition
 import org.scalaide.play2.lexical.PlayPartitionTokeniser
 import scala.collection.mutable.ArrayBuffer
+import org.scalaide.util.internal.eclipse.RegionUtils.RichTypedRegion
+import org.scalaide.util.internal.eclipse.RegionUtils.AdvancedTypedRegionList
 
 class TemplatePartitionTokeniser extends PlayPartitionTokeniser {
 
@@ -29,7 +31,7 @@ class TemplatePartitionTokeniser extends PlayPartitionTokeniser {
     val tokens: List[TypedRegion] = parts.map(t => {
       val contentType = t match {
         case ScalaCode(_) => TemplatePartitions.TEMPLATE_SCALA
-        case DefaultCode(_) => TemplatePartitions.TEMPLATE_PLAIN 
+        case DefaultCode(_) => TemplatePartitions.TEMPLATE_PLAIN
         case CommentCode(_) => TemplatePartitions.TEMPLATE_COMMENT
       }
       new TypedRegion(t.offset, t.length, contentType)
@@ -40,9 +42,9 @@ class TemplatePartitionTokeniser extends PlayPartitionTokeniser {
     (scalaCommentRegions, plainRegions)
   }
 
-  /** 
+  /**
    * Calculates the template partitions.
-   * 
+   *
    * @param xmlTagPlainRegions 			tags which are plain text, which means are represented to user
    * @param scalaCommentRegions			scala and comment regions
    * @param plainWithoutXmlTagRegions 	plain texts which are not part of tag
@@ -59,7 +61,7 @@ class TemplatePartitionTokeniser extends PlayPartitionTokeniser {
     allRegions unionWith defaultRegions
   }
 
-  override final def tokenise(template: IDocument): List[TypedRegion] = 
+  override final def tokenise(template: IDocument): List[TypedRegion] =
     tokenise(template.get)
 
   def tokenise(templateCode: String): List[TypedRegion] = {
