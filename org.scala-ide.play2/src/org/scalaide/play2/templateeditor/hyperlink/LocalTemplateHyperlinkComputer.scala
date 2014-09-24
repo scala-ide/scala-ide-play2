@@ -5,7 +5,7 @@ import org.eclipse.jface.text.hyperlink.IHyperlink
 import org.eclipse.jface.text.IRegion
 import org.scalaide.play2.templateeditor._
 import org.scalaide.play2.templateeditor.lexical.TemplatePartitions
-import org.scalaide.util.internal.ScalaWordFinder
+import org.scalaide.util.ScalaWordFinder
 import org.scalaide.core.hyperlink.Hyperlink
 import org.eclipse.jface.text.ITextViewer
 import org.eclipse.ui.texteditor.ITextEditor
@@ -31,7 +31,7 @@ class LocalTemplateHyperlinkComputer extends AbstractHyperlinkDetector {
       if (doc.getChar(currentSelection.getOffset()) == '.') // otherwise it will generate an error
         return Nil
 
-      val wordRegion = ScalaWordFinder.findWord(doc.get, currentSelection.getOffset).asInstanceOf[IRegion]
+      val wordRegion = ScalaWordFinder().findWord(doc.get, currentSelection.getOffset).asInstanceOf[IRegion]
       icu.mapTemplateToScalaRegion(wordRegion) match {
         case Some(mappedRegion) =>
           icu.withSourceFile { (source, compiler) =>

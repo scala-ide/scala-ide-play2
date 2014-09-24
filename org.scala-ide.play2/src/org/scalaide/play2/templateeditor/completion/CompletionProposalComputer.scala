@@ -18,7 +18,7 @@ import org.scalaide.play2.templateeditor.AbstractTemplateEditor
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import org.scalaide.play2.templateeditor.TemplateCompilationUnitProvider
 import org.scalaide.ui.internal.completion.ScalaCompletionProposal
-import org.scalaide.util.internal.ScalaWordFinder
+import org.scalaide.util.ScalaWordFinder
 import org.scalaide.play2.util.StoredEditorUtils
 
 class CompletionProposalComputer extends ScalaCompletions with IContentAssistProcessor with ICompletionProposalComputer {

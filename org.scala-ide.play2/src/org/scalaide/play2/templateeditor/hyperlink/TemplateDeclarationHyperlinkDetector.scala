@@ -7,7 +7,7 @@ import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector
 import org.eclipse.jface.text.hyperlink.IHyperlink
 import org.eclipse.ui.texteditor.ITextEditor
-import org.scalaide.util.internal.ScalaWordFinder
+import org.scalaide.util.ScalaWordFinder
 import org.scalaide.core.compiler.InteractiveCompilationUnit
 import org.eclipse.jdt.internal.core.JavaProject
 import org.eclipse.jdt.internal.core.DefaultWorkingCopyOwner
@@ -29,9 +29,9 @@ class TemplateDeclarationHyperlinkDetector extends DeclarationHyperlinkDetector 
     }
     if (doc.getChar(currentSelection.getOffset()) == '.') // otherwise it will generate an error
       return Nil
-    val wordRegion = ScalaWordFinder.findWord(doc.get, currentSelection.getOffset)
+    val wordRegion = ScalaWordFinder().findWord(doc.get, currentSelection.getOffset)
 
-    import org.scalaide.util.internal.Utils.WithAsInstanceOfOpt
+    import org.scalaide.util.UtilsImplicits.withAsInstanceOfOpt
     val tu = icu.asInstanceOfOpt[TemplateCompilationUnit]
 
     tu.flatMap(_.mapTemplateToScalaRegion(wordRegion)) match {
