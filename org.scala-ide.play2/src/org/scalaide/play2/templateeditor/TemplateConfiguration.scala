@@ -114,7 +114,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Abstrac
 
   override def getAnnotationHover(viewer: ISourceViewer): IAnnotationHover = {
     new DefaultAnnotationHover(true) {
-      override def isIncluded(a: Annotation): Boolean = /*TemplateEditor.annotationsShownInHover(a.getType)*/ true
+      override def isIncluded(a: Annotation): Boolean = TemplateEditor.annotationsShownInHover(a.getType)
     }
   }
 
@@ -154,10 +154,10 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Abstrac
 
   def propertyChange(event: PropertyChangeEvent) {
     defaultScanner.adaptToPreferenceChange(event)
-//    tagScanner.adaptToPreferenceChange(event)
-//    plainScanner.adaptToPreferenceChange(event)
+    tagScanner.adaptToPreferenceChange(event)
+    plainScanner.adaptToPreferenceChange(event)
     scalaScanner.adaptToPreferenceChange(event)
-//    commentScanner.adaptToPreferenceChange(event)
+    commentScanner.adaptToPreferenceChange(event)
   }
 
 }
