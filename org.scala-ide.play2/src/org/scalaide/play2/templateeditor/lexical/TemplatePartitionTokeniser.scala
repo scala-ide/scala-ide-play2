@@ -6,8 +6,8 @@ import scala.annotation.{ switch, tailrec }
 import scala.collection.mutable.{ Stack, ListBuffer }
 import scala.xml.parsing.TokenTests
 import org.eclipse.jface.text.TypedRegion
-import org.scalaide.core.internal.lexical.ScalaPartitionTokeniser
-import org.scalaide.core.internal.lexical.ScalaPartitions
+import org.scalaide.core.lexical.ScalaCodePartitioner
+import org.scalaide.core.lexical.ScalaPartitions
 import scala.util.parsing.input.OffsetPosition
 import org.scalaide.play2.lexical.PlayPartitionTokeniser
 import scala.collection.mutable.ArrayBuffer
@@ -17,9 +17,9 @@ class TemplatePartitionTokeniser extends PlayPartitionTokeniser {
 
   /** Calculates XML tag regions by using scala partition tokenizer. */
   private def getXMLTagRegions(templateCode: String): List[TypedRegion] = {
-    val tokens = ScalaPartitionTokeniser.tokenise(templateCode)
-    tokens.filter(_.contentType == ScalaPartitions.XML_TAG).map(t => {
-      new TypedRegion(t.start, t.length, TemplatePartitions.TEMPLATE_TAG)
+    val tokens = ScalaCodePartitioner.partition(templateCode)
+    tokens.filter(_.getType == ScalaPartitions.XML_TAG).map(t => {
+      new TypedRegion(t.getOffset, t.getLength, TemplatePartitions.TEMPLATE_TAG)
     })
   }
 

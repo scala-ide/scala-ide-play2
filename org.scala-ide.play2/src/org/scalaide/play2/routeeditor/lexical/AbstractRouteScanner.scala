@@ -1,6 +1,6 @@
 package org.scalaide.play2.routeeditor.lexical
 
-import org.scalaide.core.internal.lexical.AbstractScalaScanner
+import org.scalaide.core.lexical.AbstractScalaScanner
 import org.scalaide.ui.syntax.ScalaSyntaxClass
 
 import org.eclipse.jface.preference.IPreferenceStore

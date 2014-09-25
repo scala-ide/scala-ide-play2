@@ -1,6 +1,5 @@
 package org.scalaide.play2.templateeditor
 
-import org.scalaide.core.internal.lexical.SingleTokenScanner
 import org.eclipse.jdt.internal.ui.text.JavaColorManager
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.presentation.PresentationReconciler
@@ -33,12 +32,12 @@ import org.scalaide.play2.templateeditor.hyperlink.LocalTemplateHyperlinkCompute
 import org.eclipse.jface.text.ITextHover
 import org.eclipse.jface.text.IAutoEditStrategy
 import org.eclipse.jdt.ui.text.IJavaPartitions
-import org.scalaide.core.internal.lexical.ScalaCodeScanner
 import org.eclipse.jdt.internal.ui.text.java.SmartSemicolonAutoEditStrategy
 import org.eclipse.jface.text.source.Annotation
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants
 import org.scalaide.ui.internal.editor.autoedits.BracketAutoEditStrategy
 import org.eclipse.jface.util.IPropertyChangeListener
+import org.scalaide.core.lexical.ScalaCodeScanners
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: AbstractTemplateEditor)
   extends TextSourceViewerConfiguration(prefStore)
@@ -49,11 +48,11 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Abstrac
 
   private val defaultScanner = new TemplateDefaultScanner(prefStore)
 
-  private val plainScanner = new SingleTokenScanner(TemplateSyntaxClasses.PLAIN, prefStore)
+  private val plainScanner = ScalaCodeScanners.singleTokenScanner(prefStore, TemplateSyntaxClasses.PLAIN)
 
-  private val scalaScanner = new ScalaCodeScanner(prefStore, ScalaVersions.Scala_2_10)
+  private val scalaScanner = ScalaCodeScanners.scalaCodeScanner(prefStore, ScalaVersions.Scala_2_10)
 
-  private val commentScanner = new SingleTokenScanner(TemplateSyntaxClasses.COMMENT, prefStore)
+  private val commentScanner = ScalaCodeScanners.singleTokenScanner(prefStore, TemplateSyntaxClasses.COMMENT)
 
   private val tagScanner = new HtmlTagScanner(prefStore)
 
@@ -115,7 +114,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Abstrac
 
   override def getAnnotationHover(viewer: ISourceViewer): IAnnotationHover = {
     new DefaultAnnotationHover(true) {
-      override def isIncluded(a: Annotation): Boolean = TemplateEditor.annotationsShownInHover(a.getType)
+      override def isIncluded(a: Annotation): Boolean = /*TemplateEditor.annotationsShownInHover(a.getType)*/ true
     }
   }
 
@@ -155,10 +154,10 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Abstrac
 
   def propertyChange(event: PropertyChangeEvent) {
     defaultScanner.adaptToPreferenceChange(event)
-    tagScanner.adaptToPreferenceChange(event)
-    plainScanner.adaptToPreferenceChange(event)
+//    tagScanner.adaptToPreferenceChange(event)
+//    plainScanner.adaptToPreferenceChange(event)
     scalaScanner.adaptToPreferenceChange(event)
-    commentScanner.adaptToPreferenceChange(event)
+//    commentScanner.adaptToPreferenceChange(event)
   }
 
 }
