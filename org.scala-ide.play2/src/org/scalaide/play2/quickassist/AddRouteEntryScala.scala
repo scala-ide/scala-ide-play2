@@ -21,7 +21,6 @@ import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.routeeditor.RouteEditor
 import org.scalaide.play2.routeeditor.formatter.RouteFormattingStrategy
 import org.scalaide.play2.util.Images
-import org.scalaide.util.internal.eclipse.EditorUtils
 import org.eclipse.jface.text.TextUtilities
 
 class AddRouteEntryScala extends IQuickAssistProcessor {

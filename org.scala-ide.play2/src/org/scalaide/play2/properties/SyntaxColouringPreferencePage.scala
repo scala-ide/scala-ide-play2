@@ -3,7 +3,7 @@ package org.scalaide.play2.properties
 import scala.PartialFunction.condOpt
 import org.scalaide.ui.internal.preferences.GridDataHelper.gridData
 import org.scalaide.ui.syntax.ScalaSyntaxClass
-import org.scalaide.util.internal.eclipse.EclipseUtils
+import org.scalaide.util.internal.eclipse.EclipseUtils.SelectedItems
 import org.scalaide.util.internal.eclipse.SWTUtils.fnToDoubleClickListener
 import org.scalaide.util.internal.eclipse.SWTUtils.fnToPropertyChangeListener
 import org.scalaide.util.internal.eclipse.SWTUtils.fnToSelectionAdapter
@@ -47,7 +47,7 @@ import org.eclipse.jface.viewers.LabelProvider
 /**
  * @see org.eclipse.jdt.internal.ui.preferences.JavaEditorColoringConfigurationBlock
  * Constructs the preference page for syntax coloring.
- * 
+ *
  * @param allSyntaxClasses all of the syntax classes which we'd like to configure
  * @param defaultCategory the category which is selected when the page is opened
  * @param labelContentProvider provides tree view of categories and syntax classes
@@ -279,7 +279,7 @@ class SyntaxColouringPreferencePage(allSyntaxClasses: List[ScalaSyntaxClass], de
     outerComposite.layout(false)
     outerComposite
   }
-  
+
   private def setUpSelectionListeners() {
     enabledCheckBox.addSelectionListener { () =>
       for (syntaxClass <- selectedSyntaxClass)
@@ -315,14 +315,14 @@ class SyntaxColouringPreferencePage(allSyntaxClasses: List[ScalaSyntaxClass], de
 
   private def createPreviewer(parent: Composite) =
     previewerFactory.createPreviewer(parent, overlayStore, initialText)
-  
+
   private def disposePreviewer() {
     previewerFactory.disposePreviewer
   }
-    
+
 
   private def selectedSyntaxClass: Option[ScalaSyntaxClass] = condOpt(treeViewer.getSelection) {
-    case EclipseUtils.SelectedItems(syntaxClass: ScalaSyntaxClass) => syntaxClass
+    case SelectedItems(syntaxClass: ScalaSyntaxClass) => syntaxClass
   }
 
   private def massSetEnablement(enabled: Boolean) = {
@@ -337,7 +337,7 @@ class SyntaxColouringPreferencePage(allSyntaxClasses: List[ScalaSyntaxClass], de
       massSetEnablement(false)
     case Some(syntaxClass) =>
       import syntaxClass._
-      import EclipseUtils._
+      import org.scalaide.util.internal.eclipse.EclipseUtils.PimpedPreferenceStore
       syntaxForegroundColorEditor.setColorValue(overlayStore getColor foregroundColourKey)
       syntaxBackgroundColorEditor.setColorValue(overlayStore getColor backgroundColourKey)
       val backgroundColorEnabled = overlayStore getBoolean backgroundColourEnabledKey

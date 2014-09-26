@@ -11,7 +11,6 @@ import org.scalaide.logging.HasLogger
 import org.scalaide.play2.PlayProject
 import play.twirl.compiler.GeneratedSourceVirtual
 import play.twirl.compiler.TwirlCompiler
-import play.twirl.compiler.TwirlCompiler._
 import play.twirl.compiler.TemplateCompilationError
 import org.scalaide.play2.properties.PlayPreferences
 import org.scalaide.logging.HasLogger

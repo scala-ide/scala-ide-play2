@@ -1,9 +1,7 @@
 package org.scalaide.play2.routeeditor.formatter
 
 import scala.collection.mutable.ArrayBuffer
-import org.scalaide.util.internal.eclipse.EclipseUtils
 import org.eclipse.core.resources.IResource
-import org.eclipse.core.runtime.IAdaptable
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.TypedRegion
