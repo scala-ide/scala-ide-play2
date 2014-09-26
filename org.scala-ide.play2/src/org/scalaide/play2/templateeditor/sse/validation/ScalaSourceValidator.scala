@@ -14,11 +14,11 @@ import org.scalaide.play2.templateeditor.TemplateCompilationUnitProvider
 
 
 class ScalaSourceValidator extends IValidator {
-  
+
   /* IValidator methods */
-  
+
   def cleanup(report: IReporter) = {}
-  
+
   def validate(helper: IValidationContext, reporter: IReporter) = {
 
     val wsroot = ResourcesPlugin.getWorkspace().getRoot()
@@ -35,10 +35,10 @@ class ScalaSourceValidator extends IValidator {
           markers <- Try(currentFile.findMarkers(markerType, true, IResource.DEPTH_ONE))
           marker <- markers
         } marker.delete()
-        
+
         val doc = model.getStructuredDocument()
-        val compilationUnit = TemplateCompilationUnitProvider(false).fromFileAndDocument(currentFile, doc)
-        for (error <- compilationUnit.reconcile(doc.get())) {
+        val compilationUnit = new TemplateCompilationUnitProvider(false).fromFileAndDocument(currentFile, doc)
+        for (error <- compilationUnit.forceReconcile()) {
           val (priority, severity) =
             if (error.isError()) (IMarker.PRIORITY_HIGH, IMarker.SEVERITY_ERROR)
             else if (error.isWarning()) (IMarker.PRIORITY_NORMAL, IMarker.SEVERITY_WARNING)
@@ -55,7 +55,7 @@ class ScalaSourceValidator extends IValidator {
         }
       }
       finally {
-        model.releaseFromRead()
+         model.releaseFromRead()
       }
     }
   }

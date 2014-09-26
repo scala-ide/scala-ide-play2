@@ -10,7 +10,7 @@ import scala.tools.nsc.io.AbstractFile
 import scala.tools.nsc.io.VirtualFile
 import scala.tools.nsc.util.BatchSourceFile
 import scala.tools.nsc.util.SourceFile
-import scala.util.Try
+import scala.util.{ Try, Success, Failure }
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IProject
 import org.eclipse.jdt.core.compiler.IProblem
@@ -28,6 +28,15 @@ import play.twirl.compiler.GeneratedSourceVirtual
 import org.scalaide.ui.editor.CompilationUnit
 import org.scalaide.ui.editor.CompilationUnitProvider
 import org.scalaide.ui.internal.actions.ToggleScalaNatureAction
+import org.scalaide.core.compiler.ISourceMap
+import org.scalaide.core.compiler.IPositionInformation
+import org.scalaide.play2.templateeditor.compiler.TemplateToScalaCompilationError
+import org.scalaide.core.compiler.ScalaCompilationProblem
+import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities
+import org.scalaide.core.extensions.SourceFileProvider
+import org.eclipse.core.runtime.IPath
+import org.scalaide.util.internal.eclipse.EclipseUtils
+import org.scalaide.core.compiler.InteractiveCompilationUnit
 
 /** A Template compilation unit connects the presentation compiler
  *  view of a tmeplate with the Eclipse IDE view of the underlying
@@ -51,7 +60,7 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
         case None =>
           def programmaticallyAddScalaNature(project: IProject): Unit = {
             val toggleScalaNature = new ToggleScalaNatureAction()
-            toggleScalaNature.performAction(project)  
+            toggleScalaNature.performAction(project)
           }
           programmaticallyAddScalaNature(project)
           IScalaPlugin().asScalaProject(project) getOrElse {
@@ -66,91 +75,63 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
 
   lazy val playProject = PlayProject(scalaProject)
 
-  def getTemplateName = workspaceFile.getName()
+  private def getTemplateFullPath = file.file.getAbsolutePath()
 
-  def getTemplateFullPath = file.file.getAbsolutePath()
+  @volatile private var lastInfo: TemplateSourceMap = _
 
-  /** Return the compiler ScriptSourceFile corresponding to this unit. */
-  override def sourceFile(contents: Array[Char]): SourceFile = {
-    batchSourceFile(contents)
+  override def lastSourceMap(): TemplateSourceMap = {
+    if (lastInfo eq null)
+      lastInfo = sourceMap(getContents())
+    lastInfo
   }
 
-  /** Return the compiler ScriptSourceFile corresponding to this unit. */
-  def batchSourceFile(contents: Array[Char]): BatchSourceFile = {
-    new BatchSourceFile(templateSourceFile, contents)
+  override def sourceMap(contents: Array[Char]): TemplateSourceMap ={
+    lastInfo = new TemplateSourceMap(contents)
+    lastInfo
   }
 
-  /** Return contents of generated scala file. */
-  override def getContents: Array[Char] = {
-    generatedSource().map(_.content).getOrElse("").toArray
-  }
+  override def getContents(): Array[Char] =
+    document.map(_.get.toCharArray).getOrElse(file.toCharArray)
 
   /** Return contents of template file. */
   def getTemplateContents: String = document.map(_.get).getOrElse(scala.io.Source.fromFile(file.file).mkString)
 
-  override def currentProblems: List[IProblem] = {
-    playProject.withPresentationCompiler { pc =>
-      pc.problemsOf(this)
+  override def currentProblems() = {
+    lastSourceMap().generatedSource match {
+      case Success(_) =>
+        super.currentProblems()
+      case Failure(parseError: TemplateToScalaCompilationError) =>
+        List(parseError.toProblem)
+
+      case Failure(error) =>
+        logger.error(s"Unexpected error while parsing template ${file.name}", error)
+        List(unknownError(this, error))
     }
   }
 
-  /** Reconcile the unit. Return all compilation errors.
-   *  Blocks until the unit is type-checked.
-   */
-  override def reconcile(newContents: String): List[IProblem] = {
-    playProject.withPresentationCompiler { pc =>
-      askReload()
-      pc.problemsOf(this)
-    }
+  private def unknownError(tcu: TemplateCompilationUnit, error: Throwable) = {
+    val message = s"${error.getMessage()} - ${error.getClass()}"
+    ScalaCompilationProblem(
+      getTemplateFullPath,
+      ProblemSeverities.Error,
+      message,
+      0,
+      1,
+      1,
+      1)
   }
-
-  def askReload(): Unit =
-    playProject.withPresentationCompiler { pc =>
-      pc.askReload(this)
-    }
 
   /** maps a region in template file into generated scala file
    */
   def mapTemplateToScalaRegion(region: IRegion): Option[IRegion] = synchronized {
-    for { 
-      start <- mapTemplateToScalaOffset(region.getOffset())
-      end <- mapTemplateToScalaOffset(region.getOffset() + region.getLength())
-    } yield {
-      val range = end - start
-      new Region(start, if (range > 0) range + 1 else 0)
-    }
+    val start = lastSourceMap().scalaPos(region.getOffset())
+    Some(new Region(start, region.getLength))
   }
 
   /** maps an offset in template file into generated scala file
    */
-  def mapTemplateToScalaOffset(offset: Int): Option[Int] = synchronized {
-    for(genSource <- generatedSource().toOption) yield {
-      PositionHelper.mapSourcePosition(genSource.matrix, offset)
-    }
-  }
-
-  /** Return the offset in the template file, given an offset in the generated source file.
-   *  It is the inverse of `mapTemplateToScalaOffset`. */
-  def templateOffset(generatedOffset: Int): Option[Int] = synchronized {
-    generatedSource().toOption.map(_.mapPosition(generatedOffset))
-  }
-  /* guarded by `this`*/
-  private var cachedGenerated: Try[GeneratedSourceVirtual] = generatedSource()
-  /* guarded by `this`*/
-  private var oldContents = getTemplateContents
-
-  /** Returns generated source of the given compilation unit.
-   * 
-   *  It caches results in order to save on (relatively expensive) calls to the template compiler.
-   */
-  def generatedSource(): Try[GeneratedSourceVirtual] = synchronized {
-    if (oldContents != getTemplateContents) {
-      oldContents = getTemplateContents
-      logger.debug("[generating template] " + getTemplateFullPath)
-      cachedGenerated = CompilerUsing.compileTemplateToScalaVirtual(getTemplateContents.toString(), file.file, playProject, usesInclusiveDot)
-    }
-    cachedGenerated
-  }
+  def mapTemplateToScalaOffset(offset: Int): Option[Int] =
+    Some(lastSourceMap().scalaPos(offset))
 
   /** updates template virtual file
    */
@@ -158,9 +139,70 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
     new PrintStream(templateSourceFile.output).print(document.map(_.get))
   }
 
+  class TemplateSourceMap(override val originalSource: Array[Char]) extends ISourceMap {
+    lazy val generatedSource: Try[GeneratedSourceVirtual] = {
+      logger.debug("[generating template] " + getTemplateFullPath)
+      CompilerUsing.compileTemplateToScalaVirtual(originalSource.mkString(""), file.file, playProject, usesInclusiveDot)
+    }
+
+    /** The translated Scala source code, for example the translation of a Play HTML template. */
+    override def scalaSource: Array[Char] = {
+      generatedSource.map(_.content).getOrElse("").toCharArray()
+    }
+
+    /** Map from the original source into the corresponding position in the Scala translation. */
+    def scalaPos: IPositionInformation = new IPositionInformation {
+      def apply(pos: Int): Int = {
+        (for(genSource <- generatedSource.toOption) yield {
+          PositionHelper.mapSourcePosition(genSource.matrix, pos)
+        }) getOrElse 0
+      }
+
+      def offsetToLine(offset: Int): Int = sourceFile.offsetToLine(offset)
+
+      def lineToOffset(line: Int): Int = sourceFile.lineToOffset(line)
+    }
+
+    /** Map from Scala source to its equivalent in the original source. */
+    def originalPos: IPositionInformation = new IPositionInformation {
+      // not a Scala source file, but still a source file. Used to implement line/offset translations
+      private val src = new BatchSourceFile(file, originalSource)
+
+      def apply(pos: Int) =
+        generatedSource.toOption.map(_.mapPosition(pos)).getOrElse(0)
+
+      def offsetToLine(offset: Int): Int =
+        src.offsetToLine(offset)
+
+      def lineToOffset(line: Int): Int =
+        src.lineToOffset(line)
+    }
+
+    /** Return a compiler `SourceFile` implementation with the given contents. The implementation decides
+     *  if this is a batch file or a script/other kind of source file.
+     */
+    val sourceFile: SourceFile = new BatchSourceFile(file, scalaSource)
+  }
+
+  override def toString(): String =
+    s"$file <usesInclusiveDot=$usesInclusiveDot>"
+
+  override def hashCode: Int = file.hashCode
+  override def equals(other: Any): Boolean = other match {
+    case that: TemplateCompilationUnit => this.file == that.file
+    case _ => false
+  }
 }
 
-case class TemplateCompilationUnitProvider(val usesInclusiveDot: Boolean) extends CompilationUnitProvider[TemplateCompilationUnit] {
+class TemplateCompilationUnitProvider(val usesInclusiveDot: Boolean) extends CompilationUnitProvider[TemplateCompilationUnit] with SourceFileProvider {
+  def this() {
+    this(false)
+  }
+
   override protected def mkCompilationUnit(file: IFile): TemplateCompilationUnit = TemplateCompilationUnit(file, usesInclusiveDot)
   override protected def fileExtension: String = PlayPlugin.TemplateExtension
+
+  def createFrom(path: IPath): Option[InteractiveCompilationUnit] = {
+    Option(mkCompilationUnit(EclipseUtils.workspaceRoot.getFile(path)))
+  }
 }

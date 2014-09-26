@@ -6,20 +6,17 @@ import org.eclipse.wst.sse.ui.internal.taginfo.AbstractHoverProcessor
 import org.scalaide.play2.templateeditor.TemplateCompilationUnitProvider
 import org.scalaide.play2.templateeditor.hover.TemplateHover
 import org.scalaide.play2.util.StoredEditorUtils
+import org.eclipse.jface.text.ITextHoverExtension2
+import org.scalaide.ui.internal.editor.hover.ScalaHover
 
-class TemplateScalaTextHoverProcessor extends AbstractHoverProcessor {
-  
-  def getHoverInfo(textViewer: ITextViewer, hoverRegion: IRegion): String = {
-    val result = 
-      for (file <- StoredEditorUtils.getFileOfViewer(textViewer))
-      yield new TemplateHover(TemplateCompilationUnitProvider(false).fromFileAndDocument(file, textViewer.getDocument())).getHoverInfo(textViewer, hoverRegion)
-    result getOrElse null 
-  }
+class TemplateScalaTextHoverProcessor extends ScalaHover {
 
-  def getHoverRegion(textViewer: ITextViewer, offset: Int): IRegion = {
+
+  override def getHoverInfo2(textViewer: ITextViewer, hoverRegion: IRegion): Object = {
     val result =
       for (file <- StoredEditorUtils.getFileOfViewer(textViewer))
-        yield new TemplateHover(TemplateCompilationUnitProvider(false).fromFileAndDocument(file, textViewer.getDocument())).getHoverRegion(textViewer, offset)
+      yield new TemplateHover(new TemplateCompilationUnitProvider(false).fromFileAndDocument(file, textViewer.getDocument())).getHoverInfo2(textViewer, hoverRegion)
+
     result getOrElse null
   }
 }

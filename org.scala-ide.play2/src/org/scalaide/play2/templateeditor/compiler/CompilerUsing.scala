@@ -3,7 +3,6 @@ package org.scalaide.play2.templateeditor.compiler
 import java.io.File
 import scala.util.Failure
 import scala.util.Try
-
 import org.eclipse.jdt.core.compiler.IProblem
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblem
 import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities
@@ -15,6 +14,7 @@ import play.twirl.compiler.TemplateCompilationError
 import org.scalaide.play2.properties.PlayPreferences
 import org.scalaide.logging.HasLogger
 import scala.io.Codec
+import org.scalaide.core.compiler.ScalaCompilationProblem
 /**
  * a helper for using template compiler
  */
@@ -67,23 +67,17 @@ import views.html._
 case class TemplateToScalaCompilationError(source: File, message: String, offset: Int, line: Int, column: Int) extends RuntimeException(message) {
   override def toString = source.getName + ": " + message + offset + " " + line + "." + column
 
-  import org.eclipse.jdt.core.compiler.IProblem
   import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities
-  import org.eclipse.jdt.internal.compiler.problem.DefaultProblem
 
-  def toProblem: IProblem = {
-    val severityLevel = ProblemSeverities.Error
-    new DefaultProblem(
-      source.getAbsolutePath().toCharArray,
+  def toProblem: ScalaCompilationProblem =
+    ScalaCompilationProblem(
+      source.getAbsolutePath().toString,
+      ProblemSeverities.Error,
       message,
-      0,
-      Array.empty[String],
-      severityLevel,
       Math.max(offset - 1, 0),
       Math.max(offset - 1, 0),
       line,
       column)
-  }
 }
 
 object PositionHelper {

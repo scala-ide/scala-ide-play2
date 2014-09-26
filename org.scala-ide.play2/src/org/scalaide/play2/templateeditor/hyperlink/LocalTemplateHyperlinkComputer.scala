@@ -44,18 +44,12 @@ class LocalTemplateHyperlinkComputer extends AbstractHyperlinkDetector {
             }
 
             val pos = compiler.rangePos(source, mappedRegion.getOffset(), mappedRegion.getOffset(), mappedRegion.getOffset() + mappedRegion.getLength())
-            val response = new Response[Tree]
-            compiler.askTypeAt(pos, response)
-            response.get match {
+            compiler.askTypeAt(pos).get match {
               case Left(tree: Tree) if localSymbol(tree.symbol) =>
                 val sym = tree.symbol
-                icu.templateOffset(sym.pos.startOrPoint) match {
-                  case Some(offset) => 
-                    val hyper = Hyperlink.withText(sym.name.toString)(icu, offset, sym.name.length, sym.kindString + sym.nameString, wordRegion)
-                    List(hyper)
-                  case None => 
-                    Nil
-                }
+                val offset = icu.lastSourceMap().originalPos(sym.pos.point)
+                val hyper = Hyperlink.withText(sym.name.toString)(icu, offset, sym.name.length, sym.kindString + sym.nameString, wordRegion)
+                List(hyper)
               case _ => Nil
             }
           } getOrElse Nil
@@ -69,7 +63,7 @@ class LocalTemplateHyperlinkComputer extends AbstractHyperlinkDetector {
       val fileOption = StoredEditorUtils.getFileOfViewer(viewer)
       fileOption match {
         case Some(file) => {
-          val scu = TemplateCompilationUnitProvider(false).fromFileAndDocument(file, doc)
+          val scu = new TemplateCompilationUnitProvider(false).fromFileAndDocument(file, doc)
           findHyperlinks(scu) match {
             // I know you will be tempted to remove this, but don't do it, JDT expects null when no hyperlinks are found.
             case Nil => null

@@ -470,6 +470,13 @@
        </iterate>
      </definition>
    </extension>
+   <extension
+         point="org.scala-ide.sdt.core.sourcefileprovider">
+      <provider
+            class="org.scalaide.play2.templateeditor.TemplateCompilationUnitProvider"
+            file_extension="scala.html">
+      </provider>
+   </extension>
    <!--
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">

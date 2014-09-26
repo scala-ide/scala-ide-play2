@@ -14,7 +14,7 @@ object TemplateReconcilingStrategy {
 
   private class Reloader(templateEditor: AbstractTemplateEditor) extends IDocumentListener {
     def documentChanged(event: DocumentEvent) {
-      templateEditor.compilationUnitProvider.fromEditor(templateEditor).askReload()
+      templateEditor.compilationUnitProvider.fromEditor(templateEditor).scheduleReconcile(event.getText.toCharArray)
     }
 
     def documentAboutToBeChanged(event: DocumentEvent) {}
