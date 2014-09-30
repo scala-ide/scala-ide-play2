@@ -67,7 +67,7 @@ class TemplateStructuredEditor extends StructuredTextEditor with AbstractTemplat
 
     def inputDocumentChanged(oldInput: IDocument, newInput: IDocument): Unit = {
       getInteractiveCompilationUnit().initialReconcile()
-      newInput.addDocumentListener(documentListener)
+      if (newInput ne null) newInput.addDocumentListener(documentListener)
     }
   }
 }
