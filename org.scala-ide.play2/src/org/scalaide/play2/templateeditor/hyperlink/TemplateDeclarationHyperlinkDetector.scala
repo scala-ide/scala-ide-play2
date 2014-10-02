@@ -29,9 +29,9 @@ class TemplateDeclarationHyperlinkDetector extends DeclarationHyperlinkDetector 
     }
     if (doc.getChar(currentSelection.getOffset()) == '.') // otherwise it will generate an error
       return Nil
-    val wordRegion = ScalaWordFinder().findWord(doc.get, currentSelection.getOffset)
+    val wordRegion = ScalaWordFinder.findWord(doc.get, currentSelection.getOffset)
 
-    import org.scalaide.util.UtilsImplicits.withAsInstanceOfOpt
+    import org.scalaide.util.Utils.WithAsInstanceOfOpt
     val tu = icu.asInstanceOfOpt[TemplateCompilationUnit]
 
     tu.flatMap(_.mapTemplateToScalaRegion(wordRegion)) match {

@@ -89,17 +89,6 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, prote
     regions.toArray
   }
 
-<<<<<<< HEAD
-||||||| merged common ancestors
-  private def cropRegion(region: TypedRegion, offset: Int, length: Int): TypedRegion = {
-    
-    val newOffset = max(region.getOffset(), offset)
-    val newLength = min(region.getOffset() + region.getLength(), offset + length) - newOffset
-    
-    new TypedRegion(newOffset, newLength, region.getType())
-  }
-
-=======
   private def cropRegion(region: TypedRegion, offset: Int, length: Int): TypedRegion = {
 
     val newOffset = max(region.getOffset(), offset)
@@ -108,7 +97,6 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, prote
     new TypedRegion(newOffset, newLength, region.getType())
   }
 
->>>>>>> Adapt to new Utils API
   def getPartition(offset: Int): ITypedRegion = getToken(offset) getOrElse {
     val surroundingTokens = ((null :: partitionRegions).sliding(2).find{ case List(_, r) => r.getOffset > offset }).map { case List(a,b) => (a,b) }
     surroundingTokens match {
