@@ -262,10 +262,9 @@ class TemplateTextRegionsComputer(documentContent: String) extends HasLogger {
     // split left text region if necessary
     val leftSplit = (effectedDocRegion.getStartOffset(leftTextRegion) < startEffectedOffset) match {
       case true => {
-        val split = copyXMLTextRegion(leftTextRegion)
         val adjustment = -(effectedDocRegion.getEndOffset(leftTextRegion) - startEffectedOffset)
+        val split = copyXMLTextRegion(leftTextRegion,textLengthAdjustment(leftTextRegion, adjustment) )
         split.adjustLength(adjustment)
-        split.adjustTextLength(textLengthAdjustment(split, adjustment))
         Some(split)
       }
       case false => None
@@ -284,11 +283,10 @@ class TemplateTextRegionsComputer(documentContent: String) extends HasLogger {
     // split right text region if necessary
     val rightSplit = (effectedDocRegion.getEndOffset(rightTextRegion) > endEffectedOffset) match {
       case true => {
-        val split = copyXMLTextRegion(rightTextRegion)
         val adjustment = endEffectedOffset - effectedDocRegion.getStartOffset(rightTextRegion)
+        val split = copyXMLTextRegion(rightTextRegion, textLengthAdjustment(rightTextRegion, -adjustment))
         split.adjustStart(adjustment)
         split.adjustLength(-adjustment)
-        split.adjustTextLength(textLengthAdjustment(split, -adjustment))
         Some(split)
       }
       case false => None
@@ -305,19 +303,23 @@ class TemplateTextRegionsComputer(documentContent: String) extends HasLogger {
     effectedDocRegion.setRegions(newTextRegionList)
   }
 
-  private def copyXMLTextRegion(region: ITextRegion): ITextRegion = region match {
-    case attribEquals: AttributeEqualsRegion => new AttributeEqualsRegion(attribEquals.getStart(), attribEquals.getTextLength(), attribEquals.getLength())
-    case attribName: AttributeNameRegion     => new FixedAttributeNameRegion(attribName.getStart(), attribName.getTextLength(), attribName.getLength())
-    case attribValue: AttributeValueRegion   => new AttributeValueRegion(attribValue.getStart(), attribValue.getTextLength(), attribValue.getLength())
-    case emptyTagClose: EmptyTagCloseRegion  => new EmptyTagCloseRegion(emptyTagClose.getStart(), emptyTagClose.getTextLength(), emptyTagClose.getLength())
-    case endTagOpen: EndTagOpenRegion        => new EndTagOpenRegion(endTagOpen.getStart(), endTagOpen.getTextLength(), endTagOpen.getLength())
+  /* AttributeValueRegion#adjustTextLength has a bug, so the adjustment value is passed as a parameter of this function.
+   *
+   * https://bugs.eclipse.org/bugs/show_bug.cgi?id=445700
+   */
+  private def copyXMLTextRegion(region: ITextRegion, textLengthAdjustment: Int): ITextRegion = region match {
+    case attribEquals: AttributeEqualsRegion => new AttributeEqualsRegion(attribEquals.getStart(), attribEquals.getTextLength() + textLengthAdjustment, attribEquals.getLength())
+    case attribName: AttributeNameRegion     => new FixedAttributeNameRegion(attribName.getStart(), attribName.getTextLength() + textLengthAdjustment, attribName.getLength())
+    case attribValue: AttributeValueRegion   => new AttributeValueRegion(attribValue.getStart(), attribValue.getTextLength() + textLengthAdjustment, attribValue.getLength())
+    case emptyTagClose: EmptyTagCloseRegion  => new EmptyTagCloseRegion(emptyTagClose.getStart(), emptyTagClose.getTextLength() + textLengthAdjustment, emptyTagClose.getLength())
+    case endTagOpen: EndTagOpenRegion        => new EndTagOpenRegion(endTagOpen.getStart(), endTagOpen.getTextLength() + textLengthAdjustment, endTagOpen.getLength())
     case tagClose: TagCloseRegion            => new TagCloseRegion(tagClose.getStart())
-    case tagName: TagNameRegion              => new TagNameRegion(tagName.getStart(), tagName.getTextLength(), tagName.getLength())
-    case tagOpen: TagOpenRegion              => new TagOpenRegion(tagOpen.getStart(), tagOpen.getTextLength(), tagOpen.getLength())
+    case tagName: TagNameRegion              => new TagNameRegion(tagName.getStart(), tagName.getTextLength() + textLengthAdjustment, tagName.getLength())
+    case tagOpen: TagOpenRegion              => new TagOpenRegion(tagOpen.getStart(), tagOpen.getTextLength() + textLengthAdjustment, tagOpen.getLength())
     case whitespace: WhiteSpaceOnlyRegion    => new WhiteSpaceOnlyRegion(whitespace.getStart(), whitespace.getLength())
-    case cdata: XMLCDataTextRegion           => new XMLCDataTextRegion(cdata.getStart(), cdata.getTextLength(), cdata.getLength())
+    case cdata: XMLCDataTextRegion           => new XMLCDataTextRegion(cdata.getStart(), cdata.getTextLength() + textLengthAdjustment, cdata.getLength())
     case content: XMLContentRegion           => new XMLContentRegion(content.getStart(), content.getLength())
-    case context: ContextRegion              => new ContextRegion(context.getType(), context.getStart(), context.getTextLength(), context.getLength())
+    case context: ContextRegion              => new ContextRegion(context.getType(), context.getStart(), context.getTextLength() + textLengthAdjustment, context.getLength())
     case _ => {
       logger.error(s"TemplateRegionParser: Unhandled attempt to copy XML region: $region")
       null
