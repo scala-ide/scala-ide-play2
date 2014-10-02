@@ -4,7 +4,7 @@ import scala.collection.mutable.ListBuffer
 import scala.math.max
 import scala.math.min
 import org.eclipse.jface.text._
-import org.scalaide.util.internal.eclipse.RegionUtils._
+import org.scalaide.util.eclipse.RegionUtils.RichTypedRegion
 
 /**
  * Partitions the document according to given tokeniser
@@ -78,23 +78,15 @@ abstract class PlayDocumentPartitioner(tokensiser: PlayPartitionTokeniser, prote
       if (searchingForStart) {
         if (partitionRegion containsPositionInclusive offset) {
           searchingForStart = false
-          regions += cropRegion(partitionRegion, offset, length)
+          regions += partitionRegion.crop(offset, length)
         }
       } else {
         if (partitionRegion.getOffset() > offset + length - 1)
           return regions.toArray
         else
-          regions += cropRegion(partitionRegion, offset, length)
+          regions += partitionRegion.crop(offset, length)
       }
     regions.toArray
-  }
-
-  private def cropRegion(region: TypedRegion, offset: Int, length: Int): TypedRegion = {
-    
-    val newOffset = max(region.getOffset(), offset)
-    val newLength = min(region.getOffset() + region.getLength(), offset + length) - newOffset
-    
-    new TypedRegion(newOffset, newLength, region.getType())
   }
 
   def getPartition(offset: Int): ITypedRegion = getToken(offset) getOrElse {

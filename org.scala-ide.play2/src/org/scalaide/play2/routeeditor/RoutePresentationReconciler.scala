@@ -1,24 +1,23 @@
 package org.scalaide.play2.routeeditor
 
-import org.scalaide.core.internal.lexical.SingleTokenScanner
-
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.presentation.PresentationReconciler
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer
 import org.eclipse.jface.text.rules.ITokenScanner
 import org.eclipse.jface.util.PropertyChangeEvent
-import org.scalaide.play2.properties.PropertyChangeHandler
 import org.scalaide.play2.routeeditor.lexical.RouteActionScanner
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions
 import org.scalaide.play2.routeeditor.lexical.RouteURIScanner
+import org.eclipse.jface.util.IPropertyChangeListener
+import org.scalaide.core.lexical.ScalaCodeScanners
 
-class RoutePresentationReconciler(prefStore: IPreferenceStore) extends PresentationReconciler with PropertyChangeHandler {
+class RoutePresentationReconciler(prefStore: IPreferenceStore) extends PresentationReconciler with IPropertyChangeListener {
 
   private val scanner =
-    new SingleTokenScanner(RouteSyntaxClasses.DEFAULT, prefStore)
+    ScalaCodeScanners.singleTokenScanner(prefStore, RouteSyntaxClasses.DEFAULT)
 
   private val httpScanner =
-    new SingleTokenScanner(RouteSyntaxClasses.HTTP_KEYWORD, prefStore)
+    ScalaCodeScanners.singleTokenScanner(prefStore, RouteSyntaxClasses.HTTP_KEYWORD)
 
   private val uriScanner =
     new RouteURIScanner(prefStore)
@@ -27,7 +26,7 @@ class RoutePresentationReconciler(prefStore: IPreferenceStore) extends Presentat
     new RouteActionScanner(prefStore)
 
   private val commentScanner =
-    new SingleTokenScanner(RouteSyntaxClasses.COMMENT, prefStore)
+    ScalaCodeScanners.singleTokenScanner(prefStore, RouteSyntaxClasses.COMMENT)
 
   handlePartition(scanner, RoutePartitions.ROUTE_DEFAULT)
   handlePartition(httpScanner, RoutePartitions.ROUTE_HTTP)
@@ -41,7 +40,7 @@ class RoutePresentationReconciler(prefStore: IPreferenceStore) extends Presentat
     setRepairer(dr, token)
   }
   
-  override def handlePropertyChangeEvent(event: PropertyChangeEvent) {
+  override def propertyChange(event: PropertyChangeEvent) {
     scanner.adaptToPreferenceChange(event)
     httpScanner.adaptToPreferenceChange(event)
     uriScanner.adaptToPreferenceChange(event)

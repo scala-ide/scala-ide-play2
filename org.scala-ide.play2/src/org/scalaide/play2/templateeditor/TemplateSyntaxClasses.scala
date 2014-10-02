@@ -1,7 +1,7 @@
 package org.scalaide.play2.templateeditor
 
 import org.scalaide.ui.syntax.ScalaSyntaxClass
-import org.scalaide.play2.properties.Category
+import org.scalaide.ui.syntax.ScalaSyntaxClass.Category
 import org.scalaide.ui.syntax.ScalaSyntaxClasses
 
 object TemplateSyntaxClasses {
@@ -39,23 +39,4 @@ object TemplateSyntaxClasses {
     DEFAULT, PLAIN, MAGIC_AT, BRACE))
 
   val categories = List(scalaCategory, htmlCategory, commentsCategory, otherCategory)
-
-  val ALL_SYNTAX_CLASSES = categories.flatMap(_.children)
-
-  val ENABLED_SUFFIX = ".enabled"
-  val FOREGROUND_COLOUR_SUFFIX = ".colour"
-  val BACKGROUND_COLOUR_SUFFIX = ".backgroundColour"
-  val BACKGROUND_COLOUR_ENABLED_SUFFIX = ".backgroundColourEnabled"
-  val BOLD_SUFFIX = ".bold"
-  val ITALIC_SUFFIX = ".italic"
-  val UNDERLINE_SUFFIX = ".underline"
-
-  val ALL_SUFFIXES = List(ENABLED_SUFFIX, FOREGROUND_COLOUR_SUFFIX, BACKGROUND_COLOUR_SUFFIX,
-    BACKGROUND_COLOUR_ENABLED_SUFFIX, BOLD_SUFFIX, ITALIC_SUFFIX, UNDERLINE_SUFFIX)
-
-  val ALL_KEYS = (for {
-    syntaxClass <- ALL_SYNTAX_CLASSES
-    suffix <- ALL_SUFFIXES
-  } yield syntaxClass.baseName + suffix).toSet
-
 }

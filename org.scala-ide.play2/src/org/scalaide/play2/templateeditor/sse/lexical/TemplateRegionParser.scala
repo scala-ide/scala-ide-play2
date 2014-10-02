@@ -4,7 +4,7 @@ import java.io.Reader
 import java.io.StringReader
 import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
-import org.scalaide.core.internal.lexical.ScalaCodeScanner
+import org.scalaide.core.lexical.ScalaCodeScanners
 import org.scalaide.logging.HasLogger
 import org.eclipse.jface.text.IDocument
 import org.eclipse.ui.editors.text.EditorsUI
@@ -419,7 +419,7 @@ class TemplateTextRegionsComputer(documentContent: String) extends HasLogger {
 private class TemplateTextRegionConverter(documentContent: String, tokens: Seq[ITypedRegion]) {
 
   private val tokenIndexLookup: Map[Int, ITypedRegion] = (tokens map (reg => (reg.getOffset(), reg))).toMap
-  private val scanner = new ScalaCodeScanner(TemplateTextRegionConverter.preferenceStore, ScalaVersions.Scala_2_10)
+  private val tokenizer = ScalaCodeScanners.scalaCodeTokenizer(ScalaVersions.Scala_2_10)
 
   def apply(token: ITypedRegion): (Seq[TemplateTextRegion], String) = {
     if (token.getType == TemplatePartitions.TEMPLATE_SCALA)
@@ -448,9 +448,9 @@ private class TemplateTextRegionConverter(documentContent: String, tokens: Seq[I
         regions += new TemplateTextRegion(TemplateSyntaxClasses.MAGIC_AT, t.getOffset() - token.getOffset(), t.getLength(), t.getLength())
       // actual scala code
       else { //if (t.getType() == TemplatePartitions.TEMPLATE_SCALA) {
-        val tokens = scanner.tokenize(documentContent.slice(t.getOffset(), t.getOffset() + t.getLength()), t.getOffset())
+        val tokens = tokenizer.tokenize(documentContent.slice(t.getOffset(), t.getOffset() + t.getLength()), t.getOffset())
         tokens.foreach { v =>
-          regions += new TemplateTextRegion(v.syntaxClass, v.start - token.getOffset(), v.length, v.length)
+          regions += new TemplateTextRegion(v.syntaxClass, v.offset - token.getOffset(), v.length, v.length)
         }
       }
       currentIndex += t.getLength()

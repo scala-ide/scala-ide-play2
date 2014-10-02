@@ -71,7 +71,7 @@ class RouteEditor extends TextEditor with ISourceViewerEditor with HasLogger wit
   }
 
   override def handlePreferenceStoreChanged(event: PropertyChangeEvent) = {
-    config.handlePropertyChangeEvent(event)
+    config.propertyChange(event)
     super.handlePreferenceStoreChanged(event)
   }
 

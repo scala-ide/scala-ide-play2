@@ -9,7 +9,6 @@ import org.eclipse.jface.text.TypedRegion
 import org.eclipse.jface.text.TypedRegion
 import org.junit.AfterClass
 import org.eclipse.jface.text.IDocument
-import org.scalaide.util.internal.eclipse.RegionUtils._
 import scala.annotation.tailrec
 import org.eclipse.jdt.internal.core.util.SimpleDocument
 
@@ -73,7 +72,8 @@ val x = "x string"
     def noOverlap(list: List[TypedRegion]): Boolean = {
       list match {
         case head :: second :: tail =>
-          !head.overlapsWith(second) && noOverlap(list.tail)
+          import org.scalaide.util.eclipse.RegionUtils.RichRegion
+          !head.intersects(second) && noOverlap(list.tail)
         case _ =>
           true
       }

@@ -10,15 +10,15 @@ import org.eclipse.jface.text.presentation.IPresentationReconciler
 import org.eclipse.jface.text.source.ISourceViewer
 import org.eclipse.jface.text.source.SourceViewerConfiguration
 import org.eclipse.jface.util.PropertyChangeEvent
-import org.scalaide.play2.properties.PropertyChangeHandler
 import org.scalaide.play2.routeeditor.completion.ActionContentAssistProcessor
 import org.scalaide.play2.routeeditor.completion.HttpMethodCompletionComputer
 import org.scalaide.play2.routeeditor.completion.UriCompletionComputer
 import org.scalaide.play2.routeeditor.formatter.RouteFormattingStrategy
 import org.scalaide.play2.routeeditor.hyperlink.RouteHyperlinkDetector
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions
+import org.eclipse.jface.util.IPropertyChangeListener
 
-class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) extends SourceViewerConfiguration with PropertyChangeHandler {
+class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) extends SourceViewerConfiguration with IPropertyChangeListener {
   private val reconciler: RoutePresentationReconciler = new RoutePresentationReconciler(prefStore)
 
   override def getDoubleClickStrategy(sourceViewer: ISourceViewer, contentType: String) = {
@@ -50,5 +50,7 @@ class RouteConfiguration(prefStore: IPreferenceStore, routeEditor: RouteEditor) 
     formatter
   }
 
-  override def handlePropertyChangeEvent(event: PropertyChangeEvent): Unit = reconciler.handlePropertyChangeEvent(event)
+  override def propertyChange(event: PropertyChangeEvent): Unit = {
+    reconciler.propertyChange(event)
+  }
 }

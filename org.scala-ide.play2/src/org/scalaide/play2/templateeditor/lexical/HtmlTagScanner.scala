@@ -7,6 +7,8 @@ import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.rules.IToken
 import org.scalaide.ui.syntax.ScalaSyntaxClasses._
 
+/** A special code scanner for Play templates. It only mark the beginning and end quotes as
+ */
 class HtmlTagScanner(preferenceStore: IPreferenceStore) extends XmlTagScanner(preferenceStore) {
   import XmlTagScanner._
 

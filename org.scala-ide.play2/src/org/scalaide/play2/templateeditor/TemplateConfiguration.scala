@@ -1,6 +1,5 @@
 package org.scalaide.play2.templateeditor
 
-import org.scalaide.core.internal.lexical.SingleTokenScanner
 import org.eclipse.jdt.internal.ui.text.JavaColorManager
 import org.eclipse.jface.preference.IPreferenceStore
 import org.eclipse.jface.text.presentation.PresentationReconciler
@@ -28,30 +27,32 @@ import org.eclipse.jface.text.contentassist.IContentAssistant
 import org.eclipse.jface.text.contentassist.ContentAssistant
 import org.scalaide.play2.templateeditor.completion.CompletionProposalComputer
 import org.eclipse.jface.text.IDocument
-import org.scalaide.play2.properties.PropertyChangeHandler
 import org.scalaide.play2.templateeditor.lexical.TemplateDefaultScanner
 import org.scalaide.play2.templateeditor.hyperlink.LocalTemplateHyperlinkComputer
 import org.eclipse.jface.text.ITextHover
 import org.eclipse.jface.text.IAutoEditStrategy
 import org.eclipse.jdt.ui.text.IJavaPartitions
-import org.scalaide.core.internal.lexical.ScalaCodeScanner
 import org.eclipse.jdt.internal.ui.text.java.SmartSemicolonAutoEditStrategy
 import org.eclipse.jface.text.source.Annotation
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants
 import org.scalaide.ui.internal.editor.autoedits.BracketAutoEditStrategy
+import org.eclipse.jface.util.IPropertyChangeListener
+import org.scalaide.core.lexical.ScalaCodeScanners
 
-class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: AbstractTemplateEditor) extends TextSourceViewerConfiguration(prefStore) with PropertyChangeHandler {
+class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: AbstractTemplateEditor)
+  extends TextSourceViewerConfiguration(prefStore)
+  with IPropertyChangeListener {
 
   private val templateDoubleClickStrategy =
     new RouteDoubleClickStrategy()
 
   private val defaultScanner = new TemplateDefaultScanner(prefStore)
 
-  private val plainScanner = new SingleTokenScanner(TemplateSyntaxClasses.PLAIN, prefStore)
+  private val plainScanner = ScalaCodeScanners.singleTokenScanner(prefStore, TemplateSyntaxClasses.PLAIN)
 
-  private val scalaScanner = new ScalaCodeScanner(prefStore, ScalaVersions.Scala_2_10)
+  private val scalaScanner = ScalaCodeScanners.scalaCodeScanner(prefStore, ScalaVersions.Scala_2_10)
 
-  private val commentScanner = new SingleTokenScanner(TemplateSyntaxClasses.COMMENT, prefStore)
+  private val commentScanner = ScalaCodeScanners.singleTokenScanner(prefStore, TemplateSyntaxClasses.COMMENT)
 
   private val tagScanner = new HtmlTagScanner(prefStore)
 
@@ -151,7 +152,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Abstrac
     prefStore != null && prefStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS)
   }
 
-  def handlePropertyChangeEvent(event: PropertyChangeEvent) {
+  def propertyChange(event: PropertyChangeEvent) {
     defaultScanner.adaptToPreferenceChange(event)
     tagScanner.adaptToPreferenceChange(event)
     plainScanner.adaptToPreferenceChange(event)

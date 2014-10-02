@@ -6,20 +6,19 @@ import scala.annotation.{ switch, tailrec }
 import scala.collection.mutable.{ Stack, ListBuffer }
 import scala.xml.parsing.TokenTests
 import org.eclipse.jface.text.TypedRegion
-import org.scalaide.core.internal.lexical.ScalaPartitionTokeniser
-import org.scalaide.core.internal.lexical.ScalaPartitions
+import org.scalaide.core.lexical.ScalaCodePartitioner
+import org.scalaide.core.lexical.ScalaPartitions
 import scala.util.parsing.input.OffsetPosition
 import org.scalaide.play2.lexical.PlayPartitionTokeniser
 import scala.collection.mutable.ArrayBuffer
-import org.scalaide.util.internal.eclipse.RegionUtils._
 
 class TemplatePartitionTokeniser extends PlayPartitionTokeniser {
 
   /** Calculates XML tag regions by using scala partition tokenizer. */
   private def getXMLTagRegions(templateCode: String): List[TypedRegion] = {
-    val tokens = ScalaPartitionTokeniser.tokenise(templateCode)
-    tokens.filter(_.contentType == ScalaPartitions.XML_TAG).map(t => {
-      new TypedRegion(t.start, t.length, TemplatePartitions.TEMPLATE_TAG)
+    val tokens = ScalaCodePartitioner.partition(templateCode)
+    tokens.filter(_.getType == ScalaPartitions.XML_TAG).map(t => {
+      new TypedRegion(t.getOffset, t.getLength, TemplatePartitions.TEMPLATE_TAG)
     })
   }
 
@@ -52,6 +51,8 @@ class TemplatePartitionTokeniser extends PlayPartitionTokeniser {
   private def calculateAllRegions(xmlTagPlainRegions: List[TypedRegion], scalaCommentRegions: List[TypedRegion], plainWithoutXmlTagRegions: List[TypedRegion], templateCode: String): List[TypedRegion] = {
     def defaultRegion(start: Int, offset: Int) =
       new TypedRegion(start, offset, TemplatePartitions.TEMPLATE_DEFAULT)
+    import org.scalaide.util.eclipse.RegionUtils.AdvancedTypedRegionList
+
     val allRegions = (xmlTagPlainRegions unionWith scalaCommentRegions) unionWith plainWithoutXmlTagRegions
     val globalRegion = defaultRegion(0, templateCode.length())
     val defaultRegions = List(globalRegion) subtract allRegions
@@ -62,6 +63,8 @@ class TemplatePartitionTokeniser extends PlayPartitionTokeniser {
     tokenise(template.get)
 
   def tokenise(templateCode: String): List[TypedRegion] = {
+    import org.scalaide.util.eclipse.RegionUtils.AdvancedTypedRegionList
+
     val xmlTagRegions = getXMLTagRegions(templateCode)
     val (scalaCommentRegions, plainRegions) = getScalaCommentAndPlainRegions(templateCode)
     val xmlTagPlainRegions = xmlTagRegions intersectWith plainRegions
