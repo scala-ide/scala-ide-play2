@@ -1,6 +1,6 @@
 package org.scalaide.play2.routeeditor
 
-import org.scalaide.ui.internal.editor.ISourceViewerEditor
+import org.scalaide.ui.editor.ISourceViewerEditor
 import org.scalaide.core.IScalaPlugin
 import org.scalaide.core.IScalaProject
 import org.scalaide.logging.HasLogger
@@ -36,7 +36,7 @@ class RouteEditor extends TextEditor with ISourceViewerEditor with HasLogger wit
   override def createActions() {
     super.createActions()
 
-    // Adding source formatting action in the editor popup dialog 
+    // Adding source formatting action in the editor popup dialog
     val formatAction = new TextOperationAction(EditorMessages.resourceBundle, "Editor.Format.", this, ISourceViewer.FORMAT)
     formatAction.setActionDefinitionId("org.scala-ide.play2.routeeditor.commands.format")
     setAction("format", formatAction)

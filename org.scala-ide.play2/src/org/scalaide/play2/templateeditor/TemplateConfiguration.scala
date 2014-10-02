@@ -20,7 +20,6 @@ import org.eclipse.jface.text.source.IAnnotationHover
 import org.eclipse.jface.text.source.DefaultAnnotationHover
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector
 import org.scalaide.play2.templateeditor.hyperlink.TemplateDeclarationHyperlinkDetector
-import org.scalaide.play2.templateeditor.hover.TemplateHover
 import org.eclipse.jface.text.DefaultTextHover
 import org.eclipse.jface.text.ITextViewerExtension2
 import org.eclipse.jface.text.contentassist.IContentAssistant
@@ -38,6 +37,7 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants
 import org.scalaide.ui.internal.editor.autoedits.BracketAutoEditStrategy
 import org.eclipse.jface.util.IPropertyChangeListener
 import org.scalaide.core.lexical.ScalaCodeScanners
+import org.scalaide.ui.editor.hover.IScalaHover
 
 class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: AbstractTemplateEditor)
   extends TextSourceViewerConfiguration(prefStore)
@@ -121,7 +121,7 @@ class TemplateConfiguration(prefStore: IPreferenceStore, templateEditor: Abstrac
   override def getTextHover(sv: ISourceViewer, contentType: String, stateMask: Int): ITextHover = {
     if (templateEditor != null && contentType.equals(TemplatePartitions.TEMPLATE_SCALA)) {
       val cu = templateEditor.getInteractiveCompilationUnit()
-      new TemplateHover(cu)
+      IScalaHover(templateEditor)
     }
     else new DefaultTextHover(sv)
   }
