@@ -78,7 +78,7 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
     val completions = {
       for {
         mappedRegion <- tcu.mapTemplateToScalaRegion(region)
-        mappedPosition <- tcu.mapTemplateToScalaOffset(position - 1)
+        mappedPosition = tcu.lastSourceMap.scalaPos(position - 1)
         realPosition = mappedPosition + 1
       } yield {
         // `realPosition` is only valid if completing on a non-zero length name

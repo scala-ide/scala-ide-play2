@@ -128,17 +128,6 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
     Some(new Region(start, region.getLength))
   }
 
-  /** maps an offset in template file into generated scala file
-   */
-  def mapTemplateToScalaOffset(offset: Int): Option[Int] =
-    Some(lastSourceMap().scalaPos(offset))
-
-  /** updates template virtual file
-   */
-  def updateTemplateSourceFile() = {
-    new PrintStream(templateSourceFile.output).print(document.map(_.get))
-  }
-
   class TemplateSourceMap(override val originalSource: Array[Char]) extends ISourceMap {
     lazy val generatedSource: Try[GeneratedSourceVirtual] = {
       logger.debug("[generating template] " + getTemplateFullPath)
