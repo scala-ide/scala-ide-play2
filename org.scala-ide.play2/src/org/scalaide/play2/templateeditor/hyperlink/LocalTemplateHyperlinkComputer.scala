@@ -31,7 +31,7 @@ class LocalTemplateHyperlinkComputer extends AbstractHyperlinkDetector {
       if (doc.getChar(currentSelection.getOffset()) == '.') // otherwise it will generate an error
         return Nil
 
-      val wordRegion = ScalaWordFinder().findWord(doc.get, currentSelection.getOffset).asInstanceOf[IRegion]
+      val wordRegion = ScalaWordFinder.findWord(doc.get, currentSelection.getOffset).asInstanceOf[IRegion]
       icu.mapTemplateToScalaRegion(wordRegion) match {
         case Some(mappedRegion) =>
           icu.withSourceFile { (source, compiler) =>

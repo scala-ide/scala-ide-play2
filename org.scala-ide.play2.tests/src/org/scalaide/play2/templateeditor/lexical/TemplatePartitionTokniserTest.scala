@@ -9,7 +9,7 @@ import org.eclipse.jface.text.TypedRegion
 import org.eclipse.jface.text.TypedRegion
 import org.junit.AfterClass
 import org.eclipse.jface.text.IDocument
-import org.scalaide.util.internal.eclipse.RegionUtils.RichTypedRegion
+import org.scalaide.util.eclipse.RegionUtils.RichTypedRegion
 import scala.annotation.tailrec
 import org.eclipse.jdt.internal.core.util.SimpleDocument
 

@@ -11,8 +11,8 @@ import org.scalaide.core.lexical.ScalaPartitions
 import scala.util.parsing.input.OffsetPosition
 import org.scalaide.play2.lexical.PlayPartitionTokeniser
 import scala.collection.mutable.ArrayBuffer
-import org.scalaide.util.internal.eclipse.RegionUtils.RichTypedRegion
-import org.scalaide.util.internal.eclipse.RegionUtils.AdvancedTypedRegionList
+import org.scalaide.util.eclipse.RegionUtils.RichTypedRegion
+import org.scalaide.util.eclipse.RegionUtils.AdvancedTypedRegionList
 
 class TemplatePartitionTokeniser extends PlayPartitionTokeniser {
 
