@@ -34,16 +34,18 @@ class TemplateCompilationUnitTest {
     val document = new TestDocument(content1)
     templateCU.connect(document)
 
-    val generated1 = templateCU.generatedSource.get.content
+    val generated1 = templateCU.lastSourceMap().scalaSource.mkString("")
 
     val content2 = "@(messages: String)\n<html><body>@messages</body></html>\n"
     document.set(content2)
+    templateCU.sourceMap(content2.toCharArray()) // need to manually trigger a re-parse
 
-    val generated2 = templateCU.generatedSource.get.content
+    val generated2 = templateCU.lastSourceMap().scalaSource.mkString("")
     assertFalse("generated1 and generated2 should be different", generated1 == generated2)
 
     document.set(content1)
-    val generated1_2 = templateCU.generatedSource.get.content
+    templateCU.sourceMap(content1.toCharArray()) // need to manually trigger a re-parse
+    val generated1_2 = templateCU.lastSourceMap().scalaSource.mkString("")
     assertEquals("Same content should return the same generated code", stripGeneratedNote(generated1), stripGeneratedNote(generated1_2))
   }
 
@@ -63,14 +65,15 @@ class TemplateCompilationUnitTest {
   def no_scala_source_is_generated_when_there_are_template_parse_errors() {
     val tFile = file("app/views/template_parse_error.scala.html")
     val tu = TemplateCompilationUnit(tFile, false)
-    assertTrue(tu.generatedSource.isFailure)
+    assertTrue(tu.lastSourceMap().scalaSource.mkString("") == "")
   }
 
   @Test
   def error_on_position_zero_no_crash() {
     val tFile = file("app/views/template_unclosed_comment.scala.html")
     val tu = TemplateCompilationUnit(tFile, false)
-    val errors = tu.reconcile(tu.getTemplateContents)
+    tu.initialReconcile()
+    val errors = tu.currentProblems()
     assertEquals("Unexpected errors", 1, errors.size)
     assertTrue("Negative offset", errors.head.getSourceStart() >= 0)
   }
@@ -79,7 +82,7 @@ class TemplateCompilationUnitTest {
   def scala_source_is_generated_when_there_are_scala_compiler__errors() {
     val tFile = file("app/views/scala_compiler_error.scala.html")
     val tu = TemplateCompilationUnit(tFile, false)
-    assertTrue(tu.generatedSource.isSuccess)
+    assertTrue(tu.lastSourceMap().scalaSource.mkString("") != "")
   }
 
   @Test
@@ -102,7 +105,7 @@ class TemplateCompilationUnitTest {
   def views_in_non_standard_folder_work() {
     val tFile = file("moreviews/more.scala.html")
     val tu = TemplateCompilationUnit(tFile, false)
-    assertTrue(s"No errors expected ${tu.currentProblems.map(_.getMessage())}", tu.generatedSource.isSuccess)
+    assertTrue(s"No errors expected ${tu.currentProblems.map(_.getMessage())}", tu.currentProblems.isEmpty)
   }
 }
 

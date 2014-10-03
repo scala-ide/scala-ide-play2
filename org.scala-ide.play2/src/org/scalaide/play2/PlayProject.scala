@@ -6,7 +6,6 @@ import org.scalaide.core.IScalaProject
 import scala.tools.nsc.util.SourceFile
 import org.eclipse.core.resources.IFile
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
-import org.scalaide.play2.templateeditor.compiler.TemplatePresentationCompiler
 import org.eclipse.ui.preferences.ScopedPreferenceStore
 import org.eclipse.core.resources.ProjectScope
 import org.scalaide.play2.util.SyncedScopedPreferenceStore
@@ -16,8 +15,6 @@ import org.scalaide.play2.properties.PlayPreferences
 import scala.collection.mutable
 
 class PlayProject private (val scalaProject: IScalaProject) {
-  private val presentationCompiler = new TemplatePresentationCompiler(this)
-
   val cachedPreferenceStore = new SyncedScopedPreferenceStore(scalaProject.underlying, PlayPlugin.PluginId)
 
   /** Return additional imports that are automatically added to template files.
@@ -31,17 +28,13 @@ class PlayProject private (val scalaProject: IScalaProject) {
   /** Return a new project-scoped preference store for this project. */
   def generateScopedPreferenceStore: IPreferenceStore = new ScopedPreferenceStore(new ProjectScope(scalaProject.underlying), PlayPlugin.PluginId)
 
-  def withPresentationCompiler[T](op: TemplatePresentationCompiler => T): T = {
-    op(presentationCompiler)
-  }
-
   /** Tries to load the scala template files
    */
   def initialize() {
     val templateCompilationUnits = for (
       r <- scalaProject.underlying.members() if r.isInstanceOf[IFile] && r.getFullPath().toString().endsWith("." + PlayPlugin.TemplateExtension)
     ) yield TemplateCompilationUnit(r.asInstanceOf[IFile], false)
-    templateCompilationUnits foreach (_.askReload())
+    templateCompilationUnits foreach (_.initialReconcile())
     // TODO: Why was there a second round of ask reload here?
     // templateCompilationUnits.reverse foreach (_.askReload())
   }

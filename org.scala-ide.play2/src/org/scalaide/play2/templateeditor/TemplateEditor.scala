@@ -21,10 +21,10 @@ import org.eclipse.swt.widgets.Composite
 import org.scalaide.play2.util.StoredEditorUtils
 
 trait AbstractTemplateEditor extends SourceCodeEditor { self: TextEditor =>
-  
+
   override protected type UnderlyingCompilationUnit = TemplateCompilationUnit
-  
-  override val compilationUnitProvider: CompilationUnitProvider[UnderlyingCompilationUnit] = TemplateCompilationUnitProvider(false)
+
+  override val compilationUnitProvider: CompilationUnitProvider[UnderlyingCompilationUnit] = new TemplateCompilationUnitProvider(false)
 }
 
 class TemplateEditor extends TextEditor with AbstractTemplateEditor {

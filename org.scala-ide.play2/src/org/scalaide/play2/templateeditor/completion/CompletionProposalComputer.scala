@@ -24,23 +24,23 @@ import org.scalaide.play2.util.StoredEditorUtils
 class CompletionProposalComputer extends ScalaCompletions with IContentAssistProcessor with ICompletionProposalComputer {
 
   /* ICompletionProposalComputer methods */
-  
+
   def sessionStarted() : Unit = { }
-  
+
   def computeCompletionProposals(context: CompletionProposalInvocationContext, monitor: IProgressMonitor): java.util.List[ICompletionProposal] = {
     import scala.collection.JavaConversions._
     this.computeCompletionProposals(context.getViewer(), context.getInvocationOffset()).toList
   }
-  
+
   def computeContextInformation(context: CompletionProposalInvocationContext, monitor: IProgressMonitor): java.util.List[IContextInformation] = {
     import scala.collection.JavaConversions._
     this.computeContextInformation(context.getViewer(), context.getInvocationOffset()).toList
   }
-  
+
   def sessionEnded(): Unit = { }
-  
+
   /* IContentAssistProcessor methods */
-  
+
   override def getCompletionProposalAutoActivationCharacters() = Array('.')
 
   override def getContextInformationAutoActivationCharacters() = Array[Char]()
@@ -56,15 +56,15 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
 
     val compileUnit: Option[TemplateCompilationUnit] = editor map { templateEditor =>
       templateEditor.compilationUnitProvider match {
-        case tcup: TemplateCompilationUnitProvider => tcup.copy(usesInclusiveDot = true).fromEditor(templateEditor)
+        case tcup: TemplateCompilationUnitProvider => new TemplateCompilationUnitProvider(usesInclusiveDot = true).fromEditor(templateEditor)
         case _ => null // null will be caught by the catch-all case in the compileUnit match
       }
     }
-    
+
     compileUnit match {
       case Some(tcu) => {
-        // FIXME: askReload doesn't (always) trigger a recompile
-        tcu.askReload()
+        tcu.initialReconcile()
+        tcu.scheduleReconcile(tcu.getContents)
         val completions = tcu.withSourceFile { findCompletions(viewer, offset, tcu) } getOrElse Nil
         completions.toArray
       }
@@ -74,22 +74,22 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
 
   private def findCompletions(viewer: ITextViewer, position: Int, tcu: TemplateCompilationUnit)(sourceFile: SourceFile, compiler: IScalaPresentationCompiler): List[ICompletionProposal] = {
     val region = ScalaWordFinder.findCompletionPoint(tcu.getTemplateContents, position)
-    
+
     val completions = {
       for {
         mappedRegion <- tcu.mapTemplateToScalaRegion(region)
-        mappedPosition <- tcu.mapTemplateToScalaOffset(position - 1)
+        mappedPosition = tcu.lastSourceMap.scalaPos(position - 1)
         realPosition = mappedPosition + 1
       } yield {
         // `realPosition` is only valid if completing on a non-zero length name
-        val actualPosition = if (region.getLength() == 0) mappedRegion.getOffset() else realPosition 
+        val actualPosition = if (region.getLength() == 0) mappedRegion.getOffset() else realPosition
         findCompletions(mappedRegion)(realPosition, tcu)(sourceFile, compiler).sortBy(prop => -(prop.relevance)) map { prop =>
           val newProp = prop.copy(startPos = prop.startPos - actualPosition + position)
           new ScalaCompletionProposal(newProp)
         }
       }
     }
-    
+
     completions getOrElse Nil
   }
 
