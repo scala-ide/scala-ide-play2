@@ -35,7 +35,7 @@ import org.scalaide.core.compiler.ScalaCompilationProblem
 import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities
 import org.scalaide.core.extensions.SourceFileProvider
 import org.eclipse.core.runtime.IPath
-import org.scalaide.util.internal.eclipse.EclipseUtils
+import org.scalaide.util.eclipse.EclipseUtils
 import org.scalaide.core.compiler.InteractiveCompilationUnit
 
 /** A Template compilation unit connects the presentation compiler

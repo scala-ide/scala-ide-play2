@@ -3,7 +3,6 @@ package org.scalaide.play2
 import java.io.File
 import org.scalaide.core.compiler.IScalaPresentationCompiler
 import org.scalaide.core.IScalaProject
-import scala.tools.nsc.util.SourceFile
 import org.eclipse.core.resources.IFile
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import org.eclipse.ui.preferences.ScopedPreferenceStore

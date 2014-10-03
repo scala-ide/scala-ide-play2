@@ -9,6 +9,7 @@ import org.eclipse.jface.text.TypedRegion
 import org.eclipse.jface.text.TypedRegion
 import org.junit.AfterClass
 import org.eclipse.jface.text.IDocument
+import org.scalaide.util.eclipse.RegionUtils.RichTypedRegion
 import scala.annotation.tailrec
 import org.eclipse.jdt.internal.core.util.SimpleDocument
 
@@ -25,7 +26,7 @@ class TemplatePartitionTokeniserTest {
     val p1 = "@(param: String)"
     testForTokenise(List(d(0, 1), s(1, p1.length() - 1)), p1)
   }
-  
+
   @Test
   def simpleTokeniseTest() = {
     def t = testForTokenise _
@@ -40,9 +41,9 @@ class TemplatePartitionTokeniserTest {
     val p6 = """@{val blockOfScalaCode = ""}"""
     t(List(d(0, 1), s(1, p6.length() - 1)), p6)
   }
-  
-  
-  
+
+
+
   @Test
   def complexTokeniseTest() = {
     def t = testForTokenise _

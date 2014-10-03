@@ -119,7 +119,7 @@ object RouteUriWithRegion {
 
   /** Returns all the regions with URI in the passed `document`. */
   def allUrisInDocument(document: IDocument): List[RouteUriWithRegion] = {
-    import org.scalaide.util.internal.Utils.WithAsInstanceOfOpt
+    import org.scalaide.util.Utils.WithAsInstanceOfOpt
     (for {
       partitioner <- document.getDocumentPartitioner().asInstanceOfOpt[RouteDocumentPartitioner].toList
       partition <- partitioner.uriPartitions
