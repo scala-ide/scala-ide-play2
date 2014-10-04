@@ -8,7 +8,7 @@ import org.eclipse.ui.PartInitException
 import org.eclipse.ui.PlatformUI
 import org.eclipse.ui.ide.IDE
 import org.scalaide.logging.HasLogger
-import org.scalaide.util.internal.ui.DisplayThread
+import org.scalaide.util.ui.DisplayThread
 
 /**
  * A wizard to create a new Play template file.
@@ -48,7 +48,7 @@ class NewTemplateWizard extends Wizard with INewWizard with HasLogger {
   }
 
   // ------
-  
+
   // set the dialog values
   setWindowTitle("New Play Template")
 

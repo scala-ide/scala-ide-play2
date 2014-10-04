@@ -5,7 +5,7 @@ import org.eclipse.jface.text.hyperlink.IHyperlink
 import org.eclipse.jface.text.IRegion
 import org.scalaide.play2.templateeditor._
 import org.scalaide.play2.templateeditor.lexical.TemplatePartitions
-import org.scalaide.util.internal.ScalaWordFinder
+import org.scalaide.util.ScalaWordFinder
 import org.scalaide.core.hyperlink.Hyperlink
 import org.eclipse.jface.text.ITextViewer
 import org.eclipse.ui.texteditor.ITextEditor

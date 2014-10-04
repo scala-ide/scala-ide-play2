@@ -13,7 +13,7 @@ import org.eclipse.ui.ISelectionService
 import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.ITypedRegion
 import org.scalaide.play2.routeeditor.lexical.RoutePartitions
-import org.scalaide.util.internal.eclipse.EditorUtils
+import org.scalaide.util.eclipse.EditorUtils
 
 class LocalRename extends AbstractHandler {
 
