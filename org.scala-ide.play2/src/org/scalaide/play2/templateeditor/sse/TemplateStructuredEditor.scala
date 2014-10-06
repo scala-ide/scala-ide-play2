@@ -17,6 +17,7 @@ import org.eclipse.jface.text.ITextListener
 import org.eclipse.jface.text.ITextInputListener
 import org.eclipse.jface.text.IDocument
 
+import scala.concurrent._
 
 class TemplateStructuredEditor extends StructuredTextEditor with AbstractTemplateEditor {
 
@@ -53,7 +54,8 @@ class TemplateStructuredEditor extends StructuredTextEditor with AbstractTemplat
 
   object documentListener extends IDocumentListener {
     override def documentChanged(event: DocumentEvent) {
-      getInteractiveCompilationUnit().scheduleReconcile(event.getDocument.get.toCharArray)
+      import ExecutionContext.Implicits._
+      Future { getInteractiveCompilationUnit().scheduleReconcile(event.getDocument.get.toCharArray) }
     }
 
     override def documentAboutToBeChanged(event: DocumentEvent) {}

@@ -43,7 +43,7 @@
         class="org.scalaide.play2.templateeditor.sse.TemplateStructuredTextViewerConfiguration"
         target="org.scalaide.play2.templateSource" />
       <documentationTextHover
-          class="org.scalaide.play2.templateeditor.sse.hover.TemplateScalaTextHoverProcessor"
+          class="org.scalaide.ui.editor.hover.ScalaHover"
           target="__template_scala" />
       <documentationTextHover
           class="org.eclipse.wst.html.ui.internal.taginfo.HTMLTagInfoHoverProcessor"
