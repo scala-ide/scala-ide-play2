@@ -6,12 +6,13 @@ import org.eclipse.jface.text.IRegion
 import org.scalaide.play2.templateeditor._
 import org.scalaide.play2.templateeditor.lexical.TemplatePartitions
 import org.scalaide.util.ScalaWordFinder
-import org.scalaide.core.hyperlink.Hyperlink
 import org.eclipse.jface.text.ITextViewer
 import org.eclipse.ui.texteditor.ITextEditor
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
 import org.eclipse.jface.text.IDocument
 import org.scalaide.play2.util.StoredEditorUtils
+import org.scalaide.ui.editor.SourceConfiguration
+import org.eclipse.jface.text.Region
 
 /** A hyperlink detector that only looks for local definitions.
  *
@@ -48,8 +49,7 @@ class LocalTemplateHyperlinkComputer extends AbstractHyperlinkDetector {
               case Left(tree: Tree) if localSymbol(tree.symbol) =>
                 val sym = tree.symbol
                 val offset = icu.lastSourceMap().originalPos(sym.pos.point)
-                val hyper = Hyperlink.withText(sym.name.toString)(icu, offset, sym.name.length, sym.kindString + sym.nameString, wordRegion)
-                List(hyper)
+                List(SourceConfiguration.scalaHyperlink(icu, new Region(offset, sym.decodedName.length), sym.kindString + sym.nameString, sym.nameString, wordRegion))
               case _ => Nil
             }
           } getOrElse Nil
