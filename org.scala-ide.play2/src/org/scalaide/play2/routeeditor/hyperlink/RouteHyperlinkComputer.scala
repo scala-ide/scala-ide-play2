@@ -2,7 +2,6 @@ package org.scalaide.play2.routeeditor.hyperlink
 
 import org.scalaide.core.compiler.InteractiveCompilationUnit
 import org.scalaide.core.IScalaProject
-import org.scalaide.core.hyperlink.Hyperlink
 import org.eclipse.jdt.core.IJavaElement
 import org.eclipse.jface.text.IDocument
 import org.eclipse.jface.text.IRegion
@@ -12,7 +11,7 @@ import org.scalaide.play2.routeeditor.RouteAction
 object RouteHyperlinkComputer {
 
   /** Return the hyperlink to controller referenced in this route, if it exists.
-   */  
+   */
   def detectHyperlinks(scalaProject: IScalaProject, document: IDocument, region: IRegion, createJavaHyperlink: (RouteAction, IJavaElement) => IHyperlink): Option[IHyperlink] = {
     RouteAction.routeActionAt(document, region.getOffset()).flatMap {
       routeAction =>
@@ -45,33 +44,30 @@ object RouteHyperlinkComputer {
 
             // method or methods of the object with the given name
             val objMethod = obj.info.member(newTermName(routeAction.methodName))
-            
+
             // if the method of the object doesn't exist, than perhaps routeAction.typeName is actually a class
             // so let's try getting the class and searching it's methods for routeAction.methodName
             val method =
               if (objMethod.exists) objMethod
-              else 					rootMirror.getClassIfDefined(routeAction.typeName).info.member(newTermName(routeAction.methodName))
+              else rootMirror.getClassIfDefined(routeAction.typeName).info.member(newTermName(routeAction.methodName))
 
             if (!method.exists) {
               None
             } else {
-              // find the method with the right parameter types 
+              // find the method with the right parameter types
               val filteredMethod = if (method.isOverloaded) {
                 method.alternatives.find(parametersMatch(_))
               } else {
                 Some(method).find(parametersMatch(_))
               }
               // generate the IHyperlink if it is a Scala method.
-              // For Java method, the computation is delayed outside of the presentation compiler thread. 
+              // For Java method, the computation is delayed outside of the presentation compiler thread.
               val res: Option[Option[IHyperlink]] = filteredMethod.map {
                 method =>
                   if (method.isJavaDefined) {
                     None
                   } else {
-                    findDeclaration(method, scalaProject.javaProject).map {
-                      unitAndOffset =>
-                        Hyperlink.withText("Open Declaration")(unitAndOffset._1, unitAndOffset._2, routeAction.methodName.length, methodLabel(method), routeAction.region)
-                    }
+                    compiler.mkHyperlink(method, "Open Declaration", routeAction.region, scalaProject.javaProject, methodLabel _)
                   }
               }
               res
