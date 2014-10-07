@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.IProgressMonitor
 import org.scalaide.play2.templateeditor.AbstractTemplateEditor
 import org.scalaide.play2.templateeditor.TemplateCompilationUnit
 import org.scalaide.play2.templateeditor.TemplateCompilationUnitProvider
-import org.scalaide.ui.internal.completion.ScalaCompletionProposal
+import org.scalaide.ui.completion.ScalaCompletionProposal
 import org.scalaide.util.ScalaWordFinder
 import org.scalaide.play2.util.StoredEditorUtils
 
@@ -65,14 +65,14 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
       case Some(tcu) => {
         tcu.initialReconcile()
         tcu.scheduleReconcile(tcu.getContents)
-        val completions = tcu.withSourceFile { findCompletions(viewer, offset, tcu) } getOrElse Nil
+        val completions = findCompletions(viewer, offset, tcu)
         completions.toArray
       }
       case _ => Array()
     }
   }
 
-  private def findCompletions(viewer: ITextViewer, position: Int, tcu: TemplateCompilationUnit)(sourceFile: SourceFile, compiler: IScalaPresentationCompiler): List[ICompletionProposal] = {
+  private def findCompletions(viewer: ITextViewer, position: Int, tcu: TemplateCompilationUnit): List[ICompletionProposal] = {
     val region = ScalaWordFinder.findCompletionPoint(tcu.getTemplateContents, position)
 
     val completions = {
@@ -83,9 +83,9 @@ class CompletionProposalComputer extends ScalaCompletions with IContentAssistPro
       } yield {
         // `realPosition` is only valid if completing on a non-zero length name
         val actualPosition = if (region.getLength() == 0) mappedRegion.getOffset() else realPosition
-        findCompletions(mappedRegion)(realPosition, tcu)(sourceFile, compiler).sortBy(prop => -(prop.relevance)) map { prop =>
+        findCompletions(mappedRegion, realPosition, tcu).sortBy(prop => -(prop.relevance)) map { prop =>
           val newProp = prop.copy(startPos = prop.startPos - actualPosition + position)
-          new ScalaCompletionProposal(newProp)
+          ScalaCompletionProposal(newProp)
         }
       }
     }
