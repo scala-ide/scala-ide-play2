@@ -392,14 +392,6 @@
       </page>
    </extension>
    <extension
-         point="org.eclipse.jdt.ui.quickAssistProcessors">
-      <quickAssistProcessor
-            class="org.scalaide.play2.quickassist.AddRouteEntryScala"
-            id="org.scala-ide.play2.scalaAddRouteEntry"
-            name="Add Entry to Route file">
-      </quickAssistProcessor>
-   </extension>
-   <extension
          point="org.eclipse.ui.menus">
       <menuContribution
             locationURI="popup:org.scalaide.play2.routeeditor.RouteEditor.EditorContext?before=additions">
@@ -476,6 +468,13 @@
             class="org.scalaide.play2.templateeditor.TemplateCompilationUnitProvider"
             file_extension="scala.html">
       </provider>
+   </extension>
+   <extension
+         point="org.scala-ide.sdt.core.quickAssists">
+      <quickAssist
+            class="org.scalaide.play2.quickassist.AddRouteEntryScala"
+            id="org.scalaide.play2.quickassist.AddRouteEntryScala">
+      </quickAssist>
    </extension>
    <!--
    <extension

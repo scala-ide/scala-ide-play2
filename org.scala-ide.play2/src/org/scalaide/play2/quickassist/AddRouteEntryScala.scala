@@ -22,45 +22,45 @@ import org.scalaide.play2.routeeditor.RouteEditor
 import org.scalaide.play2.routeeditor.formatter.RouteFormattingStrategy
 import org.scalaide.play2.util.Images
 import org.eclipse.jface.text.TextUtilities
+import org.scalaide.core.quickassist.QuickAssist
+import org.scalaide.core.quickassist.BasicCompletionProposal
+import org.scalaide.core.quickassist.InvocationContext
+import org.eclipse.jdt.core.ICompilationUnit
+import org.scalaide.core.quickassist.BasicCompletionProposal
 
-class AddRouteEntryScala extends IQuickAssistProcessor {
+class RouteEntryProposal(displayString: String)(f: => Unit)
+    extends BasicCompletionProposal(
+        relevance = 100,
+        displayString,
+        image = PlayPlugin.instance.getImageRegistry().get(Images.ROUTES_ICON)) {
+  override def apply(doc: IDocument): Unit = f
+}
+
+class AddRouteEntryScala extends QuickAssist {
   private lazy val scalaResolver = new ScalaControllerMethodResolver
-  private lazy val javaResolver = new JavaControllerMethodResolver
-
-  override def hasAssists(context: IInvocationContext): Boolean = {
-    context.getCompilationUnit() match {
-      case scu: ScalaCompilationUnit =>
-        scalaResolver.getControllerMethod(scu, context.getSelectionOffset()).isDefined
-      case cu => javaResolver.getControllerMethod(cu, context.getSelectionOffset()).isDefined
-    }
-  }
 
   /** Return quick assists for adding an entry in the route file.
    *
    *  TODO: Check that a similar entry does not already exist.
    */
-  override def getAssists(context: IInvocationContext, locations: Array[IProblemLocation]): Array[IJavaCompletionProposal] = {
-    val unit = context.getCompilationUnit()
-    val (resolver, prj) = unit match {
-      case scu: ScalaCompilationUnit => (scalaResolver, scu.scalaProject.underlying)
-      case _                         => (javaResolver, unit.getJavaProject().getProject())
-    }
-    (for (cmeth <- resolver.getControllerMethod(unit, context.getSelectionOffset())) yield {
+  override def compute(ctx: InvocationContext): Seq[BasicCompletionProposal] = {
+    val unit = ctx.icu.asInstanceOf[ICompilationUnit]
+    val prj = ctx.icu.scalaProject.underlying
+
+    (for (cmeth <- scalaResolver.getControllerMethod(unit, ctx.selectionStart)) yield {
       createAssistProposals(prj, cmeth)
-    }) getOrElse Array()
+    }) getOrElse Seq()
   }
 
   /** Create assist proposals to add the given controller method to all route files in the project.
    *
    *  This method is language-agnostic, so it should be used for assists in both Java and Scala files.
    */
-  private def createAssistProposals(project: IProject, cmeth: ControllerMethod): Array[IJavaCompletionProposal] = {
-    val image = PlayPlugin.instance.getImageRegistry().get(Images.ROUTES_ICON)
-
-    for (routeFile <- getRoutePaths(project).toArray)
-      yield BaseAssistProposal(s"Add entry to ${routeFile.getName}", image) { _ =>
-      insertRouteEntry(routeFile, cmeth.toRouteCallSyntax)
-    }
+  private def createAssistProposals(project: IProject, cmeth: ControllerMethod) = {
+    for (routeFile <- getRoutePaths(project))
+      yield new RouteEntryProposal(s"Add entry to ${routeFile.getName}")(
+          insertRouteEntry(routeFile, cmeth.toRouteCallSyntax)
+      )
   }
 
   private def getRoutePaths(prj: IProject): Seq[IFile] = {
