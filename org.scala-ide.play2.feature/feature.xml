@@ -223,7 +223,7 @@
    </url>
 
    <requires>
-      <import feature="org.scala-ide.sdt.feature"/>
+      <import feature="org.scala-ide.sdt.feature" version="4.0.0" match="compatible"/>
    </requires>
 
    <plugin
