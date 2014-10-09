@@ -477,6 +477,13 @@
             file_extension="scala.html">
       </provider>
    </extension>
+   <extension
+         point="org.scala-ide.sdt.core.quickAssists">
+      <quickAssist
+            class="org.scalaide.play2.quickassist.AddRouteEntryScala"
+            id="org.scala-ide.play2.addRoute">
+      </quickAssist>
+   </extension>
    <!--
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">
