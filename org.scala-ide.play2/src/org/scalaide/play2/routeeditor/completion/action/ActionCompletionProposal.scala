@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.Point
   * @param kind          The kind of member of this proposal, i.e., val, var, object, class, package, ...
   * @param isJava        Is this completion for a Java member.
   */
-class ActionCompletionProposal(replaceRegion: IRegion, val simpleName: String, val kind: MemberKind.Value, val isJava: Boolean)
+case class ActionCompletionProposal(replaceRegion: IRegion, val simpleName: String, val kind: MemberKind.Value, val isJava: Boolean)
   extends ICompletionProposal {
 
   import ActionCompletionProposal.javaFieldImage

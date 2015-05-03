@@ -18,14 +18,18 @@ import org.scalaide.play2.ScalaPlayClassNames
 private[action] object MembersComputer {
 
   def apply(compiler: IScalaPresentationCompiler, input: ActionRouteInput): MembersComputer = {
-    val provider = {
+    val membersLocator = {
       if (input.isControllerClassInstantiation) new InstanceMembersLocator(compiler)
-      else new ModuleMembersLocator(compiler)
+      else new ModuleOrInstanceMembersLocator(compiler)
     }
-    provider.createMembersComputer(input)
+    membersLocator.createMembersComputer(input)
   }
 
-  private abstract class MembersLocator(protected val compiler: IScalaPresentationCompiler) extends HasLogger {
+  trait MembersLocator {
+    def createMembersComputer(input: ActionRouteInput): MembersComputer
+  }
+
+  private abstract class BaseMembersLocator(protected val compiler: IScalaPresentationCompiler) extends MembersLocator with HasLogger {
 
     def createMembersComputer(input: ActionRouteInput): MembersComputer = {
       val prefix = {
@@ -74,7 +78,7 @@ private[action] object MembersComputer {
     }
   }
 
-  private class InstanceMembersLocator(_compiler: IScalaPresentationCompiler) extends MembersLocator(_compiler) { self =>
+  private class InstanceMembersLocator(_compiler: IScalaPresentationCompiler) extends BaseMembersLocator(_compiler) { self =>
 
     override protected def prefixSymbol(input: ActionRouteInput): compiler.Symbol = {
       val sym = findPackageFromRoot(input.prefix) orElse findClassFromRoot(input.prefix)
@@ -86,15 +90,15 @@ private[action] object MembersComputer {
       member.isClass && !member.isTrait && !member.isAbstractClass
 
     override protected def createMembersComputer(_prefix: compiler.Symbol): MembersComputer = {
-      if (_prefix.isPackage) {
+      if (_prefix.hasPackageFlag) {
         // _prefix will be the EmptyPackage if the ActionRouteInput has an empty prefix,
         // meaning that the input itself is a single word, and thus we need to search among
         // the RootClass decls for packages, and the EmptyPackage 
-        if (_prefix != compiler.rootMirror.EmptyPackage) new PackageAndClassMembersComputer {
+        if (_prefix != compiler.rootMirror.EmptyPackage) new PackageOrClassMembersComputer {
           override val compiler: self.compiler.type = self.compiler
           override val prefix: self.compiler.Symbol = _prefix
         }
-        else new PackageAndClassMembersComputer {
+        else new PackageOrClassMembersComputer {
           override val compiler: self.compiler.type = self.compiler
           override val prefix: self.compiler.Symbol = _prefix
           override protected final def allMembers = compiler.rootMirror.RootClass.tpe.decls.toList ++ _prefix.tpe.decls.toList
@@ -111,7 +115,7 @@ private[action] object MembersComputer {
     }
   }
 
-  private class ModuleMembersLocator(_compiler: IScalaPresentationCompiler) extends MembersLocator(_compiler) { self =>
+  private class ModuleMembersLocator(_compiler: IScalaPresentationCompiler) extends BaseMembersLocator(_compiler) { self =>
 
     override protected def prefixSymbol(input: ActionRouteInput): compiler.Symbol =
       findPackageFromRoot(input.prefix) orElse findModuleFromRoot(input.prefix)
@@ -120,11 +124,11 @@ private[action] object MembersComputer {
       if (_prefix.isPackage) {
         // _prefix will be the EmptyPackage if the ActionRouteInput has an empty prefix,
         // meaning that the input itself is a single word, and thus we need to search among the RootClass decls
-        if (_prefix != compiler.rootMirror.EmptyPackage) new PackageAndModuleMembersComputer  {
+        if (_prefix != compiler.rootMirror.EmptyPackage) new PackageOrModuleMembersComputer  {
           override val compiler: self.compiler.type = self.compiler
           override val prefix: self.compiler.Symbol = _prefix
         }
-        else new PackageAndModuleMembersComputer  {
+        else new PackageOrModuleMembersComputer  {
           override val compiler: self.compiler.type = self.compiler
           override val prefix: self.compiler.Symbol = _prefix
           override protected final def allMembers = compiler.rootMirror.RootClass.tpe.decls.toList ++ _prefix.tpe.decls.toList
@@ -140,14 +144,31 @@ private[action] object MembersComputer {
       }
     }
   }
+  
+  private class ModuleOrInstanceMembersLocator(_compiler: IScalaPresentationCompiler) extends MembersLocator with HasLogger {
+    override def createMembersComputer(input: ActionRouteInput): MembersComputer = new MembersComputer {
+      override protected val compiler: IScalaPresentationCompiler = _compiler
+
+      override def members: List[compiler.Symbol] =  {
+        val moduleMembers = new ModuleMembersLocator(compiler).createMembersComputer(input).members
+        val instanceMembers = new InstanceMembersLocator(compiler).createMembersComputer(input).members
+        moduleMembers ++ instanceMembers
+      }.asInstanceOf[List[compiler.Symbol]]
+    }
+  }
+}
+
+abstract class MembersComputer {
+  protected val compiler: IScalaPresentationCompiler
+  
+  def members: List[compiler.Symbol]
 }
 
 /** Based on the `prefix` returns the relevant set of members.
   *
   * @note This class is not instantiated directly. It contains common behavior used by the subclasses.
   */
-private[action] abstract class MembersComputer protected () extends HasLogger {
-  protected val compiler: IScalaPresentationCompiler
+private[action] abstract class FilteredMembersComputer protected() extends MembersComputer {
   protected val prefix: compiler.Symbol
 
   final def members: List[compiler.Symbol] = {
@@ -176,13 +197,12 @@ private[action] abstract class MembersComputer protected () extends HasLogger {
 /** A member compute that always returns an empty list of members.*/
 object EmptyMembersComputer extends MembersComputer {
   override protected val compiler: IScalaPresentationCompiler = null
-  override protected val prefix: compiler.Symbol = null
 
-  protected def allMembers: List[compiler.Symbol] = Nil
+  def members: List[compiler.Symbol] = Nil
 }
 
 /** @note This class is not instantiated directly. It contains common behavior used by the subclasses. */
-private abstract class PackageMembersComputer protected () extends MembersComputer {
+private abstract class PackageMembersComputer protected () extends FilteredMembersComputer {
 
   protected def allMembers: List[compiler.Symbol] = prefix.tpe.decls.toList
 
@@ -191,18 +211,14 @@ private abstract class PackageMembersComputer protected () extends MembersComput
   protected def isExpectedMember(member: compiler.Symbol): Boolean = member.isPackage
 }
 
-/** Filter for packages and module classes (or Java classes that have at least one static method declared). 
- *  @note Use this when the action name in the route file does NOT start with a '@'.
- */
-private abstract class PackageAndModuleMembersComputer extends PackageMembersComputer {
+/** Filter for packages or module classes (or Java classes that have at least one static method declared). */
+private abstract class PackageOrModuleMembersComputer extends PackageMembersComputer {
   override protected def isExpectedMember(member: compiler.Symbol): Boolean =
     super.isExpectedMember(member) || member.isModule
 }
 
-/** Filter for packages and concrete classes. This is used when the action name in the route file starts with a '@' (i.e.,
-  * the class is instantiated by the Play framework hence it ought to be a concrete public class).
-  */
-private abstract class PackageAndClassMembersComputer extends PackageMembersComputer {
+/** Filter for packages or concrete classes. */
+private abstract class PackageOrClassMembersComputer extends PackageMembersComputer {
   override protected def isExpectedMember(member: compiler.Symbol): Boolean =
     super.isExpectedMember(member) || isConcreteClass(member)
 
@@ -210,7 +226,7 @@ private abstract class PackageAndClassMembersComputer extends PackageMembersComp
 }
 
 /** Common superclass for filtering action methods, i.e., concrete public methods whose return type matches the Play Action type. */
-private abstract class ActionMethodComputer extends MembersComputer with PlayClassNames {
+private abstract class ActionMethodComputer extends FilteredMembersComputer with PlayClassNames {
   private lazy val playActionClassSym = compiler.rootMirror.getClassIfDefined(actionClassFullName)
 
   override protected def filter(member: compiler.Symbol): Boolean =
@@ -225,7 +241,7 @@ private abstract class ActionMethodComputer extends MembersComputer with PlayCla
 }
 
 /** The same filter is used for filtering action methods on both scala module and instance's class.
-  * The reason for this is simple: in both cases we are looking at instance methods.
+  * The reason for this is that in both cases we are looking at instance methods.
   */
 private abstract class ScalaMembersComputer extends ActionMethodComputer with ScalaPlayClassNames {
   override protected def allMembers: List[compiler.Symbol] = prefix.tpe.members.toList

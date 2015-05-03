@@ -19,7 +19,7 @@ class ActionCompletionComputer(compiler: IScalaPresentationCompiler) {
 
     val input = new ActionRouteInput(rawInput)
 
-    for {
+    val proposals: Set[ActionCompletionProposal] = (for {
       memberr <- MembersComputer(compiler, input).members
       // I need the cast because of path-dependent type mismatch. Feel free to suggest a fix, if you see one.
       member = memberr.asInstanceOf[compiler.Symbol]
@@ -27,7 +27,9 @@ class ActionCompletionComputer(compiler: IScalaPresentationCompiler) {
       if textReplacement.startsWith(input.suffix)
       kind = kindOf(member)
       isJava = !member.isPackage && member.isJava
-    } yield new ActionCompletionProposal(replaceRegion, textReplacement, kind, isJava)
+    } yield new ActionCompletionProposal(replaceRegion, textReplacement, kind, isJava))(collection.breakOut)
+
+    proposals.toList
   }
 
   /** Based on the passed `input` and its current `region` in the document, compute the
