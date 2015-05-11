@@ -143,10 +143,10 @@ class ActionContentAssistProcessorTest extends CompletionComputerTest {
   }
 
   @Test
-  def no_completion_for_scala_class_not_prefixed_with_@() {
+  def completion_for_scala_class() {
     val route = RouteCompletionFile { "GET / controllers.scala.AppCla#" }
 
-    route expectedCompletions ()
+    route expectedCompletions Proposal("AppClass", MemberKind.Class)
   }
 
   @Test
@@ -156,6 +156,13 @@ class ActionContentAssistProcessorTest extends CompletionComputerTest {
     route expectedCompletions Proposal("AppClass", MemberKind.Class)
   }
 
+  @Test
+  def completion_for_action_method_in_scala_class() {
+    val route = RouteCompletionFile { "GET / controllers.scala.AppClass.actionMe#" }
+
+    route expectedCompletions Proposal("actionMethod()", MemberKind.Def)
+  }
+  
   @Test
   def completion_for_action_method_in_scala_class_iff_prefixed_by_@() {
     val route = RouteCompletionFile { "GET / @controllers.scala.AppClass.actionMe#" }
@@ -192,10 +199,10 @@ class ActionContentAssistProcessorTest extends CompletionComputerTest {
   }
 
   @Test
-  def no_completion_for_NON_static_method_for_java_controller() {
+  def completion_for_NON_static_method_for_java_controller() {
     val route = RouteCompletionFile { "GET / controllers.java.Application.nonStaticMeth#" }
 
-    route expectedCompletions ()
+    route expectedCompletions Proposal("nonStaticMethod(name)", MemberKind.Def, isJava = true)
   }
 
   @Test
@@ -237,7 +244,7 @@ class ActionContentAssistProcessorTest extends CompletionComputerTest {
   def do_not_inherit_java_static_methods() {
     val route = RouteCompletionFile { "GET / controllers.java.SubApplication.#" }
 
-    route expectedCompletions ()
+    route expectedCompletions Proposal("nonStaticMethod(name)", MemberKind.Def, isJava = true)
   }
 
   @Test
@@ -322,6 +329,7 @@ class ActionContentAssistProcessorTest extends CompletionComputerTest {
     val route = RouteCompletionFile { "GET / controllers.scala.#" }
 
     route expectedCompletions (Proposal("ActionWithMangledName", MemberKind.Object),
+      Proposal("AppClass", MemberKind.Class),
       Proposal("AppNotExtendingController", MemberKind.Object),
       Proposal("MembersVisibility", MemberKind.Object),
       Proposal("SubAppClass", MemberKind.Object),
@@ -374,7 +382,7 @@ class ActionContentAssistProcessorTest extends CompletionComputerTest {
   def completion_for_top_level_scala_class() {
     val route = RouteCompletionFile { "GET / RootScalaApp#" }
     
-    route expectedCompletions Proposal("RootScalaApplication", MemberKind.Object)
+    route expectedCompletions (Proposal("RootScalaApplication", MemberKind.Object), Proposal("RootScalaApplication", MemberKind.Class))
   }
   
   @Test

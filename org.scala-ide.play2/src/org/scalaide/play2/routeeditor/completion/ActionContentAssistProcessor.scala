@@ -34,8 +34,8 @@ class ActionContentAssistProcessor(routeEditor: HasScalaProject) extends IConten
     import org.scalaide.core.compiler.IScalaPresentationCompiler.Implicits._
     val completions = project.presentationCompiler { compiler =>
       compiler.asyncExec {
-        val computer = new ActionCompletionComputer(compiler)
-        computer.computeCompletionProposals(document, offset)
+        val actionComputer = new ActionCompletionComputer(compiler)
+        actionComputer.computeCompletionProposals(document, offset)
       }.getOrElse(Nil)()
     } getOrElse Nil
 
