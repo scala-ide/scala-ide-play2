@@ -1,8 +1,12 @@
-# Scala IDE plugin for Play 2.1
+# Scala IDE plugin for Play 2.x
 
-This is an extension to Scala IDE to support Play 2.1 routes and template files.
+This is an extension to Scala IDE to support Play 2.x routes and template files.
 
 For user documentation, check the [wiki](https://github.com/scala-ide/scala-ide-play2/wiki).
+
+# Supported Play versions
+
+This plugin provides Eclipse supports for Play 2.3.x projects. However, it should also work with older Play releases.
 
 ## Project structure
 
@@ -23,15 +27,3 @@ Simply run the ``./build.sh`` script.
 The build is based on
 [plugin-profiles](https://github.com/scala-ide/plugin-profiles) and
 can be built against several versions of the IDE and Eclipse.
-
-Launching the ``build.sh`` script will exand to the following Maven command:
-
-```
-mvn -Peclipse-indigo,scala-2.10.x,scala-ide-stable clean install
-```
-
-You can choose a different profile for any of the three axis: eclipse
-platform, and Scala IDE stream. The Scala profile has to be ``scala-2.10.x`` because 
-this plug-in targets Play v2.1, which is only available for Scala 2.10. 
-Read [here](https://github.com/scala-ide/scala-worksheet/wiki/Build-the-Worksheet)
-for more details.
