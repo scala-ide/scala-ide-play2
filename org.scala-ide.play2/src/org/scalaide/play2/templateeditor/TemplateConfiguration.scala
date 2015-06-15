@@ -34,7 +34,6 @@ import org.eclipse.jdt.ui.text.IJavaPartitions
 import org.eclipse.jdt.internal.ui.text.java.SmartSemicolonAutoEditStrategy
 import org.eclipse.jface.text.source.Annotation
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants
-import org.scalaide.ui.internal.editor.autoedits.BracketAutoEditStrategy
 import org.eclipse.jface.util.IPropertyChangeListener
 import org.scalaide.core.lexical.ScalaCodeScanners
 import org.scalaide.ui.editor.hover.IScalaHover
