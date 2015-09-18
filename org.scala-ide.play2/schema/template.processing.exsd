@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.scala-ide.play2" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.scala-ide.play2" id="org.scalaide.play2.template.processing" name="Template parser and compiler"/>
+      </appInfo>
+      <documentation>
+         Allows for usage of library versions dependent play template parser and compiler simultaneously.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="template-processor"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  right now the value should be org.scalaide.play2.template.processing
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  any unique string
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  descriptive name like &apos;Play template processors&apos;
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="template-processor">
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="version"/>
+         </sequence>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  class implementing org.scalaide.play2.templateeditor.processing.TemplateProcessing
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn=":org.scalaide.play2.templateeditor.processing.TemplateProcessing"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="version">
+      <complexType>
+         <attribute name="supports" type="string" use="required">
+            <annotation>
+               <documentation>
+                  supported Play version
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         Scala IDE 4.2
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         &lt;extension
+      point=&quot;org.scalaide.play2.template.processing&quot;
+      id=&quot;acme.play23.template.processor&quot;
+      name=&quot;template processor for Play 2.3&quot;&gt;
+   &lt;template-processor
+         class=&quot;my.class.implementing.org.scalaide.play2.templateeditor.processing.TemplateProcessing&quot;&gt;
+      &lt;version supported=&quot;2.2&quot;/&gt;
+      &lt;version supported=&quot;2.3&quot;/&gt;
+   &lt;/template-processor&gt;
+&lt;/extension&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiinfo"/>
+      </appInfo>
+      <documentation>
+         see org.scalaide.play2.templateeditor.processing.TemplateProcessing
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         Implementations wrap Twirl library. Different Play version may use different Twirl versions.
+      </documentation>
+   </annotation>
+
+
+</schema>

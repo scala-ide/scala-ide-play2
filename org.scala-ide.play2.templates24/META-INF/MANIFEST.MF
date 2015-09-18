@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Twirl Templates for Play 2.4
+Bundle-SymbolicName: org.scala-ide.play2.templates24;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.scalaide.play2.templates24.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.scala-lang.scala-library;bundle-version="[2.11,2.12)",
+ org.scala-lang.scala-compiler;bundle-version="[2.11,2.12)",
+ org.scala-lang.scala-reflect;bundle-version="[2.11,2.12)",
+ org.scala-lang.modules.scala-xml,
+ org.scala-lang.modules.scala-parser-combinators,
+ org.scala-ide.play2;bundle-version="0.5.0",
+ org.scala-lang.scala-library
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
+ target/lib/twirl-compiler.jar,
+ target/lib/twirl-parser.jar
+Import-Package: 
+ com.ibm.icu.text;apply-aspects:=false;org.eclipse.swt.graphics;apply-aspects:=false,
+ scala.tools.eclipse.contribution.weaving.jdt.ui.javaeditor.formatter;apply-aspects:=false,
+ scala.xml,
+ scala.util.parsing.input,
+ scala.reflect.internal.util

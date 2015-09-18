@@ -14,12 +14,14 @@ import org.eclipse.swt.widgets.Display
 import org.eclipse.ui.IWorkbenchPropertyPage
 import org.scalaide.play2.PlayPlugin
 
-/** Preference page displayed in the property dialog of (play) projects.
+/**
+ * Preference page displayed in the property dialog of (play) projects.
  *  Used from the UI thread.
  */
 class ProjectPropertyPage extends FieldEditorPreferencePage(FieldEditorPreferencePage.GRID) with IWorkbenchPropertyPage {
 
-  /** Preference field to display the list of extra imports.
+  /**
+   * Preference field to display the list of extra imports.
    */
   private class ImportsFieldEditor(name: String, labelText: String, parent: Composite) extends ListEditor(name, labelText, parent) {
 
@@ -56,6 +58,7 @@ class ProjectPropertyPage extends FieldEditorPreferencePage(FieldEditorPreferenc
   // Members declared in org.eclipse.jface.preference.FieldEditorPreferencePage
 
   override def createFieldEditors() {
+    addField(new ProjectPropertyPage.PlayProjectVersion(getFieldEditorParent()))
     addField(new ImportsFieldEditor(PlayPreferences.TemplateImports, "Template default imports", getFieldEditorParent()))
   }
 
@@ -80,4 +83,15 @@ class ProjectPropertyPage extends FieldEditorPreferencePage(FieldEditorPreferenc
     prefStore
   }
 
+}
+
+object ProjectPropertyPage {
+  import org.eclipse.jface.preference.ComboFieldEditor
+  import org.scalaide.play2.properties.PlayPreferences._
+
+  private def supportedVersions = PlaySupportedVersion.map(version => Array(version, version)).toArray
+  class PlayProjectVersion(parent: Composite) extends ComboFieldEditor(PlayVersion, "Play version", supportedVersions, parent) {
+    override def getPreferenceStore(): IPreferenceStore =
+      PlayPlugin.preferenceStore
+  }
 }

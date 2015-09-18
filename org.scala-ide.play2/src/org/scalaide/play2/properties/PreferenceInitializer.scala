@@ -4,9 +4,11 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer
 import org.scalaide.play2.PlayPlugin
 
 class PreferenceInitializer extends AbstractPreferenceInitializer {
+  import PlayPreferences._
 
-  override def initializeDefaultPreferences() {
-    PlayPlugin.preferenceStore.setDefault(PlayPreferences.TemplateImports, "import play.api.templates._\nimport play.api.templates.PlayMagic._\n")
+  override def initializeDefaultPreferences(): Unit = {
+    PlayPlugin.preferenceStore.setDefault(PlayVersion, DefaultPlayVersion)
+    PlayPlugin.preferenceStore.setDefault(TemplateImports, "")
   }
 
 }
