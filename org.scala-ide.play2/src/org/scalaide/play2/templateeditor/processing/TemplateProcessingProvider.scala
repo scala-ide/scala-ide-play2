@@ -19,6 +19,9 @@ object TemplateProcessingProvider {
         }.contains(pVer)
       }
     }
-    version.get.createExecutableExtension("class").asInstanceOf[TemplateProcessing]
+    if (version.nonEmpty)
+      version.get.createExecutableExtension("class").asInstanceOf[TemplateProcessing]
+    else
+      throw new IllegalStateException(s"Cannot find template processing for Play version: ${playVersion.getOrElse("version not found")}.")
   }
 }
