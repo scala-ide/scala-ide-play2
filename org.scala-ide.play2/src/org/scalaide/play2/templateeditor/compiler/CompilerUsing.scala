@@ -10,8 +10,10 @@ import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities
 import org.scalaide.core.compiler.ScalaCompilationProblem
 import org.scalaide.logging.HasLogger
 import org.scalaide.play2.PlayProject
+import org.scalaide.play2.properties.PlayPreferences.PlayVersion
 import org.scalaide.play2.templateeditor.processing.GeneratedSource
 import org.scalaide.play2.templateeditor.processing.TemplateProcessingProvider
+
 /**
  * a helper for using template compiler
  */
@@ -27,7 +29,12 @@ object CompilerUsing extends HasLogger {
 
     val extension = source.getName.split('.').last
 
-    TemplateProcessingProvider.templateProcessing.compile(
+    val playVersion = if (playProject.cachedPreferenceStore.getString(PlayVersion).isEmpty())
+      None
+    else
+      Some(playProject.cachedPreferenceStore.getString(PlayVersion))
+
+    TemplateProcessingProvider.templateProcessing(playVersion).compile(
       content,
       source,
       playProject.sourceDir,

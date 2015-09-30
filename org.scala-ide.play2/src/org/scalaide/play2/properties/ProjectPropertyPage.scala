@@ -77,12 +77,8 @@ class ProjectPropertyPage extends FieldEditorPreferencePage(FieldEditorPreferenc
     }
   }
 
-  // ----
-
-  override def doGetPreferenceStore(): IPreferenceStore = {
+  override def doGetPreferenceStore(): IPreferenceStore =
     prefStore
-  }
-
 }
 
 object ProjectPropertyPage {
@@ -90,8 +86,6 @@ object ProjectPropertyPage {
   import org.scalaide.play2.properties.PlayPreferences._
 
   private def supportedVersions = PlaySupportedVersion.map(version => Array(version, version)).toArray
-  class PlayProjectVersion(parent: Composite) extends ComboFieldEditor(PlayVersion, "Play version", supportedVersions, parent) {
-    override def getPreferenceStore(): IPreferenceStore =
-      PlayPlugin.preferenceStore
-  }
+
+  class PlayProjectVersion(parent: Composite) extends ComboFieldEditor(PlayVersion, "Play version", supportedVersions, parent)
 }

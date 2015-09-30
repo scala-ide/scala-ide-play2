@@ -1,25 +1,33 @@
 package org.scalaide.play2.templateeditor.sse.lexical
 
-import org.junit.Test
-import org.junit.Assert._
-import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocumentRegion
 import scala.annotation.tailrec
+import scala.collection.JavaConverters
+
+import org.eclipse.wst.sse.core.internal.parser.ContextRegion
+import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocumentRegion
 import org.eclipse.wst.sse.core.internal.provisional.text.ITextRegion
 import org.eclipse.wst.sse.core.internal.text.BasicStructuredDocumentRegion
-import org.eclipse.wst.xml.core.internal.regions.DOMRegionContext._
-import org.scalaide.play2.templateeditor.sse.lexical.TemplateDocumentRegions._
-import org.scalaide.play2.templateeditor.TemplateSyntaxClasses._
-import org.scalaide.ui.syntax.ScalaSyntaxClasses
-import org.eclipse.wst.xml.core.internal.parser.regions.XMLContentRegion
-import org.eclipse.wst.xml.core.internal.parser.regions.TagOpenRegion
-import org.eclipse.wst.xml.core.internal.parser.regions.TagNameRegion
-import org.eclipse.wst.xml.core.internal.parser.regions.AttributeNameRegion
 import org.eclipse.wst.xml.core.internal.parser.regions.AttributeEqualsRegion
+import org.eclipse.wst.xml.core.internal.parser.regions.AttributeNameRegion
 import org.eclipse.wst.xml.core.internal.parser.regions.AttributeValueRegion
 import org.eclipse.wst.xml.core.internal.parser.regions.TagCloseRegion
-import org.eclipse.wst.sse.core.internal.parser.ContextRegion
+import org.eclipse.wst.xml.core.internal.parser.regions.TagNameRegion
+import org.eclipse.wst.xml.core.internal.parser.regions.TagOpenRegion
+import org.eclipse.wst.xml.core.internal.parser.regions.XMLContentRegion
+import org.eclipse.wst.xml.core.internal.regions.DOMRegionContext.BLOCK_TEXT
+import org.eclipse.wst.xml.core.internal.regions.DOMRegionContext.XML_CONTENT
+import org.eclipse.wst.xml.core.internal.regions.DOMRegionContext.XML_TAG_NAME
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import org.scalaide.play2.templateeditor.BeforeAfterTemplateVersion
+import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.BRACE
+import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.COMMENT
+import org.scalaide.play2.templateeditor.TemplateSyntaxClasses.MAGIC_AT
+import org.scalaide.play2.templateeditor.sse.lexical.TemplateDocumentRegions.COMMENT_DOC_REGION
+import org.scalaide.play2.templateeditor.sse.lexical.TemplateDocumentRegions.SCALA_DOC_REGION
+import org.scalaide.ui.syntax.ScalaSyntaxClasses
 
-class TemplateRegionParserTest {
+class TemplateRegionParserTest extends BeforeAfterTemplateVersion {
   
   private def docR(length: Int, tpe: String, textRegions: Seq[ITextRegion] = List()): IStructuredDocumentRegion = {
     val region = new BasicStructuredDocumentRegion { override def getType() = tpe }

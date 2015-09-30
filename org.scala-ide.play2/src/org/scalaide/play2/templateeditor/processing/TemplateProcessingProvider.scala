@@ -1,16 +1,19 @@
 package org.scalaide.play2.templateeditor.processing
 
 import org.eclipse.core.runtime.RegistryFactory
-import org.scalaide.play2.PlayPlugin
+import org.scalaide.logging.HasLogger
 import org.scalaide.play2.properties.PlayPreferences
 
-object TemplateProcessingProvider {
+object TemplateProcessingProvider extends HasLogger {
   val ExtensionPointId = "org.scalaide.play2.template.processing"
 
-  def templateProcessing(): TemplateProcessing = {
+  def templateProcessing(templateVersion: Option[String] = None): TemplateProcessing = {
     val extensions = RegistryFactory.getRegistry.getConfigurationElementsFor(ExtensionPointId)
-    val playVersion = Option(PlayPlugin.preferenceStore.getString(PlayPreferences.PlayVersion)).flatMap { version =>
+    val playVersion = templateVersion.orElse(TemplateVersionExhibitor.get.flatMap { version =>
       if (version.isEmpty) None else Some(version)
+    }).orElse {
+      eclipseLog.warn(s"Cannot find template version. Dropped to default ${PlayPreferences.DefaultPlayVersion}.")
+      Some(PlayPreferences.DefaultPlayVersion)
     }
     val version = playVersion.flatMap { pVer =>
       extensions.find {

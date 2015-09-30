@@ -19,7 +19,7 @@ object TemplateParsing {
       case _ =>
         -1
     }
-    val length = TemplateProcessingProvider.templateProcessing.length(input)
+    val length = TemplateProcessingProvider.templateProcessing().length(input)
 
     override def toString = kind + "[" + offset + " - " + length + "]: " + input
   }
@@ -31,5 +31,5 @@ object TemplateParsing {
    * Returns list of different types of region of the template code
    */
   def handleTemplateCode(templateCode: String) =
-    TemplateProcessingProvider.templateProcessing.parse(templateCode)
+    TemplateProcessingProvider.templateProcessing().parse(templateCode)
 }
