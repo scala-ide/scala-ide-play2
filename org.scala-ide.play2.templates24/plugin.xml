@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.scalaide.play2.template.processing">
+      <template-processor
+            class="org.scalaide.play2.templates24.TemplateProcessing">
+         <version
+               supports="2.4"/>
+      </template-processor>
+   </extension>
+
+</plugin>

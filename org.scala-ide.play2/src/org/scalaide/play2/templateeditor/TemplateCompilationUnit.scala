@@ -1,42 +1,37 @@
 package org.scalaide.play2.templateeditor
 
-import java.io.PrintStream
-import org.scalaide.core.IScalaPlugin
-import org.scalaide.core.compiler.IScalaPresentationCompiler
-import org.scalaide.core.IScalaProject
-import org.scalaide.logging.HasLogger
-import scala.tools.nsc.interactive.Response
-import scala.tools.nsc.io.AbstractFile
 import scala.tools.nsc.io.VirtualFile
 import scala.tools.nsc.util.BatchSourceFile
 import scala.tools.nsc.util.SourceFile
-import scala.util.{ Try, Success, Failure }
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
+
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IProject
-import org.eclipse.jdt.core.compiler.IProblem
-import org.eclipse.jface.text.IDocument
+import org.eclipse.core.runtime.IPath
+import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities
 import org.eclipse.jface.text.IRegion
 import org.eclipse.jface.text.Region
-import org.eclipse.ui.IEditorInput
-import org.eclipse.ui.part.FileEditorInput
+import org.scalaide.core.IScalaPlugin
+import org.scalaide.core.IScalaProject
+import org.scalaide.core.compiler.IPositionInformation
+import org.scalaide.core.compiler.ISourceMap
+import org.scalaide.core.compiler.InteractiveCompilationUnit
+import org.scalaide.core.compiler.ScalaCompilationProblem
+import org.scalaide.core.extensions.SourceFileProvider
+import org.scalaide.logging.HasLogger
 import org.scalaide.play2.IssueTracker
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.PlayProject
 import org.scalaide.play2.templateeditor.compiler.CompilerUsing
 import org.scalaide.play2.templateeditor.compiler.PositionHelper
-import play.twirl.compiler.GeneratedSourceVirtual
+import org.scalaide.play2.templateeditor.compiler.TemplateToScalaCompilationError
+import org.scalaide.play2.templateeditor.processing.GeneratedSource
 import org.scalaide.ui.editor.CompilationUnit
 import org.scalaide.ui.editor.CompilationUnitProvider
 import org.scalaide.ui.internal.actions.ToggleScalaNatureAction
-import org.scalaide.core.compiler.ISourceMap
-import org.scalaide.core.compiler.IPositionInformation
-import org.scalaide.play2.templateeditor.compiler.TemplateToScalaCompilationError
-import org.scalaide.core.compiler.ScalaCompilationProblem
-import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities
-import org.scalaide.core.extensions.SourceFileProvider
-import org.eclipse.core.runtime.IPath
 import org.scalaide.util.eclipse.EclipseUtils
-import org.scalaide.core.compiler.InteractiveCompilationUnit
 
 /** A Template compilation unit connects the presentation compiler
  *  view of a tmeplate with the Eclipse IDE view of the underlying
@@ -85,7 +80,7 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
     lastInfo
   }
 
-  override def sourceMap(contents: Array[Char]): TemplateSourceMap ={
+  override def sourceMap(contents: Array[Char]): TemplateSourceMap = {
     lastInfo = new TemplateSourceMap(contents)
     lastInfo
   }
@@ -129,7 +124,7 @@ case class TemplateCompilationUnit(_workspaceFile: IFile, val usesInclusiveDot: 
   }
 
   class TemplateSourceMap(override val originalSource: Array[Char]) extends ISourceMap {
-    lazy val generatedSource: Try[GeneratedSourceVirtual] = {
+    lazy val generatedSource: Try[GeneratedSource] = {
       logger.debug("[generating template] " + getTemplateFullPath)
       CompilerUsing.compileTemplateToScalaVirtual(originalSource.mkString(""), file.file, playProject, usesInclusiveDot)
     }

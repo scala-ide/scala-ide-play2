@@ -20,6 +20,8 @@
 
   <modules>
     <module>org.scala-ide.play2</module>
+    <module>org.scala-ide.play2.templates23</module>
+    <module>org.scala-ide.play2.templates24</module>
     <module>org.scala-ide.play2.tests</module>
     <module>org.scala-ide.play2.feature</module>
     <module>org.scala-ide.play2.source.feature</module>

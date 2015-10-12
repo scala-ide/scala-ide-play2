@@ -1,19 +1,16 @@
 package org.scalaide.play2.templateeditor.lexical
 
-import org.junit.Test
-import org.junit.Assert._
-import org.eclipse.jdt.core.IJavaElement
-import org.eclipse.jdt.core.IMethod
-import org.eclipse.jdt.core.Signature
-import org.eclipse.jface.text.TypedRegion
-import org.eclipse.jface.text.TypedRegion
-import org.junit.AfterClass
-import org.eclipse.jface.text.IDocument
-import org.scalaide.util.eclipse.RegionUtils.RichTypedRegion
 import scala.annotation.tailrec
-import org.eclipse.jdt.internal.core.util.SimpleDocument
 
-class TemplatePartitionTokeniserTest {
+import org.eclipse.jdt.internal.core.util.SimpleDocument
+import org.eclipse.jface.text.TypedRegion
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import org.scalaide.play2.templateeditor.BeforeAfterTemplateVersion
+import org.scalaide.util.eclipse.RegionUtils
+
+class TemplatePartitionTokeniserTest extends BeforeAfterTemplateVersion {
 
   def s(offset: Int, length: Int) = new TypedRegion(offset, length, TemplatePartitions.TEMPLATE_SCALA)
   def d(offset: Int, length: Int) = new TypedRegion(offset, length, TemplatePartitions.TEMPLATE_DEFAULT)

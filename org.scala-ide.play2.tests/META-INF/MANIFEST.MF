@@ -9,7 +9,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.scala-lang.scala-library,
  org.eclipse.equinox.weaving.aspectj,
  org.junit;bundle-version="4.5.0",
- org.scala-ide.sdt.core
+ org.scala-ide.sdt.core,
+ org.scala-ide.play2.templates24
 Import-Package: org.scalaide.core.testsetup,
  org.aspectj.weaver.loadtime.definition
 Bundle-ClassPath: .,

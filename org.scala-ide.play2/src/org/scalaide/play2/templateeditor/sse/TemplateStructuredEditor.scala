@@ -1,23 +1,27 @@
 package org.scalaide.play2.templateeditor.sse
 
+import scala.concurrent._
+
+import org.eclipse.core.resources.IFile
 import org.eclipse.jface.preference.IPreferenceStore
+import org.eclipse.jface.text.DocumentEvent
+import org.eclipse.jface.text.IDocument
+import org.eclipse.jface.text.IDocumentListener
+import org.eclipse.jface.text.ITextInputListener
+import org.eclipse.jface.text.TextViewer
+import org.eclipse.jface.text.source.ISourceViewer
+import org.eclipse.jface.text.source.IVerticalRuler
 import org.eclipse.jface.text.source.SourceViewerConfiguration
+import org.eclipse.swt.widgets.Composite
+import org.eclipse.ui.IEditorInput
+import org.eclipse.ui.IEditorSite
 import org.eclipse.ui.editors.text.EditorsUI
 import org.eclipse.ui.texteditor.ChainedPreferenceStore
 import org.eclipse.wst.sse.ui.StructuredTextEditor
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.templateeditor.AbstractTemplateEditor
-import org.eclipse.jface.text.source.IVerticalRuler
-import org.eclipse.swt.widgets.Composite
-import org.eclipse.jface.text.TextViewer
-import org.eclipse.jface.text.source.ISourceViewer
-import org.eclipse.jface.text.IDocumentListener
-import org.eclipse.jface.text.DocumentEvent
-import org.eclipse.jface.text.ITextListener
-import org.eclipse.jface.text.ITextInputListener
-import org.eclipse.jface.text.IDocument
-
-import scala.concurrent._
+import org.scalaide.play2.templateeditor.processing.TemplateVersionExhibitor
+import org.scalaide.play2.templateeditor.processing.TemplateVersionExtractor
 
 class TemplateStructuredEditor extends StructuredTextEditor with AbstractTemplateEditor {
 
@@ -38,6 +42,11 @@ class TemplateStructuredEditor extends StructuredTextEditor with AbstractTemplat
       case _ =>
     }
     super.setSourceViewerConfiguration(config)
+  }
+
+  override def init(site: IEditorSite, input: IEditorInput): Unit = {
+    TemplateVersionExhibitor.set(TemplateVersionExtractor.fromIFile(input.getAdapter(classOf[IFile]).asInstanceOf[IFile]))
+    super.init(site, input)
   }
 
   override def createSourceViewer(parent: Composite, verticalRuler: IVerticalRuler, styles: Int): ISourceViewer = {

@@ -49,9 +49,6 @@ Import-Package:
  scala.util.parsing.input
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Activator: org.scalaide.play2.PlayPlugin
-Bundle-ClassPath: .,
- target/lib/twirl-compiler.jar,
- target/lib/twirl-parser.jar
 Export-Package: org.scalaide.play2,org.scalaide.play2.lexical,org.scal
  aide.play2.properties,org.scalaide.play2.quickassist,org.scalaide.pla
  y2.routeeditor,org.scalaide.play2.routeeditor.completion,org.scalaide
@@ -67,4 +64,5 @@ Export-Package: org.scalaide.play2,org.scalaide.play2.lexical,org.scal
  nk,org.scalaide.play2.templateeditor.sse.lexical,org.scalaide.play2.t
  emplateeditor.sse.model,org.scalaide.play2.templateeditor.sse.style,o
  rg.scalaide.play2.templateeditor.sse.validation,org.scalaide.play2.ut
- il,org.scalaide.play2.wizards
+ il,org.scalaide.play2.wizards,org.scalaide.play2.templateeditor.proce
+ ssing
