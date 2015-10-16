@@ -2,7 +2,7 @@
 <feature
   id="org.scala-ide.play2.source.feature"
   label="Play2 support in Scala IDE sources"
-  version="0.5.1.qualifier"
+  version="0.5.2.qualifier"
   provider-name="Scala IDE">
 
    <description url="http://github.com/scala-ide/scala-ide-play2/wiki">
