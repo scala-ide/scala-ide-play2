@@ -25,7 +25,8 @@ object PlayPreferences {
     "play.api.mvc._",
     "play.api.data._",
     "views.%format%._",
-    "play.api.templates.PlayMagic._")
+    "play.api.templates.PlayMagic._",
+    "play.mvc.Http.Context.Implicit._")
 
   final val defaultImports = serializeImports(DefaultTemplateImports.toArray)
 
