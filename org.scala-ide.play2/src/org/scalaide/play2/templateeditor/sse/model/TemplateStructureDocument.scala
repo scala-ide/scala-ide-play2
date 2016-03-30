@@ -37,7 +37,7 @@ case class TemplateStructuredDocument(private val regionParser: RegionParser, te
   }
 
   // Members declared in org.eclipse.core.runtime.IAdaptable
-  override def getAdapter(adapter: Class[_]): Object = withParserVersion { super.getAdapter(adapter) }
+  override def getAdapter[T](adapter: Class[T]): T = withParserVersion { super.getAdapter(adapter) }
 
   // Members declared in org.eclipse.jface.text.IDocument
   override def addDocumentListener(listener: IDocumentListener): Unit = withParserVersion { super.addDocumentListener(listener) }
