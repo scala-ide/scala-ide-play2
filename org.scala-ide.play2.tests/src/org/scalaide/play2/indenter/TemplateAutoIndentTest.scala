@@ -9,8 +9,6 @@ import org.junit.ComparisonFailure
 import org.junit.Test
 import org.eclipse.jface.text.TextUtilities
 
-import org.eclipse.jface.text.DocumentCommand
-
 object TemplateAutoIndentTest {
   class TestCommand(cOffset: Int, cLength: Int, cText: String, cCaretOffset: Int, cShiftsCaret: Boolean, cDoIt: Boolean) extends DocumentCommand {
     caretOffset = cCaretOffset
@@ -53,12 +51,9 @@ class TemplateAutoIndentTest {
 
     strategy.customizeDocumentCommand(doc, cmd)
 
-    import collection.JavaConverters._
-    for (e <- cmd.getCommandIterator().asScala.toList.reverse) {
-      val m = e.getClass().getMethod("execute", classOf[IDocument])
-      m.setAccessible(true)
-      m.invoke(e, doc)
-    }
+    val m = cmd.getClass.getSuperclass.getDeclaredMethod("execute", classOf[IDocument])
+    m.setAccessible(true)
+    m.invoke(cmd, doc)
 
     val expected = expectedOutput.replaceAll("\\^", "")
     val actual = doc.get()
