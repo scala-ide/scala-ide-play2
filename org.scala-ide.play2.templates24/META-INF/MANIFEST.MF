@@ -5,9 +5,9 @@ Bundle-SymbolicName: org.scala-ide.play2.templates24;singleton:=true
 Bundle-Version: 0.9.0.qualifier
 Bundle-Activator: org.scalaide.play2.templates24.Activator
 Require-Bundle: org.eclipse.core.runtime,
- org.scala-lang.scala-library;bundle-version="[2.11,2.12)",
- org.scala-lang.scala-compiler;bundle-version="[2.11,2.12)",
- org.scala-lang.scala-reflect;bundle-version="[2.11,2.12)",
+ org.scala-lang.scala-library;bundle-version="[2.12,2.13)",
+ org.scala-lang.scala-compiler;bundle-version="[2.12,2.13)",
+ org.scala-lang.scala-reflect;bundle-version="[2.12,2.13)",
  org.scala-lang.modules.scala-xml,
  org.scala-lang.modules.scala-parser-combinators,
  org.scala-ide.play2;bundle-version="0.8.0",

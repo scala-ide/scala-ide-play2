@@ -13,12 +13,12 @@
     <dependency>
       <groupId>com.typesafe.play</groupId>
       <artifactId>${twirl-compiler.artifactId}</artifactId>
-      <version>1.1.1</version>
+      <version>1.2.1</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.play</groupId>
       <artifactId>${twirl-parser.artifactId}</artifactId>
-      <version>1.1.1</version>
+      <version>1.2.1</version>
     </dependency>
   </dependencies>
 
