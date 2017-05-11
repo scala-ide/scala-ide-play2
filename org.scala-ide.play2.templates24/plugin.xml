@@ -5,9 +5,9 @@
    <extension
          point="org.scalaide.play2.template.processing">
       <template-processor
-            class="org.scalaide.play2.templates24.TemplateProcessing">
+            class="org.scalaide.play2.templates.TemplateProcessing">
          <version
-               supports="2.4"/>
+               supports="2.6"/>
       </template-processor>
    </extension>
 

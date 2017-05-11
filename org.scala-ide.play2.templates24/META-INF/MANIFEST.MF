@@ -1,16 +1,16 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Twirl Templates for Play 2.4
-Bundle-SymbolicName: org.scala-ide.play2.templates24;singleton:=true
-Bundle-Version: 0.9.0.qualifier
-Bundle-Activator: org.scalaide.play2.templates24.Activator
+Bundle-Name: Twirl Templates for Play 2.6
+Bundle-SymbolicName: org.scala-ide.play2.templates;singleton:=true
+Bundle-Version: 0.10.0.qualifier
+Bundle-Activator: org.scalaide.play2.templates.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.scala-lang.scala-library;bundle-version="[2.12,2.13)",
  org.scala-lang.scala-compiler;bundle-version="[2.12,2.13)",
  org.scala-lang.scala-reflect;bundle-version="[2.12,2.13)",
  org.scala-lang.modules.scala-xml,
  org.scala-lang.modules.scala-parser-combinators,
- org.scala-ide.play2;bundle-version="0.8.0",
+ org.scala-ide.play2;bundle-version="[0.10,0.11)",
  org.scala-lang.scala-library
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

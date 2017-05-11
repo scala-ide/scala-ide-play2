@@ -1,4 +1,4 @@
-package org.scalaide.play2.templates24
+package org.scalaide.play2.templates
 
 import scala.util.parsing.input.NoPosition
 import scala.util.parsing.input.Positional
@@ -21,7 +21,7 @@ import play.twirl.parser.TreeNodes.Template
 import play.twirl.parser.TreeNodes.TemplateTree
 import play.twirl.parser.TwirlParser
 
-object Template24Parser {
+object TemplateParser {
   private[this] val parser = new TwirlParser(true)
 
   // removes the generated yield after for
@@ -62,7 +62,7 @@ object Template24Parser {
   }
 
   private def handleTemplate(template: Template): List[PlayTemplate] = template match {
-    case Template(name, comment, params, topImports, imports, defs, sub, content) =>
+    case Template(name, _, comment, params, topImports, imports, defs, sub, content) =>
       val namePart = if (name != null && name.str.length != 0) List(ScalaCode(name)) else List()
       val commentPart = comment.map(CommentCode(_)).toList
       val paramsPart = if (params.pos != NoPosition) List(ScalaCode(params)) else List()

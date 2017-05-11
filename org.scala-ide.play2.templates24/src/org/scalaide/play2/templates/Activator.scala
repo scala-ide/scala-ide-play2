@@ -1,4 +1,4 @@
-package org.scalaide.play2.templates24
+package org.scalaide.play2.templates
 
 import org.osgi.framework.BundleActivator
 import org.osgi.framework.BundleContext
