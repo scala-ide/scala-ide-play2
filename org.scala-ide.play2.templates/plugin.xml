@@ -11,4 +11,7 @@
       </template-processor>
    </extension>
 
+   <extension point="org.scala-ide.sdt.aspects.masterprojdocprovider">
+      <provider class="org.scalaide.play2.templates.MasterProjectionDocumentProvider" />
+   </extension>
 </plugin>

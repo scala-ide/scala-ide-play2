@@ -20,6 +20,9 @@ Bundle-ClassPath: .,
 Import-Package: 
  com.ibm.icu.text;apply-aspects:=false;org.eclipse.swt.graphics;apply-aspects:=false,
  scala.tools.eclipse.contribution.weaving.jdt.ui.javaeditor.formatter;apply-aspects:=false,
+ scala.tools.eclipse.contribution.weaving.jdt.ui.document;apply-aspects:=false,
+ org.eclipse.jface.text,
+ org.eclipse.jface.text.projection,
  scala.xml,
  scala.util.parsing.input,
  scala.reflect.internal.util
