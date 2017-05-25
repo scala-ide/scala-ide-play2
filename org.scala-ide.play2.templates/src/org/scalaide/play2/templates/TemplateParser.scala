@@ -1,9 +1,13 @@
-package org.scalaide.play2.templates23
+package org.scalaide.play2.templates
+
+import scala.util.parsing.input.NoPosition
+import scala.util.parsing.input.Positional
 
 import org.scalaide.play2.templateeditor.lexical.TemplateParsing.CommentCode
 import org.scalaide.play2.templateeditor.lexical.TemplateParsing.DefaultCode
 import org.scalaide.play2.templateeditor.lexical.TemplateParsing.PlayTemplate
 import org.scalaide.play2.templateeditor.lexical.TemplateParsing.ScalaCode
+
 import play.twirl.parser.TreeNodes.Block
 import play.twirl.parser.TreeNodes.Comment
 import play.twirl.parser.TreeNodes.Def
@@ -16,10 +20,8 @@ import play.twirl.parser.TreeNodes.Simple
 import play.twirl.parser.TreeNodes.Template
 import play.twirl.parser.TreeNodes.TemplateTree
 import play.twirl.parser.TwirlParser
-import scala.util.parsing.input.Positional
-import scala.util.parsing.input.NoPosition
 
-object Template23Parser {
+object TemplateParser {
   private[this] val parser = new TwirlParser(true)
 
   // removes the generated yield after for
@@ -60,7 +62,7 @@ object Template23Parser {
   }
 
   private def handleTemplate(template: Template): List[PlayTemplate] = template match {
-    case Template(name, comment, params, topImports, imports, defs, sub, content) =>
+    case Template(name, _, comment, params, topImports, imports, defs, sub, content) =>
       val namePart = if (name != null && name.str.length != 0) List(ScalaCode(name)) else List()
       val commentPart = comment.map(CommentCode(_)).toList
       val paramsPart = if (params.pos != NoPosition) List(ScalaCode(params)) else List()

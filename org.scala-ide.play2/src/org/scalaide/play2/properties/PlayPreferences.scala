@@ -32,7 +32,7 @@ object PlayPreferences {
 
   final val PlayVersion = "playVersion"
 
-  final val PlaySupportedVersion = List("2.4", "2.3", "2.2")
+  final val PlaySupportedVersion = List("2.6", "2.5")
 
   final val DefaultPlayVersion = PlaySupportedVersion.head
 

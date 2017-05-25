@@ -2,7 +2,7 @@
 <feature
   id="org.scala-ide.play2.source.feature"
   label="Play2 support in Scala IDE sources"
-  version="0.9.0.qualifier"
+  version="0.10.0.qualifier"
   provider-name="Scala IDE">
 
    <description url="http://github.com/scala-ide/scala-ide-play2/wiki">
@@ -229,14 +229,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.scala-ide.play2.templates23"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.scala-ide.play2.templates24"
+         id="org.scala-ide.play2.templates"
          download-size="0"
          install-size="0"
          version="0.0.0"

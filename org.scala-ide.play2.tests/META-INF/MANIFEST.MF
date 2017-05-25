@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Scala Plugin (Test)
 Bundle-SymbolicName: org.scala-ide.play2.tests
-Bundle-Version: 0.9.0.qualifier
+Bundle-Version: 0.10.0.qualifier
 Bundle-Vendor: scala-ide.org
 Fragment-Host: org.scala-ide.play2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -10,7 +10,7 @@ Require-Bundle: org.scala-lang.scala-library,
  org.eclipse.equinox.weaving.aspectj,
  org.junit;bundle-version="4.5.0",
  org.scala-ide.sdt.core,
- org.scala-ide.play2.templates24
+ org.scala-ide.play2.templates
 Import-Package: org.scalaide.core.testsetup,
  org.aspectj.weaver.loadtime.definition
 Bundle-ClassPath: .,

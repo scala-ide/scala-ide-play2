@@ -6,7 +6,7 @@ import org.scalaide.play2.templateeditor.processing.TemplateVersionExhibitor
 
 trait BeforeAfterTemplateVersion {
   @Before def setUp(): Unit = {
-    TemplateVersionExhibitor.set(Some("2.4"))
+    TemplateVersionExhibitor.set(Some("2.6"))
   }
 
   @After def tearDown(): Unit = {

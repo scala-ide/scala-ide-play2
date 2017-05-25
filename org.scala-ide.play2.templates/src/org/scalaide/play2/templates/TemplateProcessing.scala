@@ -1,4 +1,4 @@
-package org.scalaide.play2.templates24
+package org.scalaide.play2.templates
 
 import java.io.File
 
@@ -12,9 +12,9 @@ import org.scalaide.play2.templateeditor.processing.{ TemplateProcessing => Play
 
 class TemplateProcessing extends PlayProcessing {
   def compile(content: String, source: File, sourceDirectory: File, additionalImports: String, codec: Codec, inclusiveDot: Boolean): Try[GeneratedSource] =
-    Template24Compiler.compile(content, source, sourceDirectory, additionalImports, inclusiveDot)
+    TemplateCompiler.compile(content, source, sourceDirectory, additionalImports, inclusiveDot)
 
-  def parse(templateCode: String): List[PlayTemplate] = Template24Parser.parse(templateCode)
+  def parse(templateCode: String): List[PlayTemplate] = TemplateParser.parse(templateCode)
 
-  def length(input: Positional): Int = Template24Parser.length(input)
+  def length(input: Positional): Int = TemplateParser.length(input)
 }

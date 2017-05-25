@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.scalaide.play2.template.processing">
+      <template-processor
+            class="org.scalaide.play2.templates.TemplateProcessing">
+         <version
+               supports="2.6"/>
+      </template-processor>
+   </extension>
+
+   <extension point="org.scala-ide.sdt.aspects.masterprojdocprovider">
+      <provider class="org.scalaide.play2.templates.MasterProjectionDocumentProvider" />
+   </extension>
+</plugin>
