@@ -1,6 +1,6 @@
 package org.scalaide.play2.templateeditor.sse
 
-import scala.concurrent._
+import scala.concurrent.Future
 
 import org.eclipse.core.resources.IFile
 import org.eclipse.jface.preference.IPreferenceStore
@@ -17,6 +17,7 @@ import org.eclipse.ui.IEditorInput
 import org.eclipse.ui.IEditorSite
 import org.eclipse.ui.editors.text.EditorsUI
 import org.eclipse.ui.texteditor.ChainedPreferenceStore
+import org.eclipse.wst.html.ui.internal.HTMLUIPlugin
 import org.eclipse.wst.sse.ui.StructuredTextEditor
 import org.scalaide.play2.PlayPlugin
 import org.scalaide.play2.templateeditor.AbstractTemplateEditor
@@ -26,7 +27,7 @@ import org.scalaide.play2.templateeditor.processing.TemplateVersionExtractor
 class TemplateStructuredEditor extends StructuredTextEditor with AbstractTemplateEditor {
 
   override protected lazy val preferenceStore: IPreferenceStore =
-    new ChainedPreferenceStore(Array((EditorsUI.getPreferenceStore()), PlayPlugin.preferenceStore))
+    new ChainedPreferenceStore(Array(HTMLUIPlugin.getDefault.getPreferenceStore, EditorsUI.getPreferenceStore, PlayPlugin.preferenceStore))
 
   /* This is a nasty hack.
    * The problem:  The TemplateStructuredTextViewerConfiguration needs the pref store and a reference to the editor.
@@ -63,7 +64,7 @@ class TemplateStructuredEditor extends StructuredTextEditor with AbstractTemplat
 
   object documentListener extends IDocumentListener {
     override def documentChanged(event: DocumentEvent) {
-      import ExecutionContext.Implicits._
+      import scala.concurrent.ExecutionContext.Implicits._
       Future { getInteractiveCompilationUnit().scheduleReconcile(event.getDocument.get.toCharArray) }
     }
 

@@ -69,9 +69,7 @@ class TemplateStructuredTextViewerConfiguration extends StructuredTextViewerConf
 
   override def getLineStyleProviders(sourceViewer: ISourceViewer, partitionType: String) = {
     ContentType(sourceViewer, partitionType) match {
-      case HTMLContent => htmlConfiguration.getLineStyleProviders(sourceViewer, partitionType)
-      case XMLContent => xmlConfiguration.getLineStyleProviders(sourceViewer, partitionType)
-      case ScalaContent => Array(new ScalaLineStyleProvider(prefStore))
+      case HTMLContent | XMLContent | ScalaContent => Array(new ScalaLineStyleProvider(prefStore))
       case _ => super.getLineStyleProviders(sourceViewer, partitionType)
     }
   }
