@@ -91,8 +91,21 @@ object TemplateParser {
       code.length
     case PosString(str) =>
       str.length
-    case Comment(str) =>
-      str.length + "@**@".length
+    case cm @ Comment(str) =>
+      import scala.util.parsing.input.OffsetPosition
+      val Open = "@*"
+      val Close = "*@"
+      val src = cm.pos match {
+        case op: OffsetPosition =>
+          val s = op.source.toString.slice(op.offset, op.offset + (Open + str + Close).length)
+          if (s.endsWith(Close))
+            s
+          else
+            Open + str
+        case _ =>
+          Open + str + Close
+      }
+      src.length
     case _ =>
       -1
   }
